@@ -17,9 +17,8 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-page">
-      {/* Sección del carrusel de imágenes */}
       <div className="image-slider">
-        {/* Aquí iría el componente del carrusel de imágenes */}
+        {/* falta el carrusel */}
         <p>Imágenes de la escuela</p>
       </div>
 
@@ -64,8 +63,6 @@ const Login: React.FC = () => {
               </a>
             </div>
           </form>
-
-          <p className="disclaimer">[Excentos: 0,5% total]</p>
         </div>
       </div>
     </div>
