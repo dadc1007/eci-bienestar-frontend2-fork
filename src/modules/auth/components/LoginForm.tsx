@@ -1,18 +1,30 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../utils/LoginForm.css";
+import { login } from "../services/authService";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log("Email:", email, "Password:", password);
-    setTimeout(() => {
+    setError("");
+
+    try {
+      const response = await login(email, password);
+      localStorage.setItem("token", response.token);
+      navigate("/dashboard");
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -53,6 +65,8 @@ const Login: React.FC = () => {
                 required
               />
             </div>
+
+            {error && <p className="form-error">{error}</p>}
 
             <div className="form-footer">
               <button type="submit" disabled={isLoading}>
