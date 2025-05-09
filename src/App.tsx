@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './common/layout/navbar';
 import Dashboard from './common/dashboard';
+import GymRoutes from "@/modules/gym-management/GymRoutes";
 
 // Componentes de módulos
 const NavbarWrapper: React.FC<{ children: React.ReactNode, moduleColor: string }> = ({ children, moduleColor }) => {
@@ -81,12 +82,12 @@ function App() {
             } 
           />
           <Route 
-            path="/modules/gym/*" 
+            path="/modules/gym-management/*" 
             element={
-              <NavbarWrapper moduleColor="#000000">
-                <ModuleTemplate title="Gestión del Gimnasio" color="#000000" />
+              <NavbarWrapper moduleColor="#1a1a1a">
+                <GymRoutes />
               </NavbarWrapper>
-            } 
+            }
           />
           <Route 
             path="/modules/statistics/*" 

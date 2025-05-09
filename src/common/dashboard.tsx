@@ -34,7 +34,7 @@ const services = [
     id: 'gym-management',
     title: 'Seguimiento Físico y Reservas del Gimnasio',
     imageUrl: new URL('../assets/images/gym-management.jpg', import.meta.url).href,
-    linkTo: '/modules/gym',
+    linkTo: '/modules/gym-management',
     color: '#673AB7' // Morado
   },
   {

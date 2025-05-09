@@ -7,7 +7,7 @@ import {
   DropdownMenu,
   DropdownItem,
   NavbarItem,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBell } from '@fortawesome/free-regular-svg-icons';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
