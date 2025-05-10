@@ -29,9 +29,9 @@ const Navbar: React.FC<NavbarProps> = ({
     <NextUINavbar 
       isBordered 
       maxWidth="full" 
-      position="static"
+      position="static" 
       style={{ backgroundColor: moduleColor }}
-      className="px-4 sm:px-6 lg:px-8 transition-colors duration-300"
+      className="px-2 sm:px-4 lg:px-6 transition-colors duration-300"
     >
       <NavbarBrand className="font-bold text-xl tracking-tight text-white">
         ECI Bienestar
