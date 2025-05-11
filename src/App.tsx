@@ -7,6 +7,7 @@ import {
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
+import ForgotPassword from "./modules/auth/components/ForgotPassword";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -62,6 +63,9 @@ function App() {
       <Routes>
         {/* Ruta inicial - login */}
         <Route path="/" element={<Login />} />
+
+        {/* Restaurar contrasena*/}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Ruta principal - Dashboard */}
         <Route

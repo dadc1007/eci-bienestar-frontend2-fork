@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo/ECIBienestarTransparent.png";
 import axios from "axios";
 
@@ -66,7 +66,7 @@ const Login: React.FC = () => {
       <div className="w-1/2 bg-white flex flex-col items-center justify-center p-8">
         <div className="text-center mb-8">
           <img src={logo} alt="Logo" className="mx-auto w-auto h-[10rem]" />
-          <h2 className="text-[35px] font-bold text-red-500">
+          <h2 className="text-[35px] font-bold text-[#cf3a3a]">
             Inicio de Sesión
           </h2>
         </div>
@@ -119,12 +119,12 @@ const Login: React.FC = () => {
               >
                 {isLoading ? "Cargando..." : "Iniciar Sesión"}
               </button>
-              <a
-                href="/forgot-password"
+              <Link
+                to="/forgot-password"
                 className="text-[#7aa6ff] no-underline text-[1.2rem]"
               >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </Link>
             </div>
           </form>
         </div>
