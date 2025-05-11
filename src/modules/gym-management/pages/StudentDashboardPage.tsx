@@ -1,13 +1,25 @@
+import { Routes, Route } from "react-router-dom";
+import GymNavbarStudent from "../components/GymNavBarStudent";
+
+import StudentMainPage from "../pages/student/StudentMainPage";
+import ReservationsPage from "../pages/student/ReservationsPage";
+import BookingPage from "../pages/student/BookingPage";
+import RoutinesPage from "../pages/student/RoutinesPage";
+import RegisterProgressPage from "../pages/student/RegisterProgressPage";
+import EvolutionPage from "../pages/student/EvolutionPage";
+
 const StudentDashboardPage = () => {
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">Panel del Estudiante</h1>
-      <ul className="list-disc list-inside text-gray-700">
-        <li>📅 Ver y reservar horarios del gimnasio</li>
-        <li>💪 Consultar rutinas asignadas</li>
-        <li>📈 Visualizar tu progreso físico</li>
-      </ul>
-    </div>
+    <Routes>
+      <Route path="/" element={<GymNavbarStudent />}>
+        <Route index element={<StudentMainPage />} />
+        <Route path="reservations" element={<ReservationsPage />} />
+        <Route path="booking" element={<BookingPage />} />
+        <Route path="routines" element={<RoutinesPage />} />
+        <Route path="progress" element={<RegisterProgressPage />} />
+        <Route path="evolution" element={<EvolutionPage />} />
+      </Route>
+    </Routes>
   );
 };
 

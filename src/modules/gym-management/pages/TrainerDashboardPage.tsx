@@ -1,13 +1,24 @@
+import { Routes, Route } from "react-router-dom";
+import GymNavbarTrainer from "../components/GymNavBarTrainer";
+import TrainerMainPage from "../pages/trainer/TrainerMainPage";
+import TrainerRoutinesPage from "../pages/trainer/TrainerRoutinesPage";
+import ExercisesPage from "../pages/trainer/ExercisesPage";
+import SessionsPage from "../pages/trainer/SessionsPage";
+import TrainerReservationsPage from "../pages/trainer/TrainerReservationsPage";
+import ProgressPage from "../pages/trainer/ProgressPage";
+
 const TrainerDashboardPage = () => {
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">Panel del Entrenador</h1>
-      <ul className="list-disc list-inside text-gray-700">
-        <li>🧑‍🏫 Consultar la lista de estudiantes inscritos</li>
-        <li>📋 Asignar rutinas personalizadas</li>
-        <li>📊 Evaluar y registrar el progreso de cada estudiante</li>
-      </ul>
-    </div>
+    <Routes>
+      <Route path="/" element={<GymNavbarTrainer />}>
+        <Route index element={<TrainerMainPage />} />
+        <Route path="routines" element={<TrainerRoutinesPage />} />
+        <Route path="exercises" element={<ExercisesPage />} />
+        <Route path="sessions" element={<SessionsPage />} />
+        <Route path="reservations" element={<TrainerReservationsPage />} />
+        <Route path="progress" element={<ProgressPage />} />
+      </Route>
+    </Routes>
   );
 };
 
