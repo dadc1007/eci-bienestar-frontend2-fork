@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "../../../assets/images/logo/ECIBienestarTransparent.png";
 import axios from "axios";
 
 const Login: React.FC = () => {
@@ -57,15 +58,17 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex h-screen font-sans w-screen">
-      <div className="flex-1 bg-[#cf3a3a] flex items-center justify-center">
+      <div className="flex-1 bg-[#990000] flex items-center justify-center">
         {/* falta el carrusel */}
         <p>Imágenes de la escuela</p>
       </div>
 
       <div className="w-1/2 bg-white flex flex-col items-center justify-center p-8">
         <div className="text-center mb-8">
-          <h1>ECI BIENESTAR</h1>
-          <h2 className="text-[26px] text-red-500">Inicio de Sesión</h2>
+          <img src={logo} alt="Logo" className="mx-auto w-auto h-[10rem]" />
+          <h2 className="text-[35px] font-bold text-red-500">
+            Inicio de Sesión
+          </h2>
         </div>
 
         <div className="w-full max-w-[400px] min-w-[200px] p-8 rounded-[30px] bg-[#cf3a3a] shadow-md">
@@ -73,12 +76,12 @@ const Login: React.FC = () => {
             <div className="mb-61">
               <label
                 htmlFor="email"
-                className="block mb-2 text-[#ffffff] font-bold"
+                className="block mb-2 text-[#ffffff] font-bold text-[15px]"
               >
                 Correo
               </label>
               <input
-                className="w-full p-3 border border-[#bdc3c7] rounded-md text-base text-[#ffffff]"
+                className="w-full p-3 border border-[#bdc3c7] text-base text-[#000000] rounded-[30px] mb-5"
                 type="email"
                 id="email"
                 value={email}
@@ -96,7 +99,7 @@ const Login: React.FC = () => {
                 Contraseña
               </label>
               <input
-                className="w-full p-3 border border-[#bdc3c7] rounded-md text-base text-[#ffffff]"
+                className="w-full p-3 border border-[#bdc3c7] rounded-[30px] text-base text-[#000000] mb-5"
                 type="password"
                 id="password"
                 value={password}
@@ -112,13 +115,13 @@ const Login: React.FC = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full p-3 bg-[#990000] text-white border-none rounded-md text-base cursor-pointer mb-4"
+                className="w-full p-3 bg-[#990000] text-white border-none rounded-[30px] text-base cursor-pointer mb-4"
               >
                 {isLoading ? "Cargando..." : "Iniciar Sesión"}
               </button>
               <a
                 href="/forgot-password"
-                className="text-[#7aa6ff] no-underline text-[1.5rem]"
+                className="text-[#7aa6ff] no-underline text-[1.2rem]"
               >
                 ¿Olvidaste tu contraseña?
               </a>
