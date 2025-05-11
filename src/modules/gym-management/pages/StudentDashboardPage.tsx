@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import GymNavbarStudent from "../components/GymNavBarStudent";
-
 import StudentMainPage from "../pages/student/StudentMainPage";
 import ReservationsPage from "../pages/student/ReservationsPage";
 import BookingPage from "../pages/student/BookingPage";

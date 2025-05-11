@@ -13,6 +13,14 @@ import RoutinesPage from "@/modules/gym-management/pages/student/RoutinesPage";
 import RegisterProgressPage from "@/modules/gym-management/pages/student/RegisterProgressPage";
 import EvolutionPage from "@/modules/gym-management/pages/student/EvolutionPage";
 
+// Trainer pages
+import TrainerMainPage from "@/modules/gym-management/pages/trainer/TrainerMainPage";
+import TrainerRoutinesPage from "@/modules/gym-management/pages/trainer/TrainerRoutinesPage";
+import ExercisesPage from "@/modules/gym-management/pages/trainer/ExercisesPage";
+import SessionsPage from "@/modules/gym-management/pages/trainer/SessionsPage";
+import TrainerReservationsPage from "@/modules/gym-management/pages/trainer/TrainerReservationsPage";
+import ProgressPage from "@/modules/gym-management/pages/trainer/ProgressPage";
+
 const GymRoutes = () => {
   return (
     <Routes>
@@ -30,8 +38,14 @@ const GymRoutes = () => {
       </Route>
 
       {/* Rutas para entrenadores */}
-      <Route path="trainer" element={<TrainerDashboardPage />} />
-      {/* Aquí puedes anidar rutas de entrenador si tienes varias subpáginas */}
+      <Route path="trainer" element={<TrainerDashboardPage />}>
+        <Route index element={<TrainerMainPage />} />
+        <Route path="trainer-routines" element={<TrainerRoutinesPage />} />
+        <Route path="exercises" element={<ExercisesPage />} />
+        <Route path="sessions" element={<SessionsPage />} />
+        <Route path="trainer-reservations" element={<TrainerReservationsPage />} />
+        <Route path="progress" element={<ProgressPage />} />
+      </Route>
 
       {/* Catch-all: redirige rutas desconocidas */}
       <Route path="*" element={<Navigate to="." replace />} />

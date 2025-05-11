@@ -12,10 +12,10 @@ const TrainerDashboardPage = () => {
     <Routes>
       <Route path="/" element={<GymNavbarTrainer />}>
         <Route index element={<TrainerMainPage />} />
-        <Route path="routines" element={<TrainerRoutinesPage />} />
+        <Route path="trainer-routines" element={<TrainerRoutinesPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="sessions" element={<SessionsPage />} />
-        <Route path="reservations" element={<TrainerReservationsPage />} />
+        <Route path="trainer-reservations" element={<TrainerReservationsPage />} />
         <Route path="progress" element={<ProgressPage />} />
       </Route>
     </Routes>
