@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './common/dashboard';
 import Layout from './common/layout/layout';
+import GymRoutes from './modules/gym-management/GymRoutes';
 
 const MODULE_MAPPING = {
   health: 'turnos',
@@ -18,7 +19,7 @@ const moduleColors = {
   recreation: "#0E7029",  // Salas Recreativas
   extracurricular: "#362550", // Clases Extra
   sports: "#5B1F00",      // Préstamos Deportivos
-  gym: "#000000",         // Gimnasio/Seguimiento
+  gym: "#1a1a1a",         // Gimnasio/Seguimiento
   users: "#990000",       // Gestión Usuarios
   statistics: "#990000",  // Estadísticas
   default: "#990000"      // Color por defecto para dashboard
@@ -130,7 +131,7 @@ function App() {
         
         {/* Módulo de Gimnasio/Seguimiento */}
         <Route 
-          path="/modules/gym/*" 
+          path="/modules/gym-management/*" 
           element={
             <Layout 
               moduleColor={moduleColors.gym}
@@ -139,7 +140,7 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               userEmail="administrador@ejemplo.com"
             >
-              <ModuleTemplate title="Gestión del Gimnasio" color={moduleColors.gym} />
+              <GymRoutes />
             </Layout>
           } 
         />

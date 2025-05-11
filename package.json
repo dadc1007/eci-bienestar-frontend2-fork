@@ -16,7 +16,6 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroicons/react": "^2.2.0",
     "@heroui/react": "^2.7.8",
-    "@nextui-org/react": "^2.6.11",
     "framer-motion": "^12.9.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

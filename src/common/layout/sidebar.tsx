@@ -56,7 +56,7 @@ const defaultModules: SidebarModule[] = [
     id: 'seguimiento',
     name: 'Seguimiento Físico',
     icon: faDumbbell,
-    path: '/modules/gym'
+    path: '/modules/gym-management'
   },
   {
     id: 'usuarios',
