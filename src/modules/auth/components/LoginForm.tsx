@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../utils/LoginForm.css";
 import axios from "axios";
 
 const Login: React.FC = () => {
@@ -57,23 +56,29 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="image-slider">
+    <div className="flex h-screen font-sans w-screen">
+      <div className="flex-1 bg-[#cf3a3a] flex items-center justify-center">
         {/* falta el carrusel */}
         <p>Imágenes de la escuela</p>
       </div>
 
-      <div className="login-section">
-        <div className="login-container">
-          <div className="login-header">
-            <h1>ECI BIENESTAR</h1>
-            <h2>Inicio de Sesión</h2>
-          </div>
+      <div className="w-1/2 bg-white flex flex-col items-center justify-center p-8">
+        <div className="text-center mb-8">
+          <h1>ECI BIENESTAR</h1>
+          <h2 className="text-[26px] text-red-500">Inicio de Sesión</h2>
+        </div>
 
+        <div className="w-full max-w-[400px] min-w-[200px] p-8 rounded-[30px] bg-[#cf3a3a] shadow-md">
           <form onSubmit={handleSimulatedLogin}>
-            <div className="form-group">
-              <label htmlFor="email">Correo</label>
+            <div className="mb-61">
+              <label
+                htmlFor="email"
+                className="block mb-2 text-[#ffffff] font-bold"
+              >
+                Correo
+              </label>
               <input
+                className="w-full p-3 border border-[#bdc3c7] rounded-md text-base text-[#ffffff]"
                 type="email"
                 id="email"
                 value={email}
@@ -83,9 +88,15 @@ const Login: React.FC = () => {
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="password">Contraseña</label>
+            <div className="block mb-2 text-[#ffffff] font-bold">
+              <label
+                htmlFor="password"
+                className="block mb-2 text-[#ffffff] font-bold"
+              >
+                Contraseña
+              </label>
               <input
+                className="w-full p-3 border border-[#bdc3c7] rounded-md text-base text-[#ffffff]"
                 type="password"
                 id="password"
                 value={password}
@@ -97,11 +108,18 @@ const Login: React.FC = () => {
 
             {error && <p className="form-error">{error}</p>}
 
-            <div className="form-footer">
-              <button type="submit" disabled={isLoading}>
+            <div className="flex flex-col items-center">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full p-3 bg-[#990000] text-white border-none rounded-md text-base cursor-pointer mb-4"
+              >
                 {isLoading ? "Cargando..." : "Iniciar Sesión"}
               </button>
-              <a href="/forgot-password" className="forgot-password">
+              <a
+                href="/forgot-password"
+                className="text-[#7aa6ff] no-underline text-[1.5rem]"
+              >
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
