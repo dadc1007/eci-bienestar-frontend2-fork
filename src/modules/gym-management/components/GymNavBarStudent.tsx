@@ -40,7 +40,7 @@ const GymNavbarStudent = () => {
                 `px-4 py-2 text-sm font-semibold transition whitespace-nowrap ${
                   isActive
                     ? "bg-black text-white rounded-t-xl"
-                    : "text-black hover:bg-gray-200"
+                    : "text-black rounded-t-xl hover:bg-gray-200"
                 }`
               }
             >
