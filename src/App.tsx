@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './common/dashboard';
 import Layout from './common/layout/layout';
+import HealthRoutes from './modules/appointment-management/HealthRoutes';
 
 const MODULE_MAPPING = {
   health: 'turnos',
@@ -66,7 +67,7 @@ function App() {
         
         {/* Módulo de Salud/Turnos */}
         <Route 
-          path="/modules/health/*" 
+          path="/modules/appointment-management/*" 
           element={
             <Layout 
               moduleColor={moduleColors.health}
@@ -75,7 +76,7 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               userEmail="administrador@ejemplo.com"
             >
-              <ModuleTemplate title="Gestión de Turnos de Salud" color={moduleColors.health} />
+              <HealthRoutes/>
             </Layout>
           } 
         />

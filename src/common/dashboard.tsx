@@ -6,7 +6,7 @@ const services = [
     id: 'appointment-management',
     title: 'Bienestar Universitario: Gestión de Turnos',
     imageUrl: new URL('../assets/images/appointment-management.jpg', import.meta.url).href,
-    linkTo: '/modules/health',
+    linkTo: '/modules/appointment-management',
     color: '#990000' // Rojo ECI
   },
   {

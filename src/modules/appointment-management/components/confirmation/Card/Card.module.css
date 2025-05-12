@@ -1,0 +1,15 @@
+.bg-gradient-health-medicine {
+  @apply bg-gradient-to-r from-health-medicine-primary to-health-medicine-dark;
+}
+
+.bg-gradient-health-dentistry {
+  @apply bg-gradient-to-r from-health-primary to-health-primary-dark;
+}
+
+.bg-gradient-health-psychology {
+  @apply bg-gradient-to-r from-health-psychology-primary to-health-psychology-dark;
+}
+
+.circle {
+  @apply w-5 h-5 bg-gray-100 rounded-full;
+}

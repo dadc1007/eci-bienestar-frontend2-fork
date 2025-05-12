@@ -32,7 +32,7 @@ const defaultModules: SidebarModule[] = [
     id: 'turnos',
     name: 'Turnos Bienestar',
     icon: faCalendarDays,
-    path: '/modules/health'
+    path: '/modules/appointment-management'
   },
   {
     id: 'salas',
