@@ -1,6 +1,8 @@
+// @ts-ignore
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './common/dashboard';
 import Layout from './common/layout/layout';
+import SportsHome from './modules/sports-equipment/SportsRouter.tsx';
 
 const MODULE_MAPPING = {
   health: 'turnos',
@@ -25,7 +27,7 @@ const moduleColors = {
 };
 
 // Componentes de módulos
-const ModuleTemplate: React.FC<{ title: string, color: string }> = ({ title, color }) => (
+const ModuleTemplate: React.FC<{ title: string, color: string }> = ({ title}) => (
   <div className="container mx-auto px-4 py-8">
     <h1 className="text-3xl font-bold text-gray-800 mb-6">{title}</h1>
     <div className="bg-white rounded-lg shadow p-6">
@@ -116,14 +118,14 @@ function App() {
         <Route 
           path="/modules/sports/*" 
           element={
-            <Layout 
+            <Layout
               moduleColor={moduleColors.sports}
               activeModule={MODULE_MAPPING.sports}
               onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
               userEmail="administrador@ejemplo.com"
             >
-              <ModuleTemplate title="Préstamos Deportivos" color={moduleColors.sports} />
+              <SportsHome />
             </Layout>
           } 
         />
