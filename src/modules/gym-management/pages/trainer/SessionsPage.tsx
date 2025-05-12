@@ -9,6 +9,7 @@ type Session = {
   label: string;
   day: string;
   time: string;
+  capacity: number;
 };
 
 const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -25,12 +26,14 @@ const hours = [
   "5:00 PM",
 ];
 
+const capacities = [5, 10, 15, 20, 25, 30];
+
 export default function GymSchedule() {
   const [sessions, setSessions] = useState<Session[]>([
-    { label: "Sesion gimnasio", day: "Lunes", time: "10:00 AM" },
-    { label: "Sesion gimnasio", day: "Miércoles", time: "10:00 AM" },
-    { label: "Sesion gimnasio", day: "Viernes", time: "10:00 AM" },
-    { label: "Sesion gimnasio", day: "Lunes", time: "1:00 PM" },
+    { label: "Sesion gimnasio", day: "Lunes", time: "10:00 AM", capacity: 5 },
+    { label: "Sesion gimnasio", day: "Miércoles", time: "10:00 AM", capacity: 10 },
+    { label: "Sesion gimnasio", day: "Viernes", time: "10:00 AM", capacity: 15 },
+    { label: "Sesion gimnasio", day: "Lunes", time: "1:00 PM", capacity: 20 },
   ]);
 
   const [selected, setSelected] = useState<Session | null>(null);
@@ -40,7 +43,7 @@ export default function GymSchedule() {
   const handleUpdate = (updated: Session) => {
     setSessions((prev) =>
       prev.map((s) =>
-        s.day === editing?.day && s.time === editing?.time ? updated : s
+        s.day === editing?.day && s.time === editing?.time && s.capacity === editing?.capacity ? updated : s
       )
     );
     setEditing(null);
@@ -48,7 +51,7 @@ export default function GymSchedule() {
 
   const handleCreate = (newSession: Session) => {
     const exists = sessions.some(
-      (s) => s.day === newSession.day && s.time === newSession.time
+      (s) => s.day === newSession.day && s.time === newSession.time && s.capacity ===  newSession.capacity
     );
     if (!exists) {
       setSessions((prev) => [...prev, newSession]);
@@ -68,7 +71,7 @@ export default function GymSchedule() {
           <PlusIcon className="w-6 h-6" />
         </button>
       </div>
-
+      
       <div className="overflow-x-auto border rounded-b-lg">
         <table className="w-full min-w-[600px]">
           <thead>
@@ -131,7 +134,7 @@ export default function GymSchedule() {
           onDelete={(sessionToDelete) => {
             setSessions((prev) =>
               prev.filter(
-                (s) => !(s.day === sessionToDelete.day && s.time === sessionToDelete.time)
+                (s) => !(s.day === sessionToDelete.day && s.time === sessionToDelete.time && s.capacity === sessionToDelete.capacity)
               )
             );
             setEditing(null);
@@ -168,6 +171,7 @@ function SessionDetailModal({
         <p><strong>Nombre:</strong> {session.label}</p>
         <p><strong>Día:</strong> {session.day}</p>
         <p><strong>Hora:</strong> {session.time}</p>
+        <p><strong>Capacidad:</strong> {session.capacity}</p>
       </div>
     </div>
   );
@@ -244,6 +248,19 @@ function SessionEditModal({
               ))}
             </select>
           </div>
+          <div>
+            <label className="block front-medium">Capacidad</label>
+            <select
+              name="capacity"
+              value={formData.capacity}
+              onChange={handleChange}
+              className="border p-2 w-full rounded"
+            >
+              {capacities.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+          </div>
 
           <div className="flex justify-between items-center mt-6">
             <button
@@ -278,6 +295,7 @@ function CreateSessionModal({
     label: "",
     day: "Lunes",
     time: "08:00 AM",
+    capacity: 15,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -329,6 +347,19 @@ function CreateSessionModal({
             >
               {hours.map((h) => (
                 <option key={h}>{h}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block font-medium">Capacidad</label>
+            <select
+              name="capacity"
+              value={formData.capacity}
+              onChange={handleChange}
+              className="border p-2 w-full rounded"
+            >
+              {capacities.map((c) => (
+                <option key={c}>{c}</option>
               ))}
             </select>
           </div>

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // ⚠️ Simulación temporal del rol
-const MOCK_USER_ROLE = "ESTUDIANTE"; // Cambia a "ESTUDIANTE" para probar
+const MOCK_USER_ROLE = "ENTRENADOR"; // Cambia a "ESTUDIANTE" para probar
 
 const GymRedirectPage = () => {
   const navigate = useNavigate();

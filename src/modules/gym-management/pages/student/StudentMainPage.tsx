@@ -2,23 +2,23 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const images = [
-  "https://escuelaing.s3.amazonaws.com/production/images/_DSC5474.2e16d0ba.fill-1200x800-c100.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=ZCtmZR28LMhOJFcCGO9wkoYb0qQ%3D&Expires=1749403946",
-  "https://escuelaing.s3.amazonaws.com/production/images/_DSC5393.2e16d0ba.fill-1200x800-c100.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=fCAzVSbwIHRdjzKZ4zPZY26Rius%3D&Expires=1749403946",
-  "https://escuelaing.s3.amazonaws.com/production/images/Bienestar-Universitario-Gimn.2e16d0ba.fill-1200x800-c100_dY2H7Z9.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=kLqiRofdQMRQ70lvukO5QO%2Br87g%3D&Expires=1749403946",
-  "https://escuelaing.s3.amazonaws.com/production/images/GYM2.2e16d0ba.fill-1200x800-c100.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=GP4qIp73TPALk1wCixfGpw2DMt4%3D&Expires=1749403946"
+  "https://escuelaing.s3.amazonaws.com/production/images/Coliseo_1.max-1200x600_VwKoqpL.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=pbOnF4UFBeKbQ7Tn5Qyxa9Hll6M%3D&Expires=1749484352",
+  "https://escuelaing.s3.amazonaws.com/production/images/_DSC5393.2e16d0ba.fill-1200x800-c100_sjfYUbx.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=pWWk2nqXG71YaeMkN%2BnfYz7tejg%3D&Expires=1749484352",
+  "https://escuelaing.s3.amazonaws.com/production/images/_DSC5474.2e16d0ba.fill-1200x800-c100_fuwUvll.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=kP98XoV%2Fx%2B%2FqdPYV7RjGqPAO9Sg%3D&Expires=1749484352",
+  "https://escuelaing.s3.amazonaws.com/production/images/Bienestar-Universitario-Gimn.2e16d0ba.fill-1200x800-c100_dY2H7Z9.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FimJgyFsN7eD%2BU0lu1Qnu5u%2FEOY%3D&Expires=1749484352"
 ];
 
 const StudentMainPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Cambiar imagen cada 8 segundos
+  // Cambiar imagen cada 5 segundos
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
         prevIndex === images.length - 1 ? 0 : prevIndex + 1
       );
-    }, 8000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
