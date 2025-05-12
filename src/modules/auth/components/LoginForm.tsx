@@ -1,59 +1,53 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo/ECIBienestarTransparent.png";
-import axios from "axios";
+import apiClient from "../../../common/services/apiCliend";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
+  const [username, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
 
-  const handleSimulatedLogin = () => {
-    setIsLoading(true);
-    setError("");
-
-    const fakeUserData = {
-      id: "fake-user-123",
-      name: "Usuario Falso",
-      email: "falso@mail.escuela.edu.co",
-      token: "fake-jwt-token-simulated-abc456",
-      role: "admin",
-    };
-
-    console.log("Simulated Login exitoso:", fakeUserData);
-    localStorage.setItem("user", JSON.stringify(fakeUserData));
-
-    setIsLoading(false);
-    navigate("/home");
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // --- Start of commented out real login logic placeholder ---
-    /*
     try {
-      const response = await axios.post('http://localhost:8080/usuarios/login', { email, password });
-      console.log('Login exitoso:', response.data);
-      localStorage.setItem('user', JSON.stringify(response.data));
-      navigate("/home");
-    } catch (error: any) {
-      console.error('Error en login:', error);
-      if (error.response && error.response.data && error.response.data.message) {
-         setError(error.response.data.message);
+      const response = await apiClient.post("/api/auth/login", {
+        username,
+        password,
+      });
+
+      console.log("Login exitoso:", response.data);
+
+      if (response.data.token) {
+        localStorage.setItem("authToken", response.data.token);
+      }
+      if (response.data.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
       } else {
-         setError('Credenciales incorrectas. Inténtalo de nuevo.'); // Generic error message
+        localStorage.setItem("user", JSON.stringify(response.data));
+      }
+      navigate("/home");
+    } catch (err: any) {
+      console.error("Error en login:", err);
+
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError(
+          "Credenciales incorrectas o error en el servidor. Inténtalo de nuevo."
+        );
       }
     } finally {
-      setIsLoading(false); // Stop loading regardless of success or failure
+      setIsLoading(false);
     }
-    */
-    setIsLoading(false);
   };
 
   return (
@@ -72,7 +66,7 @@ const Login: React.FC = () => {
         </div>
 
         <div className="w-full max-w-[400px] min-w-[200px] p-8 rounded-[30px] bg-[#cf3a3a] shadow-md">
-          <form onSubmit={handleSimulatedLogin}>
+          <form onSubmit={handleSubmit}>
             <div className="mb-61">
               <label
                 htmlFor="email"
@@ -84,7 +78,7 @@ const Login: React.FC = () => {
                 className="w-full p-3 border border-[#bdc3c7] text-base text-[#000000] rounded-[30px] mb-5"
                 type="email"
                 id="email"
-                value={email}
+                value={username}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="usuario@mail.escuela.edu.co"
                 required
