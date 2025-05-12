@@ -17,7 +17,7 @@ const Login: React.FC = () => {
     setError("");
 
     try {
-      const response = await apiClient.post("/api/auth/login", {
+      const response = await apiClient.post("/auth/login", {
         username,
         password,
       });
