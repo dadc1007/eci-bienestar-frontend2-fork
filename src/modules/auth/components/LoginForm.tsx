@@ -94,7 +94,7 @@ const Login: React.FC = () => {
             <div className="block mb-2 text-[#ffffff] font-bold">
               <label
                 htmlFor="password"
-                className="block mb-2 text-[#ffffff] font-bold"
+                className="block mb-2 text-[#ffffff] font-bold text-[15px]"
               >
                 Contraseña
               </label>
