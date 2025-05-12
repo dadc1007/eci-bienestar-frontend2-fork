@@ -8,6 +8,7 @@ import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
+import AdminUsers from "./modules/user-administration/admindashboard";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -208,10 +209,7 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               userEmail="administrador@ejemplo.com"
             >
-              <ModuleTemplate
-                title="Gestión de Usuarios"
-                color={moduleColors.users}
-              />
+              <AdminUsers />
             </Layout>
           }
         />
