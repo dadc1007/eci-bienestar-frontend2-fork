@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
-  "https://aiv0cjvlf2.execute-api.us-east-1.amazonaws.com";
+  "https://suoeltmtp2.execute-api.us-east-1.amazonaws.com";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
