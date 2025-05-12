@@ -1,33 +1,58 @@
-// RegisterMeasurements.tsx
-import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
 
+// Validación del formulario con Yup
 const schema = yup.object().shape({
-  gender: yup.string().required("El género es obligatorio"),
-  height: yup.number().required().min(100).max(250),
-  age: yup.number().required().min(10).max(80),
-  weight: yup.number().required().min(30).max(200),
-  goalWeight: yup.number().required().min(30).max(200),
+  gender: yup
+    .string()
+    .oneOf(["male", "female", "other"], "Selecciona una opción válida")
+    .required("El género es obligatorio"),
+  height: yup
+    .number()
+    .typeError("Debes ingresar una altura válida")
+    .required("La altura es obligatoria")
+    .min(100, "Altura mínima: 100 cm")
+    .max(250, "Altura máxima: 250 cm"),
+  age: yup
+    .number()
+    .typeError("Debes ingresar una edad válida")
+    .required("La edad es obligatoria")
+    .min(16, "Edad mínima: 16 años")
+    .max(80, "Edad máxima: 80 años"),
+  weight: yup
+    .number()
+    .typeError("Debes ingresar un peso válido")
+    .required("El peso es obligatorio")
+    .min(35, "Peso mínimo: 35 kg")
+    .max(200, "Peso máximo: 200 kg"),
 });
 
+// Tipado para los datos del formulario
+interface FormData {
+  gender: "male" | "female" | "other";
+  height: number;
+  age: number;
+  weight: number;
+}
+
+// Componente principal
 const RegisterMeasurements = () => {
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
-    register,
     setValue,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      gender: "",
+      gender: "other", // Set a valid default value
       height: 160,
       age: 20,
       weight: 60,
-      goalWeight: 60,
     },
   });
 
@@ -51,25 +76,38 @@ const RegisterMeasurements = () => {
             Género<span className="text-red-500">*</span>
           </label>
           <div className="flex justify-center gap-12">
-            <img
-              src="/male.png"
-              alt="Hombre"
+            <button
+              type="button"
+              onClick={() => setValue("gender", "male")}
               className={`w-24 h-24 cursor-pointer border-4 ${
                 gender === "male" ? "border-blue-600" : "border-transparent"
               }`}
-              onClick={() => setValue("gender", "male")}
-            />
-            <img
-              src="/female.png"
-              alt="Mujer"
+            >
+              <img src="/male.png" alt="Hombre" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setValue("gender", "female")}
               className={`w-24 h-24 cursor-pointer border-4 ${
                 gender === "female" ? "border-pink-500" : "border-transparent"
               }`}
-              onClick={() => setValue("gender", "female")}
-            />
+            >
+              <img src="/female.png" alt="Mujer" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setValue("gender", "other")}
+              className={`w-24 h-24 flex items-center justify-center cursor-pointer border-4 rounded ${
+                gender === "other" ? "border-gray-500" : "border-transparent"
+              } bg-gray-200 font-semibold`}
+            >
+              No especificar
+            </button>
           </div>
-          {errors.gender && (
-            <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>
+          {gender && (
+            <div className="text-center font-semibold mt-2">
+              Seleccionaste: {gender === "male" ? "Hombre" : gender === "female" ? "Mujer" : "No especificar"}
+            </div>
           )}
         </div>
 
@@ -86,12 +124,15 @@ const RegisterMeasurements = () => {
                   min={100}
                   max={250}
                   {...field}
-                  className="w-full"
+                  className={`w-full ${errors.height ? "border-red-500" : ""}`}
                 />
                 <div className="text-center">{field.value} cm</div>
               </>
             )}
           />
+          {errors.height && (
+            <p className="text-red-500 text-sm mt-1">{errors.height.message}</p>
+          )}
         </div>
 
         {/* Edad */}
@@ -104,15 +145,18 @@ const RegisterMeasurements = () => {
               <>
                 <input
                   type="range"
-                  min={10}
+                  min={16}
                   max={80}
                   {...field}
-                  className="w-full"
+                  className={`w-full ${errors.age ? "border-red-500" : ""}`}
                 />
                 <div className="text-center">{field.value} años</div>
               </>
             )}
           />
+          {errors.age && (
+            <p className="text-red-500 text-sm mt-1">{errors.age.message}</p>
+          )}
         </div>
 
         {/* Peso */}
@@ -125,40 +169,23 @@ const RegisterMeasurements = () => {
               <>
                 <input
                   type="range"
-                  min={30}
+                  min={35}
                   max={200}
                   {...field}
-                  className="w-full"
+                  className={`w-full ${errors.weight ? "border-red-500" : ""}`}
                 />
                 <div className="text-center">{field.value} kg</div>
               </>
             )}
           />
-        </div>
-
-        {/* Peso Objetivo */}
-        <div>
-          <label className="block font-semibold">Peso Objetivo (kg)</label>
-          <Controller
-            name="goalWeight"
-            control={control}
-            render={({ field }) => (
-              <>
-                <input
-                  type="range"
-                  min={30}
-                  max={200}
-                  {...field}
-                  className="w-full"
-                />
-                <div className="text-center">{field.value} kg</div>
-              </>
-            )}
-          />
+          {errors.weight && (
+            <p className="text-red-500 text-sm mt-1">{errors.weight.message}</p>
+          )}
         </div>
 
         <button
           type="submit"
+          onClick={() => {navigate("body-measurements")}}
           className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
         >
           Siguiente

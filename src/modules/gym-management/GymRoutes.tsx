@@ -12,6 +12,8 @@ import BookingPage from "@/modules/gym-management/pages/student/BookingPage";
 import RoutinesPage from "@/modules/gym-management/pages/student/RoutinesPage";
 import RegisterProgressPage from "@/modules/gym-management/pages/student/RegisterProgressPage";
 import EvolutionPage from "@/modules/gym-management/pages/student/EvolutionPage";
+import RegisterMeasurements from "@/modules/gym-management/pages/student/RegisterMeasurements";
+//import RegisterMeasurements from "@/modules/gym-management/pages/student/BodyMeasurements";
 
 // Trainer pages
 import TrainerMainPage from "@/modules/gym-management/pages/trainer/TrainerMainPage";
@@ -20,6 +22,7 @@ import ExercisesPage from "@/modules/gym-management/pages/trainer/ExercisesPage"
 import SessionsPage from "@/modules/gym-management/pages/trainer/SessionsPage";
 import TrainerReservationsPage from "@/modules/gym-management/pages/trainer/TrainerReservationsPage";
 import ProgressPage from "@/modules/gym-management/pages/trainer/ProgressPage";
+
 
 const GymRoutes = () => {
   return (
@@ -35,6 +38,7 @@ const GymRoutes = () => {
         <Route path="routines" element={<RoutinesPage />} />
         <Route path="progress" element={<RegisterProgressPage />} />
         <Route path="evolution" element={<EvolutionPage />} />
+        <Route path="first-register" element={<RegisterMeasurements />} />
       </Route>
 
       {/* Rutas para entrenadores */}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const images = [
   "https://escuelaing.s3.amazonaws.com/production/images/_DSC5474.2e16d0ba.fill-1200x800-c100.jpg?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=ZCtmZR28LMhOJFcCGO9wkoYb0qQ%3D&Expires=1749403946",
@@ -9,6 +10,7 @@ const images = [
 
 const StudentMainPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   // Cambiar imagen cada 8 segundos
   useEffect(() => {
@@ -97,7 +99,10 @@ const StudentMainPage = () => {
       </ul>
 
       <div className="pt-6">
-        <button className="bg-black text-white font-semibold px-6 py-3 rounded hover:bg-yellow-500 transition">
+        <button
+          onClick={() => navigate("first-register")}
+          className="bg-black text-white font-semibold px-6 py-3 rounded hover:bg-yellow-500 transition"
+        >
           Inscribirte ahora
         </button>
       </div>
