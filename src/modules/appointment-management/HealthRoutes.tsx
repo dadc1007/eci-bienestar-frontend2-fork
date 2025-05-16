@@ -2,7 +2,7 @@ import { useState } from "react";
 import ShiftsPrincipal from "./features/ShiftsPrincipal/ShiftsPrincipal";
 import GestionShifts from "./features/gestionShifts/gestionShifts";
 import FormShift from "./features/formshift/formshift";
-import StadisticsShifts from "./features/stadisticsShifts/StadisticsShifts";
+import StadisticsShifts from "./features/Stadistics/Stadistics";
 
 
 const HealthRoutes = () => {
