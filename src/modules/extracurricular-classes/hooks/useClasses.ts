@@ -1,105 +1,154 @@
 import { useState, useEffect } from 'react';
-import { Class, Assistance, getEnrolledClasses, getAllClasses, getAttendanceHistory, enrollUserToClass, cancelEnrollment } from '../services/classesService';
+import {
+  Class,
+  getAllClasses,
+  getClassById,
+  getClassesByType,
+  createClass,
+  updateClass,
+  deleteClass,
+} from '../services/classesService';
 
-export const useEnrolledClasses = (userId: string) => {
-  const [enrolledClasses, setEnrolledClasses] = useState<Assistance[]>([]);
+// Hook para obtener todas las clases
+export const useAllClasses = () => {
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEnrolledClasses = async () => {
-    try {
-      setLoading(true);
-      const data = await getEnrolledClasses();
-      // Filtramos solo las clases del usuario actual
-      const userClasses = data.filter(assistance => assistance.userId === userId);
-      setEnrolledClasses(userClasses);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar clases inscritas');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEnrolledClasses();
-  }, [userId]);
-
-  const cancelClassEnrollment = async (classId: string) => {
-    try {
-      await cancelEnrollment(userId, classId);
-      // Actualizar la lista de clases inscritas
-      await fetchEnrolledClasses();
-      return true;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cancelar inscripción');
-      return false;
-    }
-  };
-
-  return { enrolledClasses, loading, error, cancelClassEnrollment, refreshClasses: fetchEnrolledClasses };
-};
-
-export const useAvailableClasses = (userId: string) => {
-  const [availableClasses, setAvailableClasses] = useState<Class[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchAvailableClasses = async () => {
+  const fetchClasses = async () => {
     try {
       setLoading(true);
       const data = await getAllClasses();
-      setAvailableClasses(data);
+      setClasses(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar clases disponibles');
+      setError(err instanceof Error ? err.message : 'Error al cargar las clases');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAvailableClasses();
-  }, [userId]);
+    fetchClasses();
+  }, []);
 
-  const enrollToClass = async (classId: string) => {
-    try {
-      await enrollUserToClass(userId, classId);
-      // Actualizar la lista de clases disponibles
-      await fetchAvailableClasses();
-      return true;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al inscribirse a la clase');
-      return false;
-    }
-  };
-
-  return { availableClasses, loading, error, enrollToClass, refreshClasses: fetchAvailableClasses };
+  return { classes, loading, error, refresh: fetchClasses };
 };
 
-export const useAttendanceHistory = (userId: string) => {
-  const [attendanceHistory, setAttendanceHistory] = useState<Assistance[]>([]);
+// Hook para obtener una clase por ID
+export const useClassById = (classId: string) => {
+  const [classData, setClassData] = useState<Class | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAttendanceHistory = async () => {
+  const fetchClass = async () => {
     try {
       setLoading(true);
-      const data = await getAttendanceHistory();
-      // Filtramos solo las asistencias del usuario actual
-      const userAttendance = data.filter(assistance => assistance.userId === userId && assistance.confirmed);
-      setAttendanceHistory(userAttendance);
+      const data = await getClassById(classId);
+      setClassData(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar historial de asistencia');
+      setError(err instanceof Error ? err.message : 'Error al cargar la clase');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAttendanceHistory();
-  }, [userId]);
+    if (classId) fetchClass();
+  }, [classId]);
 
-  return { attendanceHistory, loading, error, refreshHistory: fetchAttendanceHistory };
+  return { classData, loading, error, refresh: fetchClass };
+};
+
+// Hook para obtener clases por tipo
+export const useClassesByType = (classType: string) => {
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchClassesByType = async () => {
+    try {
+      setLoading(true);
+      const data = await getClassesByType(classType);
+      setClasses(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al cargar clases por tipo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (classType) fetchClassesByType();
+  }, [classType]);
+
+  return { classes, loading, error, refresh: fetchClassesByType };
+};
+
+// Hook para crear una nueva clase
+export const useCreateClass = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const createNewClass = async (classData: Omit<Class, 'id'>): Promise<Class | null> => {
+    try {
+      setLoading(true);
+      const created = await createClass(classData);
+      setError(null);
+      return created;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al crear la clase');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { createNewClass, loading, error };
+};
+
+// Hook para actualizar una clase
+export const useUpdateClass = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateExistingClass = async (classData: Class): Promise<Class | null> => {
+    try {
+      setLoading(true);
+      const updated = await updateClass(classData);
+      setError(null);
+      return updated;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al actualizar la clase');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateExistingClass, loading, error };
+};
+
+// Hook para eliminar una clase
+export const useDeleteClass = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const deleteExistingClass = async (id: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      await deleteClass(id);
+      setError(null);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al eliminar la clase');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { deleteExistingClass, loading, error };
 };
