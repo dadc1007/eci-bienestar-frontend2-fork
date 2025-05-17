@@ -1,9 +1,13 @@
 import { Button } from "@heroui/react";
 import Layout from "../../layout/layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faGear,  faChartSimple } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faGear,
+  faChartSimple,
+} from "@fortawesome/free-solid-svg-icons";
 import ShiftsUser from "../../components/shiftsUser/shiftsUser";
-import { shiftItems, carroselItems, users } from "./datosMock"; 
+import { shiftItems, carroselItems, users } from "./datosMock";
 
 const enrichedShiftItems = shiftItems.map((shift) => {
   const user = users.find((u) => u.id === shift.UserId);
@@ -14,7 +18,15 @@ const enrichedShiftItems = shiftItems.map((shift) => {
   };
 });
 
-const ShiftsPrincipal = ({ irAGestion, irAFormShift, isAStadistics }: { irAGestion: () => void, irAFormShift: () => void, isAStadistics: () => void }) => {
+const ShiftsPrincipal = ({
+  irAGestion,
+  irAFormShift,
+  isAStadistics,
+}: {
+  irAGestion: () => void;
+  irAFormShift: () => void;
+  isAStadistics: () => void;
+}) => {
   return (
     <Layout
       header={
@@ -37,7 +49,7 @@ const ShiftsPrincipal = ({ irAGestion, irAFormShift, isAStadistics }: { irAGesti
               <FontAwesomeIcon icon={faGear} size="lg" color="white" />
               Gestionar turnos
             </Button>
-            <Button 
+            <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
               onPress={irAFormShift} // Aquí se maneja el botón de "Pedir turno"
