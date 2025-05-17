@@ -8,6 +8,8 @@ import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
+import MainRooms from './modules/recreational-rooms/mainRooms'; 
+
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -22,7 +24,7 @@ const MODULE_MAPPING = {
 // Module colors
 const moduleColors = {
   health: "#0078B4", // Turnos de Salud
-  recreation: "#0E7029", // Salas Recreativas
+  recreation: "#ea899a", // Salas Recreativas
   extracurricular: "#362550", // Clases Extra
   sports: "#5B1F00", // Préstamos Deportivos
   gym: "#000000", // Gimnasio/Seguimiento
@@ -103,23 +105,22 @@ function App() {
         />
 
         {/* Módulo de Recreación/Salas */}
-        <Route
-          path="/modules/recreation/*"
-          element={
-            <Layout
-              moduleColor={moduleColors.recreation}
-              activeModule={MODULE_MAPPING.recreation}
-              onLogout={handleLogout}
-              onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
-            >
-              <ModuleTemplate
-                title="Gestión de Salas Recreativas"
-                color={moduleColors.recreation}
-              />
-            </Layout>
-          }
-        />
+        <Route path="/main-rooms" element={
+          <Layout
+            moduleColor={moduleColors.recreation}
+            activeModule={MODULE_MAPPING.recreation}
+            onLogout={handleLogout}
+            onNotificationsClick={handleNotificationsClick}
+            userEmail="administrador@ejemplo.com"
+          >
+            <Routes>
+              <Route element={<MainRooms />} />
+              {/* Puedes agregar más subrutas aquí */}
+            </Routes>
+          </Layout>
+        } />
+
+
 
         {/* Módulo de Clases Extracurriculares */}
         <Route

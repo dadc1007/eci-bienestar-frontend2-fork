@@ -38,7 +38,7 @@ const defaultModules: SidebarModule[] = [
     id: 'salas',
     name: 'Salas Recreación',
     icon: faUsers,
-    path: '/modules/recreation'
+    path: './modules/recreational-rooms'
   },
   {
     id: 'clases',
