@@ -3,12 +3,17 @@ import {
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
-import AdminUsers from "./modules/user-administration/admindashboard";
+import UserActions from "./modules/user-administration/components/UserActions";
+import Students from "./modules/user-administration/components/StudentsPage";
+import Teachers from "./modules/user-administration/components/TeachersPage";
+import Staff from "./modules/user-administration/components/StaffPage";
+import Doctors from "./modules/user-administration/components/DoctorsPage";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -209,10 +214,25 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               userEmail="administrador@ejemplo.com"
             >
-              <AdminUsers />
+              <div className="w-full h-full flex flex-col p-6 lg:p-8">
+                <div className="container mx-auto px-4 py-8 h-full">
+                  <div className="bg-white rounded-lg shadow p-6 h-full">
+                    <Outlet />
+                  </div>
+                </div>
+              </div>
             </Layout>
           }
-        />
+        >
+          {/* Ruta principal del módulo */}
+          <Route index element={<UserActions />} />
+  
+          {/* Subrutas */}
+          <Route path="students" element={<Students />} />
+          <Route path="teachers" element={<Teachers />} />
+          <Route path="staff" element={<Staff />} />
+          <Route path="doctors" element={<Doctors />} />
+        </Route>
 
         {/* Ruta de fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

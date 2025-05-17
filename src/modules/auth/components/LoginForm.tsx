@@ -1,15 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo/ECIBienestarTransparent.png";
 import apiClient from "../../../common/services/apiCliend";
+
+// carousel images
+import carousel1 from "../../../assets/images/carousel/img1.jpg";
+import carousel2 from "../../../assets/images/carousel/img2.jpg";
+import carousel3 from "../../../assets/images/carousel/img3.jpg";
 
 const Login: React.FC = () => {
   const [username, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-
   const navigate = useNavigate();
+
+  // Carousel state
+  const carouselImages = [carousel1, carousel2, carousel3];
+  const [currentIdx, setCurrentIdx] = useState<number>(0);
+
+  // Auto-play effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIdx((prev) => (prev + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const prevSlide = () => {
+    setCurrentIdx((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
+  };
+
+  const nextSlide = () => {
+    setCurrentIdx((prev) => (prev + 1) % carouselImages.length);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,8 +46,6 @@ const Login: React.FC = () => {
         password,
       });
 
-      console.log("Login exitoso:", response.data);
-
       if (response.data.token) {
         localStorage.setItem("authToken", response.data.token);
       }
@@ -34,16 +56,12 @@ const Login: React.FC = () => {
       }
       navigate("/home");
     } catch (err: any) {
-      console.error("Error en login:", err);
-
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
       } else if (err.message) {
         setError(err.message);
       } else {
-        setError(
-          "Credenciales incorrectas o error en el servidor. Inténtalo de nuevo."
-        );
+        setError("Credenciales incorrectas o error en el servidor. Inténtalo de nuevo.");
       }
     } finally {
       setIsLoading(false);
@@ -51,76 +69,116 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen font-sans w-screen">
-      <div className="flex-1 bg-[#990000] flex items-center justify-center">
-        {/* falta el carrusel */}
-        <p>Imágenes de la escuela</p>
+    <div className="flex flex-col md:flex-row h-screen w-screen font-sans">
+      {/* Desktop carousel half */}
+      <div className="hidden md:flex md:w-1/2 relative bg-[#990000] items-center justify-center overflow-hidden">
+        {carouselImages.map((src, idx) => (
+          <img
+            key={idx}
+            src={src}
+            alt={`Slide ${idx + 1}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+              idx === currentIdx ? "opacity-50" : "opacity-0"
+            }`}
+          />
+        ))}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {carouselImages.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIdx(idx)}
+              className={`w-3 h-3 rounded-full transition-opacity duration-300 ${
+                idx === currentIdx ? "bg-white opacity-100" : "bg-white opacity-50"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="w-1/2 bg-white flex flex-col items-center justify-center p-8">
-        <div className="text-center mb-8">
-          <img src={logo} alt="Logo" className="mx-auto w-auto h-[10rem]" />
-          <h2 className="text-[35px] font-bold text-[#cf3a3a]">
+      {/* Form half */}
+      <div className="w-full md:w-1/2 bg-white flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <img src={logo} alt="Logo" className="mx-auto h-24 sm:h-32 md:h-40" />
+          <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-[#cf3a3a]">
             Inicio de Sesión
           </h2>
         </div>
 
-        <div className="w-full max-w-[400px] min-w-[200px] p-8 rounded-[30px] bg-[#cf3a3a] shadow-md">
+        <div className="w-full max-w-md p-6 sm:p-8 rounded-2xl bg-[#cf3a3a] shadow-md">
           <form onSubmit={handleSubmit}>
-            <div className="mb-61">
-              <label
-                htmlFor="email"
-                className="block mb-2 text-[#ffffff] font-bold text-[15px]"
-              >
+            <div className="mb-4">
+              <label htmlFor="email" className="block mb-2 text-white font-semibold text-sm sm:text-base">
                 Correo
               </label>
               <input
-                className="w-full p-3 border border-[#bdc3c7] text-base text-[#000000] rounded-[30px] mb-5"
-                type="email"
                 id="email"
+                type="email"
                 value={username}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="usuario@mail.escuela.edu.co"
                 required
+                className="w-full px-4 py-2 border border-[#bdc3c7] rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#990000]"
               />
             </div>
 
-            <div className="block mb-2 text-[#ffffff] font-bold">
-              <label
-                htmlFor="password"
-                className="block mb-2 text-[#ffffff] font-bold text-[15px]"
-              >
+            <div className="mb-4">
+              <label htmlFor="password" className="block mb-2 text-white font-semibold text-sm sm:text-base">
                 Contraseña
               </label>
               <input
-                className="w-full p-3 border border-[#bdc3c7] rounded-[30px] text-base text-[#000000] mb-5"
-                type="password"
                 id="password"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="********"
                 required
+                className="w-full px-4 py-2 border border-[#bdc3c7] rounded-full text-black focus:outline-none focus:ring-2 focus:ring-[#990000]"
               />
             </div>
 
-            {error && <p className="form-error">{error}</p>}
+            {error && <p className="mb-4 text-red-200 text-sm">{error}</p>}
 
-            <div className="flex flex-col items-center">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full p-3 bg-[#990000] text-white border-none rounded-[30px] text-base cursor-pointer mb-4"
-              >
-                {isLoading ? "Cargando..." : "Iniciar Sesión"}
-              </button>
-              <Link
-                to="/forgot-password"
-                className="text-[#7aa6ff] no-underline text-[1.2rem]"
-              >
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-2 bg-[#990000] text-white rounded-full font-medium hover:bg-opacity-90 transition"
+            >
+              {isLoading ? "Cargando..." : "Iniciar Sesión"}
+            </button>
+
+            <div className="mt-4 text-center">
+              <Link to="/forgot-password" className="text-sm sm:text-base text-[#7aa6ff]">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
           </form>
+        </div>
+
+        {/* Mobile mini-carousel for small screens */}
+        <div className="md:hidden w-full h-40 mt-6 relative overflow-hidden rounded-xl shadow-inner bg-[#990000]">
+          {carouselImages.map((src, idx) => (
+            <img
+              key={idx}
+              src={src}
+              alt={`Slide ${idx + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                idx === currentIdx ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+          {/* Simple indicators */}
+          <div className="absolute inset-0 bg-[#990000] bg-opacity-50 pointer-events-none" />
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+            {carouselImages.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentIdx(idx)}
+                className={`w-2 h-2 rounded-full transition-opacity duration-300 ${
+                  idx === currentIdx ? "bg-white opacity-90" : "bg-white opacity-50"
+                }`}  
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -128,3 +186,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+

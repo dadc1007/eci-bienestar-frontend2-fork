@@ -8,24 +8,24 @@ interface ListItemData {
   id: number;
   name: string;
   email: string;
-  semester: string;
+  role: string;
   isVerified?: boolean;
 }
 
-const StudentsPage: React.FC = () => {
+const StaffPage: React.FC = () => {
   const navigate = useNavigate();
 
   // State & initial load
-  const [students, setStudents] = useState<ListItemData[]>([]);
+  const [staff, setStaff] = useState<ListItemData[]>([]);
   useEffect(() => {
     const mockData: ListItemData[] = Array.from({ length: 100 }, (_, i) => ({
       id: i + 1,
-      name: `Andrés Sepúlveda ${i + 1}`,
-      email: `student${i + 1}@example.com`,
-      semester: `${(i % 8) + 1}° Semestre`,
+      name: `Doctor muelitas ${i + 1}`,
+      email: `doctors${i + 1}@example.com`,
+      role: `Rol ${(i % 8) + 1}`,
       isVerified: Math.random() < 0.5,
     }));
-    setStudents(mockData);
+    setStaff(mockData);
   }, []);
 
   // Multi-select logic
@@ -39,8 +39,8 @@ const StudentsPage: React.FC = () => {
   };
   const handleDeleteSelected = () => {
     if (!selectedIds.size) return;
-    if (window.confirm(`¿Eliminar ${selectedIds.size} estudiantes seleccionados?`)) {
-      setStudents(prev => prev.filter(s => !selectedIds.has(s.id)));
+    if (window.confirm(`¿Eliminar ${selectedIds.size} personal seleccionados?`)) {
+      setStaff(prev => prev.filter(s => !selectedIds.has(s.id)));
       setSelectedIds(new Set());
     }
   };
@@ -53,14 +53,14 @@ const StudentsPage: React.FC = () => {
   };
 
   // Stats modal
-  const [statsStudent, setStatsStudent] = useState<ListItemData | null>(null);
-  const openStats = (student: ListItemData) => setStatsStudent(student);
-  const closeStats = () => setStatsStudent(null);
+  const [statsStaff, setStatsStaff] = useState<ListItemData | null>(null);
+  const openStats = (staff: ListItemData) => setStatsStaff(staff);
+  const closeStats = () => setStatsStaff(null);
 
   // Pagination
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  const filtered = students.filter(s =>
+  const filtered = staff.filter(s =>
     s.name.toLowerCase().includes(query.toLowerCase()) ||
     s.email.toLowerCase().includes(query.toLowerCase())
   );
@@ -78,13 +78,13 @@ const StudentsPage: React.FC = () => {
         <button onClick={() => navigate(-1)} className="text-gray-700 hover:text-gray-900 p-2" title="Regresar">
           <FontAwesomeIcon icon={faArrowLeft} size="lg" />
         </button>
-        <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">Estudiantes</h2>
+        <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">Personal</h2>
       </div>
 
       {/* Infobox Description */}
       <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 text-blue-900">
         <p>
-          Usa el buscador para filtrar por nombre o correo, haz clic en cualquier parte de la fila para seleccionar estudiantes<br />
+          Usa el buscador para filtrar por nombre o correo, haz clic en cualquier parte de la fila para seleccionar personal<br />
           y emplea los botones para añadir, editar o eliminarlos de forma rápida.
         </p>
       </div>
@@ -99,9 +99,9 @@ const StudentsPage: React.FC = () => {
           className="flex-1 p-2 border border-gray-300 rounded"
         />
         <button
-          onClick={() => console.log("Agregar estudiante")}
+          onClick={() => console.log("Agregar personal")}
           className="text-white bg-blue-600 hover:bg-blue-700 rounded-full w-8 h-8 flex items-center justify-center"
-          title="Agregar estudiante"
+          title="Agregar personal"
         >
           <FontAwesomeIcon icon={faPlus} />
         </button>
@@ -123,7 +123,7 @@ const StudentsPage: React.FC = () => {
               <th className="px-4 py-2 text-left">ID</th>
               <th className="px-4 py-2 text-left">Nombre</th>
               <th className="px-4 py-2 text-left">Correo</th>
-              <th className="px-4 py-2 text-left">Semestre</th>
+              <th className="px-4 py-2 text-left">Rol</th>
               <th className="px-4 py-2 text-left">Acciones</th>
             </tr>
           </thead>
@@ -142,7 +142,7 @@ const StudentsPage: React.FC = () => {
                   <span className="font-medium text-gray-800">{item.name}</span>
                 </td>
                 <td className="px-4 py-2 text-gray-500">{item.email}</td>
-                <td className="px-4 py-2 text-gray-500">{item.semester}</td>
+                <td className="px-4 py-2 text-gray-500">{item.role}</td>
                 <td className="px-4 py-2 flex items-center space-x-2">
                   <button
                     onClick={(e) => { e.stopPropagation(); console.log("Editar:", item); }}
@@ -190,11 +190,11 @@ const StudentsPage: React.FC = () => {
       </div>
 
       {/* Modal */}
-      {statsStudent && (
+      {statsStaff && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-1/2">
-            <h3 className="text-xl font-semibold mb-4">Estadísticas de {statsStudent.name}</h3>
-            <p>Contenido de estadísticas para el estudiante.</p>
+            <h3 className="text-xl font-semibold mb-4">Estadísticas de {statsStaff.name}</h3>
+            <p>Contenido de estadísticas para el personal.</p>
             <button
               onClick={closeStats}
               className="mt-4 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
@@ -206,5 +206,4 @@ const StudentsPage: React.FC = () => {
   );
 };
 
-export default StudentsPage;
-
+export default StaffPage;

@@ -8,24 +8,22 @@ interface ListItemData {
   id: number;
   name: string;
   email: string;
-  semester: string;
   isVerified?: boolean;
 }
 
-const StudentsPage: React.FC = () => {
+const TeachersPage: React.FC = () => {
   const navigate = useNavigate();
 
   // State & initial load
-  const [students, setStudents] = useState<ListItemData[]>([]);
+  const [teacher, setTeacher] = useState<ListItemData[]>([]);
   useEffect(() => {
     const mockData: ListItemData[] = Array.from({ length: 100 }, (_, i) => ({
       id: i + 1,
-      name: `Andrés Sepúlveda ${i + 1}`,
-      email: `student${i + 1}@example.com`,
-      semester: `${(i % 8) + 1}° Semestre`,
+      name: `Andrés Cantor ${i + 1}`,
+      email: `teacher${i + 1}@example.com`,
       isVerified: Math.random() < 0.5,
     }));
-    setStudents(mockData);
+    setTeacher(mockData);
   }, []);
 
   // Multi-select logic
@@ -39,8 +37,8 @@ const StudentsPage: React.FC = () => {
   };
   const handleDeleteSelected = () => {
     if (!selectedIds.size) return;
-    if (window.confirm(`¿Eliminar ${selectedIds.size} estudiantes seleccionados?`)) {
-      setStudents(prev => prev.filter(s => !selectedIds.has(s.id)));
+    if (window.confirm(`¿Eliminar ${selectedIds.size} profesores seleccionados?`)) {
+      setTeacher(prev => prev.filter(s => !selectedIds.has(s.id)));
       setSelectedIds(new Set());
     }
   };
@@ -53,14 +51,14 @@ const StudentsPage: React.FC = () => {
   };
 
   // Stats modal
-  const [statsStudent, setStatsStudent] = useState<ListItemData | null>(null);
-  const openStats = (student: ListItemData) => setStatsStudent(student);
-  const closeStats = () => setStatsStudent(null);
+  const [statsTeacher, setStatsTeacher] = useState<ListItemData | null>(null);
+  const openStats = (teacher: ListItemData) => setStatsTeacher(teacher);
+  const closeStats = () => setStatsTeacher(null);
 
   // Pagination
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  const filtered = students.filter(s =>
+  const filtered = teacher.filter(s =>
     s.name.toLowerCase().includes(query.toLowerCase()) ||
     s.email.toLowerCase().includes(query.toLowerCase())
   );
@@ -78,13 +76,13 @@ const StudentsPage: React.FC = () => {
         <button onClick={() => navigate(-1)} className="text-gray-700 hover:text-gray-900 p-2" title="Regresar">
           <FontAwesomeIcon icon={faArrowLeft} size="lg" />
         </button>
-        <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">Estudiantes</h2>
+        <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">Profesores</h2>
       </div>
 
       {/* Infobox Description */}
       <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 text-blue-900">
         <p>
-          Usa el buscador para filtrar por nombre o correo, haz clic en cualquier parte de la fila para seleccionar estudiantes<br />
+          Usa el buscador para filtrar por nombre o correo, haz clic en cualquier parte de la fila para seleccionar profesores<br />
           y emplea los botones para añadir, editar o eliminarlos de forma rápida.
         </p>
       </div>
@@ -99,9 +97,9 @@ const StudentsPage: React.FC = () => {
           className="flex-1 p-2 border border-gray-300 rounded"
         />
         <button
-          onClick={() => console.log("Agregar estudiante")}
+          onClick={() => console.log("Agregar profesores")}
           className="text-white bg-blue-600 hover:bg-blue-700 rounded-full w-8 h-8 flex items-center justify-center"
-          title="Agregar estudiante"
+          title="Agregar profesores"
         >
           <FontAwesomeIcon icon={faPlus} />
         </button>
@@ -123,7 +121,6 @@ const StudentsPage: React.FC = () => {
               <th className="px-4 py-2 text-left">ID</th>
               <th className="px-4 py-2 text-left">Nombre</th>
               <th className="px-4 py-2 text-left">Correo</th>
-              <th className="px-4 py-2 text-left">Semestre</th>
               <th className="px-4 py-2 text-left">Acciones</th>
             </tr>
           </thead>
@@ -131,7 +128,7 @@ const StudentsPage: React.FC = () => {
             {displayed.map(item => (
               <tr
                 key={item.id}
-                className={`border-b hover:bg-gray-50 cursor-pointer ${selectedIds.has(item.id) ? 'bg-gray-100' : ''}`}
+                className={`border-b hover:bg-gray-50 cursor-pointer ${selectedIds.has(item.id) ? 'bg-red-100' : ''}`}
                 onClick={() => toggleSelect(item.id)}
               >
                 <td className="px-4 py-2 text-gray-500">{item.id}</td>
@@ -142,7 +139,6 @@ const StudentsPage: React.FC = () => {
                   <span className="font-medium text-gray-800">{item.name}</span>
                 </td>
                 <td className="px-4 py-2 text-gray-500">{item.email}</td>
-                <td className="px-4 py-2 text-gray-500">{item.semester}</td>
                 <td className="px-4 py-2 flex items-center space-x-2">
                   <button
                     onClick={(e) => { e.stopPropagation(); console.log("Editar:", item); }}
@@ -190,11 +186,11 @@ const StudentsPage: React.FC = () => {
       </div>
 
       {/* Modal */}
-      {statsStudent && (
+      {statsTeacher && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-1/2">
-            <h3 className="text-xl font-semibold mb-4">Estadísticas de {statsStudent.name}</h3>
-            <p>Contenido de estadísticas para el estudiante.</p>
+            <h3 className="text-xl font-semibold mb-4">Estadísticas de {statsTeacher.name}</h3>
+            <p>Contenido de estadísticas para el profesor.</p>
             <button
               onClick={closeStats}
               className="mt-4 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
@@ -206,5 +202,4 @@ const StudentsPage: React.FC = () => {
   );
 };
 
-export default StudentsPage;
-
+export default TeachersPage;
