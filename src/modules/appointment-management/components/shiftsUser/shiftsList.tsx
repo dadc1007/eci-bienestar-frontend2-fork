@@ -8,7 +8,7 @@ const ShiftsList = ({ children }: ShiftsListProps) => {
   return (
     <Card className="h-full">
       <CardHeader
-        className="px-4 flex-col items-start text-white rounded-t-xl"
+        className="px-4 flex-col items-start text-white rounded-t-xl z-0"
         style={{
           background: "linear-gradient(to right, #00BCFF, #0078B4)",
         }}
