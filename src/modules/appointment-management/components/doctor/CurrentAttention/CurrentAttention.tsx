@@ -1,17 +1,11 @@
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Slider,
-} from "@heroui/react";
-import { InfoItem } from "@modules/appointment-management/components/doctor/CurrentAttention";
+  NoShift,
+  ShiftInfo,
+} from "@modules/appointment-management/components/doctor/CurrentAttention";
 
-const marks = Array.from({ length: 6 }, (_, i) => ({
-  value: i,
-  label: i.toString(),
-}));
+// Temporal mientras se conecta con el backend
+const turn: boolean = true;
 
 type Props = {
   readonly className?: string;
@@ -42,38 +36,17 @@ function CurrentAttention({
       </CardHeader>
       <CardBody className="py-10">
         <div className="flex flex-col items-center justify-center h-full">
-          <div className="flex flex-col items-center gap-2 mb-8">
-            <h2 className="text-4xl font-bold text-health-primary">{code}</h2>
-            {priority && (
-              <Chip color="warning" variant="flat" size="sm">
-                Atención prioritaria
-              </Chip>
-            )}
-          </div>
-          <div className="flex flex-col gap-5">
-            <InfoItem title="Nombre del paciente" value={name} />
-            <InfoItem title="Documento de identidad" value={id} />
-            <InfoItem title="Rol" value={role} />
-          </div>
-          <div className="flex gap-4 my-16">
-            <Button color="danger">Finalizar turno</Button>
-            <Button className="bg-health-primary text-white">
-              Llamar siguiente
-            </Button>
-          </div>
-          <div className="flex flex-col items-center w-10/12">
-            <Slider
-              color="warning"
-              size="sm"
-              defaultValue={0}
-              label="Calidad de la atencion"
-              marks={marks}
-              maxValue={5}
-              minValue={0}
-              showTooltip={true}
-              step={1}
+          {turn ? (
+            <ShiftInfo
+              code={code}
+              name={name}
+              id={id}
+              role={role}
+              priority={priority}
             />
-          </div>
+          ) : (
+            <NoShift />
+          )}
         </div>
       </CardBody>
     </Card>
