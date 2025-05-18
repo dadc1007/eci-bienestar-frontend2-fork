@@ -4,26 +4,11 @@ import {
   CurrentAttention,
   ShiftsOnHold,
 } from "@modules/appointment-management/components/doctor";
-import { TurnResponse } from "@modules/appointment-management/types/dto";
-import {
-  RoleEnum,
-  SpecialityEnum,
-} from "@modules/appointment-management/types/enums";
-
-// Temporal mientras se conecta con el backend
-const turn: TurnResponse = {
-  id: 1,
-  code: "O-62",
-  user: {
-    name: "Laura Gomez",
-    id: "1032373105",
-    role: RoleEnum.STUDENT,
-  },
-  speciality: SpecialityEnum.GENERAL_MEDICINE,
-  priority: false,
-};
+import { useState } from "react";
 
 function DoctorView() {
+  const [level, setLevel] = useState<number>(0);
+
   return (
     <Layout
       header={
@@ -38,13 +23,14 @@ function DoctorView() {
           <div className="flex flex-row gap-5 my-8 h-[650px] max-md:flex-col max-md:h-auto">
             <CurrentAttention
               className="w-1/2 max-md:w-full"
-              code={turn.code}
-              id={turn.user.id}
-              name={turn.user.name}
-              role={turn.user.role}
-              priority={turn.priority}
+              level={level}
+              setLevel={setLevel}
             />
-            <ShiftsOnHold className="w-1/2 max-md:w-full max-md:h-[650px]" />
+            <ShiftsOnHold
+              className="w-1/2 max-md:w-full max-md:h-[650px]"
+              setLevel={setLevel}
+              level={level}
+            />
           </div>
         </div>
       }

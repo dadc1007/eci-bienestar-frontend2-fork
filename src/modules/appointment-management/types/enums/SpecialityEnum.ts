@@ -1,5 +1,5 @@
 export enum SpecialityEnum {
-  GENERAL_MEDICINE = "Medicina General",
-  DENTISTRY = "Odontología",
-  PSYCHOLOGY = "Psicología",
+  GENERAL_MEDICINE = "GENERAL_MEDICINE",
+  DENTISTRY = "DENTISTRY",
+  PSYCHOLOGY = "PSYCHOLOGY",
 }
