@@ -9,6 +9,7 @@ import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
 import MainRooms from './modules/recreational-rooms/mainRooms'; 
+import ReserveRoom from "./modules/recreational-rooms/reservationRoom";
 
 
 const MODULE_MAPPING = {
@@ -24,7 +25,7 @@ const MODULE_MAPPING = {
 // Module colors
 const moduleColors = {
   health: "#0078B4", // Turnos de Salud
-  recreation: "#ea899a", // Salas Recreativas
+  recreation: "#0E7029", // Salas Recreativas
   extracurricular: "#362550", // Clases Extra
   sports: "#5B1F00", // Préstamos Deportivos
   gym: "#000000", // Gimnasio/Seguimiento
@@ -105,21 +106,25 @@ function App() {
         />
 
         {/* Módulo de Recreación/Salas */}
-        <Route path="/main-rooms" element={
-          <Layout
-            moduleColor={moduleColors.recreation}
-            activeModule={MODULE_MAPPING.recreation}
-            onLogout={handleLogout}
-            onNotificationsClick={handleNotificationsClick}
-            userEmail="administrador@ejemplo.com"
-          >
-            <Routes>
-              <Route element={<MainRooms />} />
-              {/* Puedes agregar más subrutas aquí */}
-            </Routes>
-          </Layout>
-        } />
+        <Route
+          path="/main-rooms/*"
+          element={
+            <Layout
+              moduleColor={moduleColors.recreation}
+              activeModule={MODULE_MAPPING.recreation}
+              onLogout={handleLogout}
+              onNotificationsClick={handleNotificationsClick}
+              userEmail="administrador@ejemplo.com"
+            >
+              <Routes>
+                <Route index element={<MainRooms />} />
+                <Route path="reserve-room" element={<ReserveRoom />} />
+                <Route path="*" element={<Navigate to="/main-rooms" replace />} />
+              </Routes>
 
+            </Layout>
+          }
+        />
 
 
         {/* Módulo de Clases Extracurriculares */}
