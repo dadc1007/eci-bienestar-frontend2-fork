@@ -6,9 +6,7 @@ import {
 } from "react-router-dom";
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
-import HealthRoutes from "./modules/appointment-management/HealthRoutes";
-import DoctorView from "./modules/appointment-management/pages/DoctorView";
-import ShiftsPrincipal from "./modules/appointment-management/features/ShiftsPrincipal/ShiftsPrincipal";
+import { HealthRoutes } from "./modules/appointment-management/routes";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -89,8 +87,8 @@ function App() {
               userEmail="administrador@ejemplo.com"
               showSidebar={true}
             >
-              {/* <HealthRoutes /> */}
-              <DoctorView />
+              <HealthRoutes />
+              {/* <DoctorView /> */}
             </Layout>
           }
         />

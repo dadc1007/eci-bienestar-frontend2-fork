@@ -5,8 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Form from "../../components/request/Form"; // Importar el formulario
 import { Card } from "../../../appointment-management/components/confirmation"; // Importar la tarjeta de confirmación
+import { useNavigate } from "react-router-dom";
 
-const FormShift = ({ volver }: { volver: () => void }) => {
+const FormShift = () => {
+  const navigate = useNavigate();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Estado para controlar si el formulario fue enviado
 
   const handleFormSubmit = () => {
@@ -22,9 +24,10 @@ const FormShift = ({ volver }: { volver: () => void }) => {
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={volver} // Acción para volver
+              onPress={() => navigate(-1)}
             >
-              <FontAwesomeIcon icon={faArrowLeft} size="lg" color="white" /> Volver
+              <FontAwesomeIcon icon={faArrowLeft} size="lg" color="white" />{" "}
+              Volver
             </Button>
           </div>
         </div>
@@ -33,14 +36,14 @@ const FormShift = ({ volver }: { volver: () => void }) => {
         <div className="flex flex-col items-center justify-center w-full h-full p-2">
           <div className="w-1/2 h-1/2">
             {!isFormSubmitted ? (
-              <Form onSubmitAction={handleFormSubmit} /> 
+              <Form onSubmitAction={handleFormSubmit} />
             ) : (
               <Card
                 themeColor="medicine"
                 patientName="John Doe"
                 speciality="Medicina General"
                 date="2023-10-01"
-              /> 
+              />
             )}
           </div>
         </div>

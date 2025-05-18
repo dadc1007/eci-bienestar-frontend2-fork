@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ShiftsUser from "../../components/shiftsUser/shiftsUser";
 import { shiftItems, carroselItems, users } from "./datosMock";
+import { useNavigate } from "react-router-dom";
 
 const enrichedShiftItems = shiftItems.map((shift) => {
   const user = users.find((u) => u.id === shift.UserId);
@@ -18,15 +19,9 @@ const enrichedShiftItems = shiftItems.map((shift) => {
   };
 });
 
-const ShiftsPrincipal = ({
-  irAGestion,
-  irAFormShift,
-  isAStadistics,
-}: {
-  irAGestion: () => void;
-  irAFormShift: () => void;
-  isAStadistics: () => void;
-}) => {
+const ShiftsPrincipal = () => {
+  const navigate = useNavigate();
+
   return (
     <Layout
       header={
@@ -36,7 +31,7 @@ const ShiftsPrincipal = ({
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={isAStadistics}
+              onPress={() => navigate("statistics")}
             >
               <FontAwesomeIcon icon={faChartSimple} size="lg" color="white" />
               Estadísticas
@@ -44,7 +39,7 @@ const ShiftsPrincipal = ({
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={irAGestion}
+              onPress={() => navigate("manage-shifts")}
             >
               <FontAwesomeIcon icon={faGear} size="lg" color="white" />
               Gestionar turnos
@@ -52,7 +47,7 @@ const ShiftsPrincipal = ({
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={irAFormShift} // Aquí se maneja el botón de "Pedir turno"
+              onPress={() => navigate("request-shifts")}
             >
               <FontAwesomeIcon icon={faPlus} /> Pedir turno
             </Button>
