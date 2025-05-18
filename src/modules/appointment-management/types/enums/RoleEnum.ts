@@ -1,8 +1,8 @@
 export enum RoleEnum {
-  STUDENT = "Estudiante",
-  TEACHER = "Profesor",
-  ADMINISTRATOR = "Administrativo",
-  GENERAL_SERVICES_STAFF = "Servicios Generales",
-  MEDICAL_STAFF = "Personal Médico",
-  MEDICAL_SECRETARY = "Secretaria Médica",
+  STUDENT = "STUDENT",
+  TEACHER = "TEACHER",
+  ADMINISTRATOR = "ADMINISTRATOR",
+  GENERAL_SERVICES_STAFF = "GENERAL_SERVICES_STAFF",
+  MEDICAL_STAFF = "MEDICAL_STAFF",
+  MEDICAL_SECRETARY = "MEDICAL_SECRETARY",
 }
