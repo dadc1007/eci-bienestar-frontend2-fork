@@ -1,95 +1,69 @@
-// src/modules/extracurricular-classes/components/student/AvailableClassesList.tsx
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Class } from '../../services/classesService';
-import ClassCard from '../student/classCard';
+import ClassCard from './classCard';
+import EnrollmentModal from '../modals/enrollmentModal';
+import UseModal from '../../hooks/useModal';
 
 interface AvailableClassesListProps {
   classes: Class[];
-  filter: string;
-  onEnroll: (classId: string) => Promise<void>;
+  categoryTitle: string;
+  userId: string;
 }
 
-interface CategorySection {
-  name: string;
-  classes: Class[];
-}
+const AvailableClassesList: React.FC<AvailableClassesListProps> = ({ 
+  classes, 
+  categoryTitle,
+  userId 
+}) => {
+  const [expanded, setExpanded] = useState(true);
+  const { isOpen, modalData, openModal, closeModal } = UseModal();
 
-const AvailableClassesList: React.FC<AvailableClassesListProps> = ({ classes, filter, onEnroll }) => {
-  const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>({
-    "Desarrollo Humano": true,
-    "Arte y Cultura": true,
-    "Deportes": true
-  });
-
-  // Agrupar clases por categoría
-  const categorizedClasses = classes.reduce<{[key: string]: Class[]}>((acc, curr) => {
-    if (!acc[curr.type]) {
-      acc[curr.type] = [];
+  const handleEnroll = (classId: string) => {
+    const selectedClass = classes.find(c => c.id === classId);
+    if (selectedClass) {
+      openModal(selectedClass);
     }
-    acc[curr.type].push(curr);
-    return acc;
-  }, {});
-
-  // Filtrar clases según el filtro de búsqueda
-  const filteredCategories = filter 
-    ? Object.keys(categorizedClasses).reduce<{[key: string]: Class[]}>((acc, category) => {
-        acc[category] = categorizedClasses[category].filter(cls => 
-          cls.name.toLowerCase().includes(filter.toLowerCase())
-        );
-        return acc;
-      }, {})
-    : categorizedClasses;
-
-  const toggleCategory = (category: string) => {
-    setExpandedCategories(prev => ({
-      ...prev,
-      [category]: !prev[category]
-    }));
   };
 
   return (
-    <>
-      {Object.keys(filteredCategories).map(category => (
-        <div key={category} className="mb-6">
-          <div 
-            className="flex justify-between items-center bg-purple-900 text-white py-3 px-4 rounded-md cursor-pointer"
-            onClick={() => toggleCategory(category)}
-          >
-            <h2 className="text-xl font-semibold">{category}</h2>
-            <FontAwesomeIcon 
-              icon={faChevronDown} 
-              className={`transition-transform ${expandedCategories[category] ? 'transform rotate-180' : ''}`} 
-            />
-          </div>
-          
-          {expandedCategories[category] && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-              {filteredCategories[category]?.length > 0 ? (
-                filteredCategories[category].map(classItem => (
-                  <ClassCard 
-                    key={classItem.id} 
-                    classData={classItem} 
-                    onEnroll={onEnroll} 
-                  />
-                ))
-              ) : (
-                <div className="col-span-3 text-center py-10 text-gray-500">
-                  No hay clases disponibles en esta categoría que coincidan con tu búsqueda.
-                </div>
-              )}
-            </div>
+    <div className="mb-6">
+      <div 
+        className="bg-[#362550] text-white p-4 rounded-t-lg flex justify-between items-center cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <h2 className="text-xl font-bold">{categoryTitle}</h2>
+        <button className="focus:outline-none">
+          {expanded ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           )}
-        </div>
-      ))}
-
-      {Object.keys(filteredCategories).length === 0 && (
-        <div className="text-center py-10 text-gray-500">
-          No hay clases disponibles que coincidan con tu búsqueda.
+        </button>
+      </div>
+      
+      {expanded && (
+        <div className="bg-gray-50 p-4 rounded-b-lg grid grid-cols-1 md:grid-cols-3 gap-4">
+          {classes.map((classItem) => (
+            <ClassCard 
+              key={classItem.id} 
+              classData={classItem} 
+              onEnroll={handleEnroll} 
+            />
+          ))}
         </div>
       )}
-    </>
+
+      <EnrollmentModal 
+        isOpen={isOpen}
+        onClose={closeModal}
+        classData={modalData}
+        userId={userId}
+      />
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { API_BASE_URL } from '../lib/config';
 
-export interface Resource {
+interface Resource {
   nombre: string;
   cantidad: number;
 }
@@ -8,117 +9,57 @@ export interface Resource {
 export interface Class {
   id: string;
   name: string;
-  type: string;
-  repetition: string;
-  resources: Resource[];
-  instructorId: string;
+  type: string | null;
+  repetition: string | null;
+  resources: Resource[] | null;
+  instructorId: string | null;
   startTime: string;
   maxStudents: number;
   endTime: string;
   endTimeRepetition: string | null;
 }
 
-// Obtener todas las clases disponibles
+const CLASSES_URL = `${API_BASE_URL}/classes`;
+
+// Obtener todas las clases
 export const getAllClasses = async (): Promise<Class[]> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/classes`);
-    if (!response.ok) {
-      throw new Error('Error al obtener clases');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error en getAllClasses:', error);
-    throw error;
-  }
+  const response = await axios.get(CLASSES_URL);
+  return response.data;
 };
 
 // Obtener clase por ID
 export const getClassById = async (classId: string): Promise<Class> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/classes/class?classId=${classId}`);
-    if (!response.ok) {
-      throw new Error('Error al obtener la clase');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error en getClassById:', error);
-    throw error;
-  }
+  const response = await axios.get(`${CLASSES_URL}/class`, {
+    params: { classId }
+  });
+  return response.data;
 };
 
 // Obtener clases por tipo
 export const getClassesByType = async (classType: string): Promise<Class[]> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/classes/type?classType=${classType}`);
-    if (!response.ok) {
-      throw new Error('Error al obtener clases por tipo');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error en getClassesByType:', error);
-    throw error;
-  }
+  const response = await axios.get(`${CLASSES_URL}/type`, {
+    params: { classType }
+  });
+  return response.data;
 };
 
 // Crear una nueva clase
-export const createClass = async (classData: Omit<Class, 'id'>): Promise<Class> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/classes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(classData),
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Error al crear la clase');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error en createClass:', error);
-    throw error;
-  }
+export const createClass = async (classData: Class): Promise<Class> => {
+  const response = await axios.post(CLASSES_URL, classData);
+  return response.data;
 };
 
 // Actualizar una clase existente
 export const updateClass = async (classData: Class): Promise<Class> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/classes/update?id=${classData.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(classData),
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Error al actualizar la clase');
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error en updateClass:', error);
-    throw error;
-  }
+  const response = await axios.put(`${CLASSES_URL}/update`, classData, {
+    params: { id: classData.id }
+  });
+  return response.data;
 };
 
 // Eliminar una clase
 export const deleteClass = async (id: string): Promise<void> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/classes/delete?id=${id}`, {
-      method: 'DELETE',
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Error al eliminar la clase');
-    }
-  } catch (error) {
-    console.error('Error en deleteClass:', error);
-    throw error;
-  }
+  await axios.delete(`${CLASSES_URL}/delete`, {
+    params: { id }
+  });
 };

@@ -1,4 +1,3 @@
-// src/modules/extracurricular-classes/components/common/ModuleTabs.tsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -10,7 +9,7 @@ interface Tab {
 
 interface ModuleTabsProps {
   tabs: Tab[];
-  userRole: string; // Añadir prop para el rol del usuario
+  userRole: string;
 }
 
 const ModuleTabs: React.FC<ModuleTabsProps> = ({ tabs, userRole }) => {

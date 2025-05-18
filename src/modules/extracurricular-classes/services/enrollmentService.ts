@@ -1,23 +1,51 @@
-import axios from 'axios';
 import { API_BASE_URL } from '../lib/config';
 
 const INSCRIPTIONS_URL = `${API_BASE_URL}/inscriptions`;
 
+// Inscribir a un usuario en una clase
 export const enrollUser = async (userId: string, classId: string) => {
-  const response = await axios.post(`${INSCRIPTIONS_URL}/inscribe`, null, {
-    params: { userId, classId },
+  const url = new URL(`${INSCRIPTIONS_URL}/inscribe`);
+  url.searchParams.append('userId', userId);
+  url.searchParams.append('classId', classId);
+  
+  const response = await fetch(url.toString(), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
-  return response.data;
+  
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+  
+  return response.json();
 };
 
+// Obtener todas las inscripciones
 export const getInscriptions = async () => {
-  const response = await axios.get(INSCRIPTIONS_URL);
-  return response.data;
+  const response = await fetch(INSCRIPTIONS_URL);
+  
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+  
+  return response.json();
 };
 
+// Eliminar una inscripción
 export const deleteInscription = async (userId: string, classId: string) => {
-  const response = await axios.delete(`${INSCRIPTIONS_URL}/delete`, {
-    params: { userId, classId },
+  const url = new URL(`${INSCRIPTIONS_URL}/delete`);
+  url.searchParams.append('userId', userId);
+  url.searchParams.append('classId', classId);
+  
+  const response = await fetch(url.toString(), {
+    method: 'DELETE',
   });
-  return response.data;
+  
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+  
+  return response.json();
 };

@@ -1,58 +1,31 @@
-// src/modules/extracurricular-classes/components/common/ClassSearchBar.tsx
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 interface ClassSearchBarProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  classNames?: string;
-  dropdownOptions?: Array<{value: string, label: string}>;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
 }
 
-const ClassSearchBar: React.FC<ClassSearchBarProps> = ({ 
-  value, 
-  onChange, 
-  placeholder = "Buscar clase...",
-  classNames = "",
-  dropdownOptions
-}) => {
+const ClassSearchBar: React.FC<ClassSearchBarProps> = ({ searchTerm, onSearchChange }) => {
   return (
-    <div className={`relative ${classNames}`}>
-      <label htmlFor="classSearch" className="block text-sm font-medium text-gray-700 mb-1">
+    <div className="mb-4">
+      <label htmlFor="search-class" className="block text-sm font-medium text-gray-700 mb-1">
         Buscar Clase
       </label>
-      
-      {dropdownOptions ? (
-        <select 
-          id="classSearch"
-          className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        >
-          <option value="">Todas las clases</option>
-          {dropdownOptions.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <FontAwesomeIcon icon={faSearch} className="text-gray-400" />
-          </div>
-          <input
-            id="classSearch"
-            type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-          />
+      <div className="relative">
+        <input
+          type="text"
+          id="search-class"
+          className="block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          placeholder="Buscar clase por nombre..."
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+          </svg>
         </div>
-      )}
+      </div>
     </div>
   );
 };
