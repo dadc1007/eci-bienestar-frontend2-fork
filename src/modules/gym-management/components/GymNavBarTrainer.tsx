@@ -4,7 +4,7 @@ const trainerTabs = [
   { label: "Rutinas", path: "trainer-routines" },
   { label: "Ejercicios", path: "exercises" },
   { label: "Sesiones", path: "sessions" },
-  { label: "Reservas", path: "trainer-reservations" },
+  { label: "Reporte", path: "trainer-generate-report" },
   { label: "Progresos", path: "progress" },
 ];
 

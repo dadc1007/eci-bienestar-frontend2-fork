@@ -1,6 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
 
 // Validación del formulario con Yup
 const schema = yup.object().shape({
@@ -60,6 +61,8 @@ const RegisterMeasurements = () => {
   };
 
   const gender = watch("gender");
+
+  const navigate = useNavigate();
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
@@ -182,8 +185,9 @@ const RegisterMeasurements = () => {
         </div>
 
         <button
-          type="submit"
-          className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+            type="submit"
+            onClick={() => {navigate("body-measurements")}}
+            className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
         >
           Siguiente
         </button>

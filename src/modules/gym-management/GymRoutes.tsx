@@ -20,7 +20,7 @@ import TrainerMainPage from "@/modules/gym-management/pages/trainer/TrainerMainP
 import TrainerRoutinesPage from "@/modules/gym-management/pages/trainer/TrainerRoutinesPage";
 import ExercisesPage from "@/modules/gym-management/pages/trainer/ExercisesPage";
 import SessionsPage from "@/modules/gym-management/pages/trainer/SessionsPage";
-import TrainerReservationsPage from "@/modules/gym-management/pages/trainer/TrainerReservationsPage";
+import TrainerGenerateReportPage from "@modules/gym-management/pages/trainer/TrainerGenerateReportPage.tsx";
 import ProgressPage from "@/modules/gym-management/pages/trainer/ProgressPage";
 
 // NotFound page
@@ -51,7 +51,7 @@ const GymRoutes = () => {
         <Route path="trainer-routines" element={<TrainerRoutinesPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="sessions" element={<SessionsPage />} />
-        <Route path="trainer-reservations" element={<TrainerReservationsPage />} />
+        <Route path="trainer-generate-report" element={<TrainerGenerateReportPage />} />
         <Route path="progress" element={<ProgressPage />} />
       </Route>
 

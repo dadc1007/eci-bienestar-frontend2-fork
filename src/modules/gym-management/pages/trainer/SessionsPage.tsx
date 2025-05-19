@@ -4,13 +4,30 @@ import {
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
+import { UserIcon } from "@heroicons/react/24/solid";
+
+
+type Student = {
+  id: number;
+  name: string;
+  attended: boolean | null;
+  canceled: boolean;
+};
 
 type Session = {
   label: string;
   day: string;
   time: string;
   capacity: number;
+  students: Student[];
 };
+
+const mockStudents: Student[] = [
+  { id: 1, name: "Juan Pérez", attended: null, canceled: false },
+  { id: 2, name: "María López", attended: null, canceled: true },
+  { id: 3, name: "Carlos Gómez", attended: null, canceled: false },
+];
+
 
 const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 const hours = [
@@ -30,10 +47,20 @@ const capacities = [5, 10, 15, 20, 25, 30];
 
 export default function GymSchedule() {
   const [sessions, setSessions] = useState<Session[]>([
-    { label: "Sesion gimnasio", day: "Lunes", time: "10:00 AM", capacity: 5 },
-    { label: "Sesion gimnasio", day: "Miércoles", time: "10:00 AM", capacity: 10 },
-    { label: "Sesion gimnasio", day: "Viernes", time: "10:00 AM", capacity: 15 },
-    { label: "Sesion gimnasio", day: "Lunes", time: "1:00 PM", capacity: 20 },
+    {
+      label: "Sesion gimnasio",
+      day: "Lunes",
+      time: "10:00 AM",
+      capacity: 5,
+      students: mockStudents,
+    },
+    {
+      label: "Sesion gimnasio",
+      day: "Miércoles",
+      time: "10:00 AM",
+      capacity: 10,
+      students: mockStudents,
+    },
   ]);
 
   const [selected, setSelected] = useState<Session | null>(null);
@@ -155,25 +182,72 @@ export default function GymSchedule() {
 
 // Modal para ver sesión
 function SessionDetailModal({
-  session,
-  onClose,
-}: {
+                              session,
+                              onClose,
+                            }: {
   session: Session;
   onClose: () => void;
 }) {
+  const handleAttendance = (studentId: number, attended: boolean) => {
+    const updatedStudents = session.students.map((student) =>
+        student.id === studentId ? { ...student, attended } : student
+    );
+    session.students = updatedStudents; // Actualiza la lista de estudiantes
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-600 hover:text-black">
-          <XMarkIcon className="w-6 h-6" />
-        </button>
-        <h2 className="text-xl font-semibold mb-4">Detalle de la sesión</h2>
-        <p><strong>Nombre:</strong> {session.label}</p>
-        <p><strong>Día:</strong> {session.day}</p>
-        <p><strong>Hora:</strong> {session.time}</p>
-        <p><strong>Capacidad:</strong> {session.capacity}</p>
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+          <button onClick={onClose} className="absolute top-2 right-2 text-gray-600 hover:text-black">
+            <XMarkIcon className="w-6 h-6" />
+          </button>
+          <h2 className="text-xl font-semibold mb-4">Detalle de la sesión</h2>
+          <p><strong>Nombre:</strong> {session.label}</p>
+          <p><strong>Día:</strong> {session.day}</p>
+          <p><strong>Hora:</strong> {session.time}</p>
+          <p><strong>Capacidad:</strong> {session.capacity}</p>
+          <h3 className="text-lg font-semibold mt-4">Estudiantes inscritos:</h3>
+          <ul className="space-y-2">
+            {session.students.map((student) => (
+                <li key={student.id} className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <button
+                        className="text-gray-600 hover:text-black"
+                        onClick={(e) => e.preventDefault()} // Sin funcionalidad por ahora
+                    >
+                      <UserIcon className="w-5 h-5" />
+                    </button>
+                    <span>{student.name}</span>
+                  </div>
+                  <div className="space-x-2">
+                    {student.canceled ? (
+                        <span className="text-red-500">Sesión cancelada</span>
+                    ) : (
+                        <>
+                          <button
+                              onClick={() => handleAttendance(student.id, true)}
+                              className={`px-2 py-1 rounded ${
+                                  student.attended === true ? "bg-green-500 text-white" : "bg-gray-200"
+                              }`}
+                          >
+                            Asistió
+                          </button>
+                          <button
+                              onClick={() => handleAttendance(student.id, false)}
+                              className={`px-2 py-1 rounded ${
+                                  student.attended === false ? "bg-red-500 text-white" : "bg-gray-200"
+                              }`}
+                          >
+                            No vino
+                          </button>
+                        </>
+                    )}
+                  </div>
+                </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
   );
 }
 
@@ -296,6 +370,7 @@ function CreateSessionModal({
     day: "Lunes",
     time: "08:00 AM",
     capacity: 15,
+    students: [],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
