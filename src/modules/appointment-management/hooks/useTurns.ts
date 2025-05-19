@@ -3,17 +3,23 @@ import { SpecialityEnum } from "@modules/appointment-management/types/enums";
 import {
   callNextTurn,
   callTurn,
+  createTurn,
   getCurrentTurnBySpeciality,
   getTurnsBySpeciality,
   skipTurn,
-} from "../services/TurnService";
+} from "@modules/appointment-management/services";
+
+export const useCreateTurn = () => {
+  return useMutation({
+    mutationFn: createTurn,
+  });
+};
 
 export const useTurnsBySpeciality = (speciality: SpecialityEnum) => {
   return useQuery({
     queryKey: ["turns-by-speciality", speciality],
     queryFn: () => getTurnsBySpeciality(speciality),
     enabled: !!speciality,
-    // refetchInterval: 5000,
   });
 };
 

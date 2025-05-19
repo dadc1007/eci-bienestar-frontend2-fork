@@ -8,6 +8,7 @@ import {
   faStethoscope,
   faArrowLeft,
   faUserCheck,
+  faUserXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -16,5 +17,6 @@ library.add(
   faStethoscope,
   faCalendar,
   faArrowLeft,
-  faUserCheck
+  faUserCheck,
+  faUserXmark
 );
