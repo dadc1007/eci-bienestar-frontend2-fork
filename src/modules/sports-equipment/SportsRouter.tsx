@@ -5,6 +5,7 @@ import Loaned from './pages/Loaned';
 import Expired from './pages/Expired';
 import SportsLayout from './SportsLayout.tsx';
 import ItemList from "./pages/itemList.tsx";
+import LoanedList from "./pages/LoanedList.tsx";
 
 
 const SportsRouter = () => {
@@ -16,6 +17,7 @@ const SportsRouter = () => {
                 <Route path="loaned" element={<Loaned />} />
                 <Route path="expired" element={<Expired />} />
                 <Route path="available/item/:id" element={<ItemList />} />
+                <Route path="LoanedList" element={<LoanedList />} />
                 <Route path="*" element={<Navigate to="home" replace />} />
             </Routes>
 

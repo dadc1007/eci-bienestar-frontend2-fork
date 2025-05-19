@@ -14,6 +14,7 @@ const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "
 
 const Loaned: React.FC = () => {
     const [reservas, setReservas] = useState<Reservation[]>([]);
+    const [selectedReserva, setSelectedReserva] = useState<Reservation | null>(null);
     const today = new Date();
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lunes
@@ -28,11 +29,12 @@ const Loaned: React.FC = () => {
                     return {
                         id: loan.id,
                         nombreItem: loan.equipmentName || "Equipo",
-                        fecha: loanDate.toISOString().split("T")[0],
+                        fecha: loanDate.toLocaleDateString("sv-SE"),
                         horaInicio: loanDate.toTimeString().slice(0, 5),
                         horaFin: returnDate.toTimeString().slice(0, 5),
                     };
                 });
+
                 setReservas(mapped);
             } catch (error) {
                 console.error("Error cargando préstamos activos:", error);
@@ -44,14 +46,14 @@ const Loaned: React.FC = () => {
     const getDayDate = (offset: number) => {
         const d = new Date(startOfWeek);
         d.setDate(d.getDate() + offset);
-        return d.toISOString().split("T")[0];
+        return d.toLocaleDateString("sv-SE");
     };
 
     const isReserved = (day: string, hour: number) => {
         return reservas.find((res) => {
             const [startHour] = res.horaInicio.split(":").map(Number);
             const [endHour] = res.horaFin.split(":").map(Number);
-            return res.fecha === day && hour >= startHour && hour < endHour;
+            return res.fecha == day && hour >= startHour && hour < endHour;
         });
     };
 

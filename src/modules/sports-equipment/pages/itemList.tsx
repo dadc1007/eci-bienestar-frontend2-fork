@@ -70,8 +70,11 @@ const ItemList = () => {
 
         try {
 
-            const dateAndTimeLoan = `${formData.fecha}T${formData.horaInicio}`;
-            const dateAndTimeScheduleReturn = `${formData.fecha}T${formData.horaFin}`;
+            const startDate = new Date(`${formData.fecha}T${formData.horaInicio}`);
+            const endDate = new Date(`${formData.fecha}T${formData.horaFin}`);
+            const dateAndTimeLoan = startDate.toLocaleString("sv-SE").replace(" ", "T");
+            const dateAndTimeScheduleReturn = endDate.toLocaleString("sv-SE").replace(" ", "T");
+
 
 
             const loanData = {

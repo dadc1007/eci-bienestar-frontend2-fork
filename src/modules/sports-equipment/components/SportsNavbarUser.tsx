@@ -17,10 +17,13 @@ const SportsNavbarUser = () => {
                 Articulos Disponibles
             </NavLink>
             <NavLink to="/modules/sports/Loaned" className={linkClasses}>
-                Articulos en Prestamo
+                Calendario de Prestamos
             </NavLink>
             <NavLink to="/modules/sports/Expired" className={linkClasses}>
                 Articulos Vencidos
+            </NavLink>
+            <NavLink to="/modules/sports/LoanedList" className={linkClasses}>
+                Articulos en Prestamo
             </NavLink>
 
         </nav>
