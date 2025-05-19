@@ -13,6 +13,7 @@ import RoutinesPage from "@/modules/gym-management/pages/student/RoutinesPage";
 import RegisterProgressPage from "@/modules/gym-management/pages/student/RegisterProgressPage";
 import EvolutionPage from "@/modules/gym-management/pages/student/EvolutionPage";
 import RegisterMeasurements from "@/modules/gym-management/pages/student/RegisterMeasurements";
+import RegisteredStudentMainPage from "@/modules/gym-management/pages/student/RegisteredStudentMainPage";
 //import RegisterMeasurements from "@/modules/gym-management/pages/student/BodyMeasurements";
 
 // Trainer pages
@@ -24,6 +25,7 @@ import TrainerGenerateReportPage from "@modules/gym-management/pages/trainer/Tra
 import ProgressPage from "@/modules/gym-management/pages/trainer/ProgressPage";
 
 
+
 const GymRoutes = () => {
   return (
     <Routes>
@@ -31,15 +33,16 @@ const GymRoutes = () => {
       <Route index element={<GymRedirectPage />} />
 
       {/* Rutas para estudiantes */}
-      <Route path="student" element={<StudentDashboardPage />}>
-        <Route index element={<StudentMainPage />} />
-        <Route path="reservations" element={<ReservationsPage />} />
-        <Route path="booking" element={<BookingPage />} />
-        <Route path="routines" element={<RoutinesPage />} />
-        <Route path="progress" element={<RegisterProgressPage />} />
-        <Route path="evolution" element={<EvolutionPage />} />
-        <Route path="first-register" element={<RegisterMeasurements />} />
-      </Route>
+        <Route path="student" element={<StudentDashboardPage />}>
+            <Route index element={<StudentMainPage />} />
+            <Route path="reservations" element={<ReservationsPage />} />
+            <Route path="booking" element={<BookingPage />} />
+            <Route path="routines" element={<RoutinesPage />} />
+            <Route path="progress" element={<RegisterProgressPage />} />
+            <Route path="evolution" element={<EvolutionPage />} />
+            <Route path="first-register" element={<RegisterMeasurements />} />
+            <Route path="registered-student" element={<RegisteredStudentMainPage />} />
+        </Route>
 
       {/* Rutas para entrenadores */}
       <Route path="trainer" element={<TrainerDashboardPage />}>
