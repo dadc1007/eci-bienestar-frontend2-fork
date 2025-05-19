@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
 
 import StadisticsShifts from "../../components/StadisticsShifts/StadisticsShifts";
 import {
@@ -11,7 +12,8 @@ import {
   datosPorEstado,
 } from "./mockData";
 
-const Stadistics = ({ volver }: { volver: () => void }) => {
+const Stadistics = () => {
+  const navigate = useNavigate();
   const [especialidades, setEspecialidades] = useState<string[]>([]);
   const [rolesPaciente, setRolesPaciente] = useState<string[]>([]);
   const [rangosFecha, setRangosFecha] = useState<string[]>([]);
@@ -160,7 +162,7 @@ const Stadistics = ({ volver }: { volver: () => void }) => {
         <Button
           className="bg-health-primary text-white px-4 py-2"
           type="button"
-          onPress={volver}
+          onPress={() => navigate(-1)}
         >
           <FontAwesomeIcon icon={faArrowLeft} size="lg" color="white" /> Volver
         </Button>
