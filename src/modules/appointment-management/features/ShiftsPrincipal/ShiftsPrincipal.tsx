@@ -31,7 +31,9 @@ const ShiftsPrincipal = () => {
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={() => navigate("statistics")}
+              onPress={() =>
+                navigate("/modules/appointment-management/statistics")
+              }
             >
               <FontAwesomeIcon icon={faChartSimple} size="lg" color="white" />
               Estadísticas
@@ -39,7 +41,9 @@ const ShiftsPrincipal = () => {
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={() => navigate("manage-shifts")}
+              onPress={() =>
+                navigate("/modules/appointment-management/manage-shifts")
+              }
             >
               <FontAwesomeIcon icon={faGear} size="lg" color="white" />
               Gestionar turnos
@@ -47,7 +51,9 @@ const ShiftsPrincipal = () => {
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={() => navigate("request-shifts")}
+              onPress={() =>
+                navigate("/modules/appointment-management/request-shifts")
+              }
             >
               <FontAwesomeIcon icon={faPlus} /> Pedir turno
             </Button>
