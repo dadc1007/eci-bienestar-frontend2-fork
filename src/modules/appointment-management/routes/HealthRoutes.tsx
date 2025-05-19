@@ -5,11 +5,12 @@ import FormShift from "../features/formshift/formshift";
 import GestionShifts from "../features/gestionShifts/gestionShifts";
 import StadisticsShifts from "../features/stadisticsShifts/StadisticsShifts";
 import AdminView from "../pages/AdminView";
+import SecretaryView from "../pages/SecretaryView";
 
 function HealthRoutes() {
   return (
     <Routes>
-      <Route index element={<AdminView />} />
+      <Route index element={<SecretaryView />} />
       <Route path="/home" element={<ShiftsPrincipal />} />
       <Route path="/request-shifts" element={<FormShift />} />
       <Route path="/manage-shifts" element={<GestionShifts />} />
