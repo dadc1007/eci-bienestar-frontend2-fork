@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import GymRedirectPage from "@/modules/gym-management/pages/GymRedirectPage";
 
 // Layouts
@@ -13,7 +13,7 @@ import RoutinesPage from "@/modules/gym-management/pages/student/RoutinesPage";
 import RegisterProgressPage from "@/modules/gym-management/pages/student/RegisterProgressPage";
 import EvolutionPage from "@/modules/gym-management/pages/student/EvolutionPage";
 import RegisterMeasurements from "@/modules/gym-management/pages/student/RegisterMeasurements";
-//import RegisterMeasurements from "@/modules/gym-management/pages/student/BodyMeasurements";
+import BodyMeasurements from "@/modules/gym-management/pages/student/BodyMeasurements";
 
 // Trainer pages
 import TrainerMainPage from "@/modules/gym-management/pages/trainer/TrainerMainPage";
@@ -22,6 +22,9 @@ import ExercisesPage from "@/modules/gym-management/pages/trainer/ExercisesPage"
 import SessionsPage from "@/modules/gym-management/pages/trainer/SessionsPage";
 import TrainerReservationsPage from "@/modules/gym-management/pages/trainer/TrainerReservationsPage";
 import ProgressPage from "@/modules/gym-management/pages/trainer/ProgressPage";
+
+// NotFound page
+import NotFoundPage from "@/modules/gym-management/pages/NotFoundPage";
 
 
 const GymRoutes = () => {
@@ -39,6 +42,7 @@ const GymRoutes = () => {
         <Route path="progress" element={<RegisterProgressPage />} />
         <Route path="evolution" element={<EvolutionPage />} />
         <Route path="first-register" element={<RegisterMeasurements />} />
+        <Route path="body-measurements" element={<BodyMeasurements />} />
       </Route>
 
       {/* Rutas para entrenadores */}
@@ -52,7 +56,7 @@ const GymRoutes = () => {
       </Route>
 
       {/* Catch-all: redirige rutas desconocidas */}
-      <Route path="*" element={<Navigate to="." replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

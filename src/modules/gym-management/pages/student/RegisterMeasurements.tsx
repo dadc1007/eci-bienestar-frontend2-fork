@@ -1,7 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
 
 // Validación del formulario con Yup
 const schema = yup.object().shape({
@@ -39,7 +38,6 @@ interface FormData {
 
 // Componente principal
 const RegisterMeasurements = () => {
-  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -49,7 +47,7 @@ const RegisterMeasurements = () => {
   } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      gender: "other", // Set a valid default value
+      gender: "male", // Set a valid default value
       height: 160,
       age: 20,
       weight: 60,
@@ -185,7 +183,6 @@ const RegisterMeasurements = () => {
 
         <button
           type="submit"
-          onClick={() => {navigate("body-measurements")}}
           className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
         >
           Siguiente
