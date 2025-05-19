@@ -13,7 +13,7 @@ const InstitutionalInfo = ({ items }: CarroselProps) => {
     <>
       <Card>
         <CardHeader
-          className="px-4 py-2 flex justify-between items-center text-white rounded-t-xl"
+          className="px-4 py-2 flex justify-between items-center text-white rounded-t-xl z-0"
           style={{
             background: "linear-gradient(to right, #00BCFF, #0078B4)",
           }}

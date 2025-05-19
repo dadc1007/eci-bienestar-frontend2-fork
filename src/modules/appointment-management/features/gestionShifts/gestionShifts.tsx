@@ -3,8 +3,11 @@ import Layout from "../../../appointment-management/layout/layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { GestionShiftPanel } from "../../components/gestionShiftPanel";
+import { useNavigate } from "react-router-dom";
 
-const GestionShifts = ({ volver }: { volver: () => void }) => {
+const GestionShifts = () => {
+  const navigate = useNavigate();
+
   return (
     <Layout
       header={
@@ -14,7 +17,7 @@ const GestionShifts = ({ volver }: { volver: () => void }) => {
             <Button
               className="bg-health-primary text-white px-4 py-2"
               type="button"
-              onPress={volver}
+              onPress={() => navigate(-1)}
             >
               <FontAwesomeIcon icon={faArrowLeft} size="lg" color="white" />{" "}
               Volver
