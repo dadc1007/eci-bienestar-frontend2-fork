@@ -1,255 +1,339 @@
-import React, { useState } from "react";
-import { PlusIcon, PencilIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon, TrashIcon, PencilIcon, PlusIcon } from "@heroicons/react/24/solid";
+import React from "react";
 
-interface Routine {
-  name: string;
-  muscleGroup: string;
-  exercises: string[];
-  img?: string;
-}
+import pectorales from "/src/modules/gym-management/assets/images/pectorales.png";
+import dorsales from "/src/modules/gym-management/assets/images/dorsales.png";
+import trapecios from "/src/modules/gym-management/assets/images/trapecios.png";
+import deltoides from "/src/modules/gym-management/assets/images/deltoides.png";
+import biceps from "/src/modules/gym-management/assets/images/biceps.png";
+import triceps from "/src/modules/gym-management/assets/images/triceps.png";
+import abdominales from "/src/modules/gym-management/assets/images/abdominales.png";
+import oblicuos from "/src/modules/gym-management/assets/images/oblicuos.png";
+import cuadriceps from "/src/modules/gym-management/assets/images/cuadriceps.png";
+import isquiotibiales from "/src/modules/gym-management/assets/images/isquiotibiales.png";
+import gluteos from "/src/modules/gym-management/assets/images/gluteos.png";
 
-const defaultMuscleGroups = [
-  { name: "Pectorales", img: "/images/pectorales.png" },
-  { name: "Dorsales", img: "/images/dorsales.png" },
-  { name: "Trapecios", img: "/images/trapecios.png" },
-  { name: "Deltoides", img: "/images/deltoides.png" },
-  { name: "Bíceps", img: "/images/biceps.png" },
-  { name: "Tríceps", img: "/images/triceps.png" },
-  { name: "Abdominales", img: "/images/abdominales.png" },
-  { name: "Oblicuos", img: "/images/oblicuos.png" },
-  { name: "Cuádriceps", img: "/images/cuadriceps.png" },
-  { name: "Isquiotibiales", img: "/images/isquiotibiales.png" },
-  { name: "Glúteos", img: "/images/gluteos.png" },
-];
+export default function RoutinesPage() {
+  const [muscleGroups, setMuscleGroups] = React.useState([
+    { id: 1, name: "Pectorales", img: pectorales },
+    { id: 2, name: "Dorsales", img: dorsales },
+    { id: 3, name: "Trapecios", img: trapecios },
+    { id: 4, name: "Deltoides", img: deltoides },
+    { id: 5, name: "Bíceps", img: biceps },
+    { id: 6, name: "Tríceps", img: triceps },
+    { id: 7, name: "Abdominales", img: abdominales },
+    { id: 8, name: "Oblicuos", img: oblicuos },
+    { id: 9, name: "Cuádriceps", img: cuadriceps },
+    { id: 10, name: "Isquiotibiales", img: isquiotibiales },
+    { id: 11, name: "Glúteos", img: gluteos },
+  ]);
 
-const TrainerMainPage: React.FC = () => {
-  const [routines, setRoutines] = useState<Routine[]>([]);
-  const [creating, setCreating] = useState(false);
-  const [editingRoutine, setEditingRoutine] = useState<Routine | null>(null);
-  const [selectedRoutine, setSelectedRoutine] = useState<Routine | null>(null);
+  const [selectedMuscle, setSelectedMuscle] = React.useState<null | typeof muscleGroups[0]>(null);
+  const [editingMuscle, setEditingMuscle] = React.useState<null | typeof muscleGroups[0]>(null);
+  const [creating, setCreating] = React.useState(false);
 
-  const handleCreateRoutine = (newRoutine: Routine) => {
-    setRoutines((prev) => [...prev, newRoutine]);
-    setCreating(false);
-  };
-
-  const handleUpdateRoutine = (updated: Routine) => {
-    setRoutines((prev) =>
-      prev.map((r) => (r.name === updated.name ? updated : r))
-    );
-    setEditingRoutine(null);
-  };
-
-  const handleDeleteRoutine = (name: string) => {
-    if (window.confirm(`¿Seguro que deseas eliminar la rutina "${name}"?`)) {
-      setRoutines((prev) => prev.filter((r) => r.name !== name));
+  // Eliminar rutina
+  const deleteMuscle = (id: number) => {
+    if (window.confirm("¿Seguro que deseas eliminar esta rutina?")) {
+      setMuscleGroups((prev) => prev.filter((m) => m.id !== id));
+      setSelectedMuscle(null);
+      setEditingMuscle(null);
     }
   };
 
-  // Mostrar todos los grupos musculares por defecto junto con las rutinas creadas (sin filtrar)
-  const allMuscles = [
-    ...defaultMuscleGroups,
-    ...routines
-      .filter(
-        (r) =>
-          !defaultMuscleGroups.some((m) => m.name.toLowerCase() === r.name.toLowerCase())
-      )
-      .map((r) => ({
-        name: r.name,
-        img: r.img || "/images/default.png",
-      })),
-  ];
-
+  
   return (
     <div className="p-4">
-      <header className="flex justify-between items-center mb-4 bg-black text-white p-3 rounded-t-lg">
-        <h2 className="text-xl font-bold">Rutinas creadas</h2>
+      <header className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center">
+        <h2 className="text-lg font-semibold">Rutinas</h2>  
         <button
           onClick={() => setCreating(true)}
-          className="bg-white text-black p-2 rounded-full hover:bg-gray-200"
-          aria-label="Crear nueva rutina"
+          className="bg-white text-black rounded-full p-1 hover:bg-gray-200"
         >
           <PlusIcon className="w-6 h-6" />
-        </button>
+        </button>  
       </header>
-
-      <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 bg-white p-4 rounded-b-lg shadow">
-        {allMuscles.map((muscle) => (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 bg-white p-4 rounded-b-lg">
+        {muscleGroups.map((muscle) => (
           <div
-            key={muscle.name}
-            className="bg-black text-white rounded-lg p-3 flex flex-col items-center relative cursor-pointer hover:bg-gray-900 transition"
-            onClick={() => {
-              const routine = routines.find((r) => r.name === muscle.name);
-              if (routine) setSelectedRoutine(routine);
-            }}
+            key={muscle.id}
+            onClick={() => setSelectedMuscle(muscle)}
+            className="bg-black text-white rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:shadow-lg hover:scale-105 transition-transform relative"
           >
-            <img
-              src={muscle.img}
-              alt={muscle.name}
-              className="w-20 h-20 object-contain mb-2"
-            />
-            <span className="font-semibold text-center">{muscle.name}</span>
-
-            {/* Mostrar botones en todas las tarjetas */}
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => {
-                  const routineToEdit = routines.find((r) => r.name === muscle.name);
-                  if (routineToEdit) setEditingRoutine(routineToEdit);
-                  else
-                    setEditingRoutine({
-                      name: muscle.name,
-                      muscleGroup: muscle.name,
-                      exercises: [],
-                      img: muscle.img,
-                    });
-                }}
-                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-                aria-label={`Editar rutina ${muscle.name}`}
-              >
-                <PencilIcon className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => handleDeleteRoutine(muscle.name)}
-                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-                aria-label={`Eliminar rutina ${muscle.name}`}
-              >
-                <TrashIcon className="w-5 h-5" />
-              </button>
-            </div>
+            <img src={muscle.img} alt={muscle.name} className="w-20 h-20 object-contain mb-2" />
+            <span className="text-center font-semibold">{muscle.name}</span>
           </div>
         ))}
-      </section>
+      </div>
+
+      {/* Modal detalle */}
+      {selectedMuscle && !editingMuscle && (
+        <RoutineDetailModal
+          muscleGroup={selectedMuscle}
+          onClose={() => setSelectedMuscle(null)}
+          onEdit={() => setEditingMuscle(selectedMuscle)}
+          onDelete={() => deleteMuscle(selectedMuscle.id)}
+        />
+      )}
 
       {creating && (
-        <RoutineModal
+        <RoutineCreateModal
           onClose={() => setCreating(false)}
-          onSave={handleCreateRoutine}
+          onSave={(newRoutine) => {
+            setMuscleGroups((prev) => [
+              ...prev,
+              {
+                id: Date.now(), // o usa un contador si lo prefieres
+                ...newRoutine,
+              },
+            ]);
+            setCreating(false);
+          }}
         />
       )}
 
-      {editingRoutine && (
-        <RoutineModal
-          routine={editingRoutine}
-          onClose={() => setEditingRoutine(null)}
-          onSave={handleUpdateRoutine}
-        />
-      )}
-
-      {selectedRoutine && (
-        <RoutineModal
-          routine={selectedRoutine}
-          onClose={() => setSelectedRoutine(null)}
-          onSave={() => {}}
-          readOnly
+      {/* Modal edición */}
+      {editingMuscle && (
+        <RoutineEditModal
+          muscleGroup={editingMuscle}
+          onClose={() => setEditingMuscle(null)}
+          onSave={(updated) => {
+            setMuscleGroups((prevGroups) =>
+              prevGroups.map((group) =>
+                group.id === editingMuscle.id ? { ...group, ...updated } : group
+              )
+            );
+            setEditingMuscle(null);
+            setSelectedMuscle((prev) =>
+              prev?.id === editingMuscle.id ? { ...prev, ...updated } : prev
+            );
+          }}
         />
       )}
     </div>
   );
-};
-
-interface RoutineModalProps {
-  routine?: Routine;
-  onClose: () => void;
-  onSave: (routine: Routine) => void;
-  readOnly?: boolean;
 }
 
-const RoutineModal: React.FC<RoutineModalProps> = ({ routine, onClose, onSave, readOnly = false }) => {
-  const [name, setName] = useState(routine?.name || "");
-  const [muscleGroup, setMuscleGroup] = useState(routine?.muscleGroup || "");
-  const [exercises, setExercises] = useState<string[]>(routine?.exercises || [""]);
-
-  const handleExerciseChange = (index: number, value: string) => {
-    const newExercises = [...exercises];
-    newExercises[index] = value;
-    setExercises(newExercises);
-  };
-
-  const addExercise = () => {
-    setExercises([...exercises, ""]);
-  };
-
-  const removeExercise = (index: number) => {
-    setExercises(exercises.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !muscleGroup.trim()) {
-      alert("Por favor, complete el nombre y grupo muscular");
-      return;
-    }
-    onSave({
-      name,
-      muscleGroup,
-      exercises: exercises.filter((ex) => ex.trim() !== ""),
-      img: undefined,
-    });
-  };
-
+const RoutineDetailModal = ({
+  muscleGroup,
+  onClose,
+  onEdit,
+  onDelete,
+}: {
+  muscleGroup: { id: number; name: string; img: string };
+  onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex justify-center items-center p-4">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative flex flex-col items-center">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+          className="absolute top-2 right-2 text-gray-600 hover:text-black"
           aria-label="Cerrar modal"
         >
           <XMarkIcon className="w-6 h-6" />
         </button>
-        <h3 className="text-xl font-bold mb-4">{routine ? "Editar Rutina" : "Crear Rutina"}</h3>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="Nombre de la rutina"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border border-gray-400 rounded px-3 py-2"
-            required
-            readOnly={readOnly}
-          />
-          <input
-            type="text"
-            placeholder="Grupo muscular"
-            value={muscleGroup}
-            onChange={(e) => setMuscleGroup(e.target.value)}
-            className="border border-gray-400 rounded px-3 py-2"
-            required
-            readOnly={readOnly}
-          />
-          <div>
-            <label className="block font-semibold mb-1">Ejercicios:</label>
-            {exercises.map((ex, i) => (
-              <div key={i} className="flex gap-2 mb-2 items-center">
-                <input
-                  type="text"
-                  value={ex}
-                  onChange={(e) => handleExerciseChange(i, e.target.value)}
-                  className="border border-gray-400 rounded px-3 py-2 flex-grow"
-                  readOnly={readOnly}
-                />
-                
-                <button
-                  type="button"
-                  onClick={() => removeExercise(i)}
-                  className="bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1"
-                >
-                  X
-                </button>
-              </div>
-            ))}
-          </div>
+        <img src={muscleGroup.img} alt={muscleGroup.name} className="w-40 h-40 object-contain mb-4" />
+        <h2 className="text-3xl font-bold mb-4">{muscleGroup.name}</h2>
+
+        <div className="flex gap-2">
           <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white rounded py-2 mt-4"
+            onClick={onEdit}
+            className="bg-black text-white p-2 rounded-full hover:bg-gray-200"
           >
-            {routine ? "Actualizar Rutina" : "Crear Rutina"}
+            <PencilIcon className="w-5 h-5" />
           </button>
-        </form>
+
+          <button
+            onClick={onDelete}
+            className="bg-black text-white p-2 rounded-full hover:bg-gray-200"
+          >
+            <TrashIcon className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default TrainerMainPage;
+const RoutineEditModal = ({
+  muscleGroup,
+  onClose,
+  onSave,
+}: {
+  muscleGroup: { id: number; name: string; img: string };
+  onClose: () => void;
+  onSave: (updated: { name: string; img: string }) => void;
+}) => {
+  const [name, setName] = React.useState(muscleGroup.name);
+  const [localImage, setLocalImage] = React.useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLocalImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const isValid = name.trim() !== "" && (localImage !== "");
+
+  const handleSave = () => {
+    onSave({ name, img: localImage || muscleGroup.img });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex justify-center items-center p-4">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative flex flex-col">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-600 hover:text-black"
+          aria-label="Cerrar modal"
+        >
+          <XMarkIcon className="w-6 h-6" />
+        </button>
+
+        <h2 className="text-2xl font-bold mb-4">Editar rutina</h2>
+
+        <label className="block mb-2 font-semibold text-gray-700">Nombre</label>
+        <input
+          className="w-full border rounded px-3 py-2 mb-4"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          autoFocus
+        />
+        <label className="block mb-2 font-semibold text-gray-700">Imagen (local o URL)</label>
+        <input
+          type="file"
+          accept="image/*"
+          className="mb-2"
+          onChange={handleFileChange}
+        />
+        <div className="flex justify-center mb-4">
+          {(localImage) && (
+            <img
+              src={localImage}
+              alt="Vista previa"
+              className="w-32 h-32 object-contain rounded border"
+            />
+          )}
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleSave}
+            className={`px-4 py-2 rounded text-white ${
+              isValid ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={!isValid}
+          >
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const RoutineCreateModal = ({
+  onClose,
+  onSave,
+}: {
+  onClose: () => void;
+  onSave: (newRoutine: { name: string; img: string }) => void;
+}) => {
+  const [name, setName] = React.useState("");
+  const [localImage, setLocalImage] = React.useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLocalImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const isValid = name.trim() !== "" && localImage;
+
+  const handleSave = () => {
+    if (isValid) {
+      onSave({ name, img: localImage! });
+    }
+
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex justify-center items-center p-4">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative flex flex-col">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-600 hover:text-black"
+          aria-label="Cerrar modal"
+        >
+          <XMarkIcon className="w-6 h-6" />
+        </button>
+
+        <h2 className="text-2xl font-bold mb-4">Crear nueva rutina</h2>
+
+        <label className="block mb-2 font-semibold text-gray-700">Nombre</label>
+        <input
+          className="w-full border rounded px-3 py-2 mb-4"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <label className="block mb-2 font-semibold text-gray-700">Imagen</label>
+        <input
+          type="file"
+          accept="image/*"
+          className="mb-4"
+          onChange={handleFileChange}
+        />
+
+        {localImage && (
+          <div className="flex justify-center mb-4">
+            <img
+              src={localImage}
+              alt="Vista previa"
+              className="w-32 h-32 object-contain rounded border"
+            />
+          </div>
+        )}
+
+        <div className="flex justify-end space-x-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleSave}
+            className={`px-4 py-2 rounded text-white ${
+              isValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={!isValid}
+          >
+            Crear
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
