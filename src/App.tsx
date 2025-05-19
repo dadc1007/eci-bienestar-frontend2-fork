@@ -3,14 +3,16 @@ import {
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
-import MainRooms from './modules/recreational-rooms/mainRooms'; 
-import ReserveRoom from "./modules/recreational-rooms/reservationRoom";
-
+import RoomActions from "./modules/recreational-rooms/components/RoomActions";
+import RoomsPage from "./modules/recreational-rooms/components/RoomsPage";
+import ReservationsPage from "./modules/recreational-rooms/components/ReservationsPage";
+import ItemsPage from "./modules/recreational-rooms/components/ItemsPage";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -35,9 +37,8 @@ const moduleColors = {
 };
 
 // Componentes de módulos
-const ModuleTemplate: React.FC<{ title: string; color: string }> = ({
+const ModuleTemplate: React.FC<{ title: string }> = ({
   title,
-  color,
 }) => (
   <div className="container mx-auto px-4 py-8">
     <h1 className="text-3xl font-bold text-gray-800 mb-6">{title}</h1>
@@ -99,15 +100,12 @@ function App() {
             >
               <ModuleTemplate
                 title="Gestión de Turnos de Salud"
-                color={moduleColors.health}
               />
             </Layout>
           }
-        />
-
-        {/* Módulo de Recreación/Salas */}
+        />        {/* Módulo de Recreación/Salas */}
         <Route
-          path="/main-rooms/*"
+          path="/modules/recreation/*"
           element={
             <Layout
               moduleColor={moduleColors.recreation}
@@ -116,16 +114,24 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               userEmail="administrador@ejemplo.com"
             >
-              <Routes>
-                <Route index element={<MainRooms />} />
-                <Route path="reserve-room" element={<ReserveRoom />} />
-                <Route path="*" element={<Navigate to="/main-rooms" replace />} />
-              </Routes>
-
+              <div className="w-full h-full flex flex-col p-6 lg:p-8">
+                <div className="container mx-auto px-4 py-8 h-full">
+                  <div className="bg-white rounded-lg shadow p-6 h-full">
+                    <Outlet />
+                  </div>
+                </div>
+              </div>
             </Layout>
           }
-        />
-
+        >
+          {/* Ruta principal del módulo */}
+          <Route index element={<RoomActions />} />
+  
+          {/* Subrutas */}
+          <Route path="rooms" element={<RoomsPage />} />
+          <Route path="reservations" element={<ReservationsPage />} />
+          <Route path="items" element={<ItemsPage />} />
+        </Route>
 
         {/* Módulo de Clases Extracurriculares */}
         <Route
@@ -140,7 +146,6 @@ function App() {
             >
               <ModuleTemplate
                 title="Clases Extracurriculares"
-                color={moduleColors.extracurricular}
               />
             </Layout>
           }
@@ -159,7 +164,6 @@ function App() {
             >
               <ModuleTemplate
                 title="Préstamos Deportivos"
-                color={moduleColors.sports}
               />
             </Layout>
           }
@@ -178,7 +182,6 @@ function App() {
             >
               <ModuleTemplate
                 title="Gestión del Gimnasio"
-                color={moduleColors.gym}
               />
             </Layout>
           }
