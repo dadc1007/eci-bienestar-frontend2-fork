@@ -11,7 +11,7 @@ function HealthRoutes() {
       <Route index element={<ShiftsPrincipal />} />
       <Route path="/request-shifts" element={<FormShift />} />
       <Route path="/manage-shifts" element={<GestionShifts />} />
-      <Route path="/statistics" element={<Stadistics volver={() => window.history.back()} />} />
+      <Route path="/statistics" element={<Stadistics/>} />
     </Routes>
   );
 }
