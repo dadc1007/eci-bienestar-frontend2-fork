@@ -3,8 +3,24 @@ import {
   ApiResponse,
   TurnResponse,
   CallTurnRequest,
+  CreateTurnRequest,
 } from "@modules/appointment-management/types/dto";
 import { SpecialityEnum } from "@modules/appointment-management/types/enums";
+
+export const createTurn = async (
+  data: CreateTurnRequest
+): Promise<ApiResponse<TurnResponse>> => {
+  try {
+    const response = await apiClient.post<ApiResponse<TurnResponse>>(
+      "/medical-turns/turns",
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creando el turno:", error);
+    throw error;
+  }
+};
 
 export const getTurnsBySpeciality = async (
   speciality: SpecialityEnum

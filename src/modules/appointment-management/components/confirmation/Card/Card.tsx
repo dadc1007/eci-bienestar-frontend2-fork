@@ -6,22 +6,23 @@ import {
   CardBody,
   CardHeader,
 } from "@heroui/react";
-import { InfoItem } from "../../../components/confirmation";
+import { InfoItem } from "@/modules/appointment-management/components/confirmation";
 import styles from "./Card.module.css";
+import { TurnResponse } from "@/modules/appointment-management/types/dto";
+import { SpecialityLabels } from "@/modules/appointment-management/constants";
 
 type Props = {
-  readonly themeColor: "medicine" | "dentistry" | "psychology";
-  readonly patientName: string;
-  readonly speciality: string;
-  readonly date: string;
+  turnResponse: TurnResponse;
+  setTurnResponse: (turnResponse: TurnResponse | null) => void;
+  onSubmitAction: (bool: boolean) => void;
 };
 
-const Card = ({ themeColor, patientName, speciality, date }: Props) => {
+const Card = ({ turnResponse, setTurnResponse, onSubmitAction }: Props) => {
   return (
     <HeroCard>
       <CardHeader
         className={`${
-          styles[`bg-gradient-health-${themeColor}`]
+          styles[`bg-gradient-health-${turnResponse.speciality}`]
         } p-8 flex flex-col gap-5`}
       >
         <FontAwesomeIcon
@@ -31,7 +32,7 @@ const Card = ({ themeColor, patientName, speciality, date }: Props) => {
         />
         <h1 className="text-2xl text-white font-bold">¡Turno confirmado!</h1>
         <p className="text-4xl text-white font-bold p-6 bg-white/20 rounded-full">
-          O-73
+          {turnResponse.code}
         </p>
       </CardHeader>
       <CardBody>
@@ -43,21 +44,21 @@ const Card = ({ themeColor, patientName, speciality, date }: Props) => {
         <div className="flex flex-col gap-8 m-8 max-[540px]:mx-5">
           <InfoItem
             title="Paciente"
-            info={patientName}
+            info={turnResponse.user.name}
             icon={["far", "user"]}
-            color={themeColor}
+            color={turnResponse.speciality}
           />
           <InfoItem
             title="Especialidad"
-            info={speciality}
+            info={SpecialityLabels[turnResponse.speciality]}
             icon={["fas", "stethoscope"]}
-            color={themeColor}
+            color={turnResponse.speciality}
           />
           <InfoItem
-            title="Fecha"
-            info={date}
+            title="Atención prioritaria"
+            info={turnResponse.priority ? "Si" : "No"}
             icon={["far", "calendar"]}
-            color={themeColor}
+            color={turnResponse.speciality}
           />
           <Alert
             color="primary"
@@ -67,6 +68,10 @@ const Card = ({ themeColor, patientName, speciality, date }: Props) => {
             color="default"
             variant="bordered"
             startContent={<FontAwesomeIcon icon={["fas", "arrow-left"]} />}
+            onPress={() => {
+              setTurnResponse(null);
+              onSubmitAction(false);
+            }}
           >
             Volver a registro
           </Button>

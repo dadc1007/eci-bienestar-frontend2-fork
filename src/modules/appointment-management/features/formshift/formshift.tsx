@@ -1,18 +1,22 @@
 import { useState } from "react";
-import { Button } from "@heroui/react";
+import { Alert, Button } from "@heroui/react";
 import Layout from "../../../appointment-management/layout/layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Form from "../../components/request/Form"; // Importar el formulario
 import { Card } from "../../../appointment-management/components/confirmation"; // Importar la tarjeta de confirmación
 import { useNavigate } from "react-router-dom";
+import { TurnResponse } from "../../types/dto";
 
 const FormShift = () => {
   const navigate = useNavigate();
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Estado para controlar si el formulario fue enviado
+  const [userFound, setUserFound] = useState<boolean>(true);
+  const [userHasTurn, setUserHasTurn] = useState<boolean>(false);
+  const [turnResponse, setTurnResponse] = useState<TurnResponse | null>(null);
+  const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
 
-  const handleFormSubmit = () => {
-    setIsFormSubmitted(true); // Cambiar el estado cuando se envíe el formulario
+  const handleFormSubmit = (bool: boolean) => {
+    setIsFormSubmitted(bool);
   };
 
   return (
@@ -36,13 +40,39 @@ const FormShift = () => {
         <div className="flex flex-col items-center justify-center w-full h-full p-2">
           <div className="w-1/2 h-1/2">
             {!isFormSubmitted ? (
-              <Form onSubmitAction={handleFormSubmit} />
+              <div className="flex flex-col gap-5">
+                {!userFound && (
+                  <Alert
+                    icon={
+                      <FontAwesomeIcon icon={["fas", "user-xmark"]} size="3x" />
+                    }
+                    description="El usuario no se encontro en el sistema"
+                    title="Usuario no encontrado"
+                    color="warning"
+                  />
+                )}
+                {userHasTurn && (
+                  <Alert
+                    icon={
+                      <FontAwesomeIcon icon={["fas", "user-xmark"]} size="3x" />
+                    }
+                    description="El usuario ya tiene un turno pendiente"
+                    title="Usuario con turno"
+                    color="warning"
+                  />
+                )}
+                <Form
+                  setUserFound={setUserFound}
+                  setUserHasTurn={setUserHasTurn}
+                  setTurnResponse={setTurnResponse}
+                  onSubmitAction={handleFormSubmit}
+                />
+              </div>
             ) : (
               <Card
-                themeColor="medicine"
-                patientName="John Doe"
-                speciality="Medicina General"
-                date="2023-10-01"
+                turnResponse={turnResponse!}
+                setTurnResponse={setTurnResponse}
+                onSubmitAction={handleFormSubmit}
               />
             )}
           </div>
