@@ -17,40 +17,33 @@ const Stadistics = ({ volver }: { volver: () => void }) => {
   const [rangosFecha, setRangosFecha] = useState<string[]>([]);
   const [estadosTurno, setEstadosTurno] = useState<string[]>([]);
 
-  // Valores por defecto seleccionados (Todos o Todo el tiempo)
   const [selectedEspecialidad, setSelectedEspecialidad] =
     useState<string>("Todos");
-  const [selectedRol, setSelectedRol] = useState<string>("");
-  const [selectedFecha, setSelectedFecha] = useState<string>("");
-  const [selectedEstado, setSelectedEstado] = useState<string>("");
+  const [selectedRol, setSelectedRol] = useState<string>("Todos");
+  const [selectedFecha, setSelectedFecha] = useState<string>("Todo el tiempo");
+  const [selectedEstado, setSelectedEstado] = useState<string>("Todos");
 
   const [turnAttended, setTurnAttended] = useState<number>(0);
   const [turnUnAttended, setTurnUnAttended] = useState<number>(0);
-  const [attendedByRol, setAttendedByRol] = useState<number[]>([0, 0, 0, 0]);
-  const [attendedBySpeciality, setAttendedBySpeciality] = useState<number[]>([
-    0, 0, 0, 0,
-  ]);
+  const [attendedByRol, setAttendedByRol] = useState<number[]>([]);
+  const [attendedBySpeciality, setAttendedBySpeciality] = useState<number[]>(
+    []
+  );
   const [datosGrafico, setDatosGrafico] = useState<
     { name: string; value: number }[]
   >([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const especialidadesData = await fetchEspecialidades();
-      const rolesData = await fetchRoles();
-      const rangosData = await fetchRangosFecha();
-      const estadosData = await fetchEstadosTurno();
-
-      setEspecialidades(especialidadesData);
-      setRolesPaciente(rolesData);
-      setRangosFecha(rangosData);
-      setEstadosTurno(estadosData);
+      setEspecialidades(await fetchEspecialidades());
+      setRolesPaciente(await fetchRoles());
+      setRangosFecha(await fetchRangosFecha());
+      setEstadosTurno(await fetchEstadosTurno());
     };
 
     fetchData();
   }, []);
 
-  // Agregando opción "Todos" / "Todo el tiempo"
   const fetchEspecialidades = async () => [
     "Todos",
     "Medicina General",
@@ -77,101 +70,80 @@ const Stadistics = ({ volver }: { volver: () => void }) => {
     "Actual",
     "Terminado",
   ];
-
   useEffect(() => {
-    // Calcular base como suma de filtros seleccionados (solo si no es "Todos" o "Todo el tiempo")
     let base = 0;
+    const datosGraficoTemp: { name: string; value: number }[] = [];
 
-    if (selectedEspecialidad && selectedEspecialidad !== "Todos")
-      base += datosPorEspecialidad[selectedEspecialidad] || 0;
+    const especialidadTodos = selectedEspecialidad === "Todos";
+    const rolTodos = selectedRol === "Todos";
+    const fechaTodos = selectedFecha === "Todo el tiempo";
+    const estadoTodos = selectedEstado === "Todos";
 
-    if (selectedRol && selectedRol !== "Todos")
-      base += datosPorRol[selectedRol] || 0;
+    // Solo un "Todos" activo permite mostrar pie chart
+    const isPieChartActive =
+      especialidadTodos || rolTodos || fechaTodos || estadoTodos;
 
-    if (selectedFecha && selectedFecha !== "Todo el tiempo")
-      base += datosPorFecha[selectedFecha] || 0;
-
-    if (selectedEstado && selectedEstado !== "Todos")
-      base += datosPorEstado[selectedEstado] || 0;
+    // Calcular datos en base al único "Todos" activo
+    if (especialidadTodos) {
+      Object.entries(datosPorEspecialidad).forEach(([name, value]) => {
+        datosGraficoTemp.push({ name, value });
+        base += value;
+      });
+    } else if (rolTodos) {
+      Object.entries(datosPorRol).forEach(([name, value]) => {
+        datosGraficoTemp.push({ name, value });
+        base += value;
+      });
+    } else if (fechaTodos) {
+      Object.entries(datosPorFecha).forEach(([name, value]) => {
+        datosGraficoTemp.push({ name, value });
+        base += value;
+      });
+    } else if (estadoTodos) {
+      Object.entries(datosPorEstado).forEach(([name, value]) => {
+        datosGraficoTemp.push({ name, value });
+        base += value;
+      });
+    } else {
+      // Si ningún "Todos" está activo, gráfico se vacía
+      if (selectedEspecialidad && selectedEspecialidad !== "Todos") {
+        base = datosPorEspecialidad[selectedEspecialidad] || 0;
+      } else if (selectedRol && selectedRol !== "Todos") {
+        base = datosPorRol[selectedRol] || 0;
+      } else if (selectedFecha && selectedFecha !== "Todo el tiempo") {
+        base = datosPorFecha[selectedFecha] || 0;
+      } else if (selectedEstado && selectedEstado !== "Todos") {
+        base = datosPorEstado[selectedEstado] || 0;
+      }
+    }
 
     setTurnAttended(base);
     setTurnUnAttended(Math.floor(base * 0.4));
+    setDatosGrafico(isPieChartActive ? datosGraficoTemp : []);
 
-    // Construir datos para gráfico según selección
-
-    const datosGraficoTemp: { name: string; value: number }[] = [];
-
-    // Si selecciona "Todos", manda todos los datos de esa categoría
-    // Si selecciona uno, manda solo ese
-
-    if (selectedEspecialidad === "Todos") {
-      Object.entries(datosPorEspecialidad).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-      });
-    } else if (selectedEspecialidad) {
-      datosGraficoTemp.push({
-        name: selectedEspecialidad,
-        value: datosPorEspecialidad[selectedEspecialidad] || 0,
-      });
-    }
-
-    if (selectedRol === "Todos") {
-      Object.entries(datosPorRol).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-      });
-    } else if (selectedRol) {
-      datosGraficoTemp.push({
-        name: selectedRol,
-        value: datosPorRol[selectedRol] || 0,
-      });
-    }
-
-    if (selectedFecha === "Todo el tiempo") {
-      Object.entries(datosPorFecha).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-      });
-    } else if (selectedFecha) {
-      datosGraficoTemp.push({
-        name: selectedFecha,
-        value: datosPorFecha[selectedFecha] || 0,
-      });
-    }
-
-    if (selectedEstado === "Todos") {
-      Object.entries(datosPorEstado).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-      });
-    } else if (selectedEstado) {
-      datosGraficoTemp.push({
-        name: selectedEstado,
-        value: datosPorEstado[selectedEstado] || 0,
-      });
-    }
-
-    setDatosGrafico(datosGraficoTemp);
-
-    // Datos para attendedBySpeciality (solo los seleccionados o todo)
-
-    if (selectedEspecialidad === "Todos") {
-      const arrayEspecialidades = especialidades.map(
-        (esp) => datosPorEspecialidad[esp] || 0
+    // Especialidades (sin "Todos")
+    const especialidadArray = especialidades
+      .filter((esp) => esp !== "Todos")
+      .map((esp) =>
+        selectedEspecialidad === "Todos"
+          ? datosPorEspecialidad[esp] || 0
+          : esp === selectedEspecialidad
+          ? datosPorEspecialidad[esp] || 0
+          : 0
       );
-      setAttendedBySpeciality(arrayEspecialidades);
-    } else {
-      const arrayEspecialidades = especialidades.map((esp) =>
-        esp === selectedEspecialidad ? datosPorEspecialidad[esp] || 0 : 0
+    setAttendedBySpeciality(especialidadArray);
+
+    // Roles (sin "Todos")
+    const rolesArray = rolesPaciente
+      .filter((rol) => rol !== "Todos")
+      .map((rol) =>
+        selectedRol === "Todos"
+          ? datosPorRol[rol] || 0
+          : rol === selectedRol
+          ? datosPorRol[rol] || 0
+          : 0
       );
-      setAttendedBySpeciality(arrayEspecialidades);
-    }
-
-    // Datos para attendedByRol (vamos a poner el arreglo completo si "Todos")
-
-    if (selectedRol === "Todos") {
-      const arrayRoles = rolesPaciente.map((rol) => datosPorRol[rol] || 0);
-      setAttendedByRol(arrayRoles);
-    } else {
-      setAttendedByRol([base, base - 1, base - 2, base - 3]);
-    }
+    setAttendedByRol(rolesArray);
   }, [
     selectedEspecialidad,
     selectedRol,

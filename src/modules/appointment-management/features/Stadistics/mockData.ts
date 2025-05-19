@@ -1,7 +1,7 @@
 export const datosPorEspecialidad: Record<string, number> = {
   "Medicina General": 5,
-  Odontologia: 10,
-  Psicologia: 3,
+  "Odontologia": 10,
+  "Psicologia": 3,
 };
 
 export const datosPorRol: Record<string, number> = {
