@@ -7,11 +7,15 @@ import {
   TurnResponse,
 } from "@/modules/appointment-management/types/dto";
 import { SpecialityEnum } from "@/modules/appointment-management/types/enums";
-import { Card, CardBody, CardHeader, CircularProgress } from "@heroui/react";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import {
   NoShift,
   ShiftInfo,
 } from "@modules/appointment-management/components/doctor/CurrentAttention";
+import {
+  ShowLoading,
+  ShowErrorMessage,
+} from "@/modules/appointment-management/components/common";
 
 type Props = {
   readonly className?: string;
@@ -41,18 +45,12 @@ function CurrentAttention({ className, level, setLevel }: Props) {
         <h4 className="font-bold text-large">Atención actual</h4>
       </CardHeader>
       <CardBody className="py-10">
-        {isLoading && (
-          <CircularProgress
-            className="w-full h-full flex items-center m-auto"
-            aria-label="Cargando..."
-            size="lg"
-          />
-        )}
+        {isLoading && <ShowLoading label="Obteniendo turnos..." size="lg" />}
 
         {!isLoading && error && (
-          <p className="text-red-500">
-            Ocurrió un error al cargar los turnos: {error.message}
-          </p>
+          <ShowErrorMessage
+            message={`Ocurrió un error al cargar los turnos: ${error.message}`}
+          />
         )}
 
         {!isLoading && !error && turn == null && (

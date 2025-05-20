@@ -7,14 +7,12 @@ import {
   TurnResponse,
 } from "@/modules/appointment-management/types/dto";
 import { SpecialityEnum } from "@/modules/appointment-management/types/enums";
+import { Card, CardBody, CardHeader, ScrollShadow } from "@heroui/react";
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CircularProgress,
-  ScrollShadow,
-} from "@heroui/react";
-import { ShiftItem } from "@modules/appointment-management/components/doctor/ShiftsOnHold";
+  ShiftItem,
+  ShowLoading,
+  ShowErrorMessage,
+} from "@modules/appointment-management/components/common";
 
 type Props = {
   readonly className?: string;
@@ -45,18 +43,12 @@ function ShiftsOnHold({ className, level, setLevel }: Props) {
         <h4 className="font-bold text-large">Turnos en espera</h4>
       </CardHeader>
       <CardBody className="py-7 px-5">
-        {isLoading && (
-          <CircularProgress
-            className="w-full h-full flex items-center m-auto"
-            aria-label="Cargando..."
-            size="lg"
-          />
-        )}
+        {isLoading && <ShowLoading label="Obteniendo turnos..." size="lg" />}
 
         {!isLoading && error && (
-          <p className="text-red-500">
-            Ocurrió un error al cargar los turnos: {error.message}
-          </p>
+          <ShowErrorMessage
+            message={`Ocurrió un error al cargar los turnos: ${error.message}`}
+          />
         )}
 
         {!isLoading && !error && turns.length === 0 && (
@@ -74,8 +66,10 @@ function ShiftsOnHold({ className, level, setLevel }: Props) {
                   <ShiftItem
                     key={turn.id}
                     turn={turn}
-                    level={level}
+                    levelAttention={level}
                     onCallTurn={handleCallTurn}
+                    showCallButton
+                    color="health-primary"
                   />
                 ))}
               </div>

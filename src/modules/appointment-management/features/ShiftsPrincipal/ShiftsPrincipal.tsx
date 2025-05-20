@@ -7,17 +7,8 @@ import {
   faChartSimple,
 } from "@fortawesome/free-solid-svg-icons";
 import ShiftsUser from "../../components/shiftsUser/shiftsUser";
-import { shiftItems, carroselItems, users } from "./datosMock";
+import { carroselItems } from "./datosMock";
 import { useNavigate } from "react-router-dom";
-
-const enrichedShiftItems = shiftItems.map((shift) => {
-  const user = users.find((u) => u.id === shift.UserId);
-  return {
-    ...shift,
-    turn: shift.code,
-    namePatient: user?.name || "Paciente desconocido",
-  };
-});
 
 const ShiftsPrincipal = () => {
   const navigate = useNavigate();
@@ -25,7 +16,7 @@ const ShiftsPrincipal = () => {
   return (
     <Layout
       header={
-        <div className="w-full flex flex-row items-center justify-between bg-white py-5 px-7">
+        <div className="w-full flex flex-row items-center justify-between bg-white py-5 px-7 max-lg:flex-col max-lg:gap-5">
           <h1 className="font-bold text-2xl">Sistema de turnos</h1>
           <div className="flex flex-row items-center justify-between gap-4">
             <Button
@@ -60,12 +51,7 @@ const ShiftsPrincipal = () => {
           </div>
         </div>
       }
-      body={
-        <ShiftsUser
-          carroselItems={carroselItems}
-          shiftItems={enrichedShiftItems}
-        />
-      }
+      body={<ShiftsUser carroselItems={carroselItems} />}
     />
   );
 };
