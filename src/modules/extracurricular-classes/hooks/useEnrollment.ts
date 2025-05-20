@@ -4,15 +4,19 @@ import { API_BASE_URL } from '../lib/config';
 const INSCRIPTIONS_URL = `${API_BASE_URL}/inscriptions`;
 
 // Tipos de datos
-interface Inscription {
+export interface Assistance {
+  id: string;
+  startTime: Date; // O usar Date si lo conviertes
   userId: string;
+  instructorId: string;
   classId: string;
-  // Añade otros campos según sea necesario
+  sessionId: string; // Nota: sessionId con 's' minúscula para consistencia
+  confirm: boolean;
 }
 
-// Hook para obtener inscripciones
+// Hook original para obtener todas las inscripciones
 export const useInscriptions = () => {
-  const [data, setData] = useState<Inscription[]>([]);
+  const [data, setData] = useState<Assistance[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -49,7 +53,58 @@ export const useInscriptions = () => {
   return { data, isLoading, error, refetch };
 };
 
-// Hook para inscribir a un usuario
+// Nuevo hook para obtener inscripciones pendientes de un usuario
+export const usePendingInscriptions = (userId: string) => {
+  const [data, setData] = useState<Assistance[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [isEmpty, setIsEmpty] = useState(false);
+
+  const fetchPendingInscriptions = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    setIsEmpty(false);
+    
+    try {
+      const url = new URL(`${INSCRIPTIONS_URL}/my-inscriptions`);
+      url.searchParams.append('userId', userId);
+      
+      const response = await fetch(url.toString());
+      
+      if (response.status === 204) {
+        setIsEmpty(true);
+        setData([]);
+        return;
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Error al obtener asistencias'));
+      console.error('Error al cargar inscripciones pendientes:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchPendingInscriptions();
+    }
+  }, [fetchPendingInscriptions, userId]);
+
+  const refetch = () => {
+    fetchPendingInscriptions();
+  };
+
+  return { data, isLoading, error, isEmpty, refetch };
+};
+
+// Hook para inscribir a un usuario (existente)
 export const useEnrollUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -96,7 +151,7 @@ export const useEnrollUser = () => {
   };
 };
 
-// Hook para eliminar una inscripción
+// Hook para eliminar una inscripción (existente)
 export const useDeleteInscription = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

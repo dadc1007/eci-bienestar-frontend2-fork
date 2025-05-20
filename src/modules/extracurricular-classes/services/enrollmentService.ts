@@ -22,7 +22,25 @@ export const enrollUser = async (userId: string, classId: string) => {
   return response.json();
 };
 
-// Obtener todas las inscripciones
+//Obtener mis inscripciones 
+export const getMyInscriptions = async (userId: string) => {
+  const url = new URL(`${INSCRIPTIONS_URL}/my-inscriptions`);
+  url.searchParams.append('userId', userId);
+
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    if (response.status === 204) {
+      return []; // No hay inscripciones pendientes
+    }
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+
+// Obtener todas las inscripciones (general)
 export const getInscriptions = async () => {
   const response = await fetch(INSCRIPTIONS_URL);
   

@@ -1,26 +1,101 @@
-import React, { useState } from 'react';
-import { Assistance } from '../../services/classesService';
+import React, { useState, useEffect } from 'react';
+import { usePendingInscriptions, useDeleteInscription } from '../../hooks/useEnrollment';
+import { getClassById } from '../../services/classesService';
 import ClassEnrollmentStatus from './classEnrollmentStatus';
 import CancelEnrollmentButton from './cancelEnrollmentButton';
 
-interface EnrolledClassesListProps {
-  classes: Assistance[];
-  onCancelEnrollment: (classId: string) => Promise<boolean>;
-  isLoading: boolean;
+interface ClassDetails {
+  name: string;
+  type: string;
+  instructor: string;
+  schedule: string;
 }
 
-const EnrolledClassesList: React.FC<EnrolledClassesListProps> = ({ 
-  classes, 
-  onCancelEnrollment,
-  isLoading
-}) => {
+const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
   const [viewType, setViewType] = useState<'list' | 'calendar'>('list');
+  const [classDetailsMap, setClassDetailsMap] = useState<Record<string, ClassDetails>>({});
+  const [loadingDetails, setLoadingDetails] = useState<Record<string, boolean>>({});
+
+  // Usamos el hook para obtener las inscripciones pendientes
+  const {
+    data: assistances,
+    isLoading,
+    error,
+    isEmpty,
+    refetch
+  } = usePendingInscriptions(userId);
+
+  // Hook para eliminar inscripciones
+  const {
+    mutate: deleteInscription,
+    isLoading: isDeleting
+  } = useDeleteInscription();
+
+  // Obtener detalles adicionales de las clases
+  useEffect(() => {
+    const fetchClassDetails = async () => {
+      if (assistances && assistances.length > 0) {
+        const details: Record<string, ClassDetails> = {};
+        const loadingStates: Record<string, boolean> = {};
+
+        for (const assistance of assistances) {
+          try {
+            loadingStates[assistance.classId] = true;
+            setLoadingDetails(prev => ({ ...prev, [assistance.classId]: true }));
+
+            const classInfo = await getClassById(assistance.classId);
+            details[assistance.classId] = {
+              name: classInfo.name,
+              type: classInfo.type || 'Sin tipo',
+              instructor: classInfo.instructorId || 'Instructor no asignado',
+              schedule: `${classInfo.startTime} - ${classInfo.endTime}`
+            };
+          } catch (err) {
+            console.error(`Error obteniendo detalles de clase ${assistance.classId}:`, err);
+            details[assistance.classId] = {
+              name: 'Clase no disponible',
+              type: 'Error',
+              instructor: 'N/A',
+              schedule: 'N/A'
+            };
+          } finally {
+            loadingStates[assistance.classId] = false;
+            setLoadingDetails(prev => ({ ...prev, [assistance.classId]: false }));
+          }
+        }
+
+        setClassDetailsMap(details);
+      }
+    };
+
+    fetchClassDetails();
+  }, [assistances]);
+
+  const handleCancelEnrollment = async (classId: string) => {
+    try {
+      // Cambiar esta línea: pasar userId y classId como argumentos separados
+      await deleteInscription(userId, classId);
+      refetch(); // Actualizar la lista después de eliminar
+      return true;
+    } catch (err) {
+      console.error('Error al cancelar inscripción:', err);
+      return false;
+    }
+  };
 
   if (isLoading) {
     return <div className="flex justify-center p-8">Cargando clases...</div>;
   }
 
-  if (classes.length === 0) {
+  if (error) {
+    return (
+      <div className="text-center p-8 bg-red-50 rounded-md">
+        <p className="text-lg text-red-600">Error al cargar las clases: {error.message}</p>
+      </div>
+    );
+  }
+
+  if (isEmpty || !assistances || assistances.length === 0) {
     return (
       <div className="text-center p-8 bg-gray-50 rounded-md">
         <p className="text-lg text-gray-500">No estás inscrito a ninguna clase actualmente.</p>
@@ -30,88 +105,110 @@ const EnrolledClassesList: React.FC<EnrolledClassesListProps> = ({
   }
 
   return (
-    <div>
-      <div className="flex mb-4">
+    <div className="mt-6">
+      {/* Selector de vista */}
+      <div className="flex mb-6">
         <button
-          className={`px-4 py-2 ${viewType === 'list' ? 'bg-purple-900 text-white' : 'bg-gray-200'}`}
+          className={`flex items-center px-4 py-2 rounded-l-lg ${viewType === 'list' ? 'bg-purple-700 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setViewType('list')}
         >
-          <span className="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-            </svg>
-            Lista
-          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+          </svg>
+          Vista de lista
         </button>
         <button
-          className={`px-4 py-2 ${viewType === 'calendar' ? 'bg-purple-900 text-white' : 'bg-gray-200'}`}
+          className={`flex items-center px-4 py-2 rounded-r-lg ${viewType === 'calendar' ? 'bg-purple-700 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setViewType('calendar')}
         >
-          <span className="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-            </svg>
-            Calendario
-          </span>
-        </button>
-      </div>
-
-      <div className="bg-white rounded-lg overflow-hidden shadow">
-        <table className="min-w-full">
-          <thead className="bg-purple-900 text-white">
-            <tr>
-              <th className="py-4 px-6 text-left">Nombre</th>
-              <th className="py-4 px-6 text-left">Tipo</th>
-              <th className="py-4 px-6 text-left">Instructor</th>
-              <th className="py-4 px-6 text-left">Horario</th>
-              <th className="py-4 px-6 text-left">Estado</th>
-              <th className="py-4 px-6 text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {classes.map((classItem) => (
-              <tr key={classItem.id} className="hover:bg-gray-50">
-                <td className="py-4 px-6">{classItem.className}</td>
-                <td className="py-4 px-6">{classItem.classType}</td>
-                <td className="py-4 px-6">{classItem.instructor}</td>
-                <td className="py-4 px-6">{classItem.schedule}</td>
-                <td className="py-4 px-6">
-                  <ClassEnrollmentStatus isConfirmed={classItem.confirmed} />
-                </td>
-                <td className="py-4 px-6 text-center">
-                  <CancelEnrollmentButton 
-                    classId={classItem.classId} 
-                    onCancel={onCancelEnrollment} 
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-4 flex justify-between">
-        <button className="flex items-center px-4 py-2 bg-gray-200 rounded-md">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
           </svg>
-          Anterior
-        </button>
-        <div className="flex items-center">
-          <span className="px-3 py-1 bg-purple-900 text-white rounded-md">1</span>
-          <span className="px-3 py-1 mx-1">2</span>
-          <span className="px-3 py-1 mx-1">3</span>
-          <span className="px-3 py-1 mx-1">...</span>
-          <span className="px-3 py-1 mx-1">67</span>
-          <span className="px-3 py-1 mx-1">68</span>
-        </div>
-        <button className="flex items-center px-4 py-2 bg-gray-200 rounded-md">
-          Siguiente
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
+          Vista de calendario
         </button>
       </div>
+
+      {viewType === 'list' ? (
+        <>
+          <div className="bg-white rounded-lg overflow-hidden shadow">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-purple-900">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Clase</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tipo</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Instructor</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Horario</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Estado</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {assistances.map((assistance) => {
+                  const details = classDetailsMap[assistance.classId] || {
+                    name: 'Cargando...',
+                    type: 'Cargando...',
+                    instructor: 'Cargando...',
+                    schedule: 'Cargando...'
+                  };
+
+                  const isClassLoading = loadingDetails[assistance.classId];
+
+                  return (
+                    <tr key={assistance.id} className={`hover:bg-gray-50 transition-colors ${isClassLoading ? 'opacity-70' : ''}`}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {isClassLoading ? 'Cargando...' : details.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {isClassLoading ? 'Cargando...' : details.type}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {isClassLoading ? 'Cargando...' : details.instructor}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {isClassLoading ? 'Cargando...' : details.schedule}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <ClassEnrollmentStatus isConfirmed={assistance.confirm} />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <CancelEnrollmentButton
+                          classId={assistance.classId}
+                          onCancel={handleCancelEnrollment}
+                          //disabled={isDeleting || isClassLoading}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginación */}
+          <div className="mt-4 flex items-center justify-between">
+            <button
+              className="flex items-center px-3 py-1 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              disabled
+            >
+              Anterior
+            </button>
+            <div className="flex-1 flex justify-center">
+              <span className="px-3 py-1 bg-purple-700 text-white rounded-md">1</span>
+            </div>
+            <button
+              className="flex items-center px-3 py-1 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              disabled
+            >
+              Siguiente
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Vista de Calendario</h3>
+          <p className="text-gray-500">La vista de calendario estará disponible pronto.</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,14 +1,11 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import ModuleTabs from '../../components/common/moduleTabs';
-import CalendarView from '../../components/common/calendarView';
 import BackButton from '../../components/common/backButton';
 import EnrolledClassesList from '../../components/student/enrolledClassesList';
-import { useAllClasses } from '../../hooks/useClasses';
-
-
 
 const EnrolledClassesPage: FC = () => {
-  const token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMjM0NTY3ODkiLCJyb2xlcyI6WyJTVFVERU5UIl0sImlhdCI6MTc0Nzc0NDE3NSwiZXhwIjoxNzQ3NzQ1OTc1fQ.hzK9XrlztUqW3VOfG-ShaSfI2B6qdY2RBsAfgHiybaaqMPxvVjr4KfTRKjSZJwU0eti2K7QxwgK6s6vJ97Cktw";
+  // Hardcodeamos el ID del estudiante como ejemplo
+  const studentId = "123";
   const userRole = 'student';
 
   const studentTabs = [
@@ -29,6 +26,11 @@ const EnrolledClassesPage: FC = () => {
 
       {/* Tabs principales */}
       <ModuleTabs tabs={studentTabs} userRole={userRole} />
+
+      {/* Listado de clases inscritas - Pasamos el studentId */}
+      <div className="mt-6">
+        <EnrolledClassesList userId={studentId} />
+      </div>
     </div>
   );
 };
