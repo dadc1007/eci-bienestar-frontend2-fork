@@ -63,9 +63,8 @@ export const hallsApi = {
   getAllHalls: async (page = 0, size = 10, sort = 'id', direction = 'asc') => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/halls/all`, {
-        params: { page, size, sort, direction }
       });
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Error fetching halls:', error);
       throw error;
@@ -117,11 +116,9 @@ export const hallsApi = {
 
 // Cliente API para elementos (items)
 export const itemsApi = {
-  getAllItems: async (page = 0, size = 10, sort = 'id', direction = 'asc') => {
+  getAllItems: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/items/all`, {
-        params: { page, size, sort, direction }
-      });
+      const response = await axios.get(`${API_BASE_URL}/api/items/all`);
       return response.data;
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -209,10 +206,9 @@ export const itemsApi = {
 
 // Cliente API para reservas (bookings)
 export const bookingsApi = {
-  getAllBookings: async (page = 0, size = 10, sort = 'id', direction = 'asc') => {
+  getAllBookings: async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/bookings`, {
-        params: { page, size, sort, direction }
       });
       return response.data;
     } catch (error) {

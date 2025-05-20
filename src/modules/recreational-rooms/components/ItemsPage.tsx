@@ -23,12 +23,8 @@ const ItemsPage: React.FC = () => {
 
     // Categorías de ejemplo para los elementos
     const categories = [
-        'Juegos de Mesa',
-        'Consolas y Videojuegos',
-        'Equipos Deportivos',
-        'Instrumentos Musicales',
-        'Equipos Electrónicos',
-        'Otros'
+        'Juegos',
+        'mesa'
     ];
 
     // Estados para los datos
