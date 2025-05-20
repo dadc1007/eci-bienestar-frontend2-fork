@@ -10,7 +10,7 @@ import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
 import RoomActions from "./modules/recreational-rooms/components/RoomActions";
-import RoomsPage from "./modules/recreational-rooms/components/RoomsPage";
+import RoomsPage from "@modules/recreational-rooms/components/rooms/components/RoomsPage";
 import ReservationsPage from "./modules/recreational-rooms/components/ReservationsPage";
 import ItemsPage from "./modules/recreational-rooms/components/ItemsPage";
 
