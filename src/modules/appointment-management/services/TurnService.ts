@@ -22,6 +22,18 @@ export const createTurn = async (
   }
 };
 
+export const getTurns = async (): Promise<ApiResponse<TurnResponse[]>> => {
+  try {
+    const response = await apiClient.get<ApiResponse<TurnResponse[]>>(
+      "/medical-turns/turns"
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo turnos:", error);
+    throw error;
+  }
+};
+
 export const getTurnsBySpeciality = async (
   speciality: SpecialityEnum
 ): Promise<ApiResponse<TurnResponse[]>> => {
@@ -32,6 +44,18 @@ export const getTurnsBySpeciality = async (
     return response.data;
   } catch (error) {
     console.error("Error obteniendo turnos:", error);
+    throw error;
+  }
+};
+
+export const getCurrentTurn = async (): Promise<ApiResponse<TurnResponse>> => {
+  try {
+    const response = await apiClient.get<ApiResponse<TurnResponse>>(
+      `/medical-turns/turns/current-turn`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo el turno que esta siendo atendido:", error);
     throw error;
   }
 };

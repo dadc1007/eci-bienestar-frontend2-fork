@@ -1,12 +1,13 @@
 import { Card, CardHeader, CardBody } from "@heroui/react";
 
 type Props = {
+  className?: string;
   children?: React.ReactNode;
 };
 
-const ShiftActual = ({ children }: Props) => {
+const ShiftActual = ({ children, className }: Props) => {
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader
         className="px-4 flex-col items-start text-white rounded-t-xl z-0"
         style={{

@@ -10,7 +10,7 @@ import Stadistics from "../features/Stadistics/Stadistics";
 function HealthRoutes() {
   return (
     <Routes>
-      <Route index element={<DoctorView />} />
+      <Route index element={<AdminView />} />
       <Route path="/home" element={<ShiftsPrincipal />} />
       <Route path="/request-shifts" element={<FormShift />} />
       <Route path="/manage-shifts" element={<GestionShifts />} />

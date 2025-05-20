@@ -9,6 +9,7 @@ import {
   faArrowLeft,
   faUserCheck,
   faUserXmark,
+  faCalendarXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -18,5 +19,6 @@ library.add(
   faCalendar,
   faArrowLeft,
   faUserCheck,
-  faUserXmark
+  faUserXmark,
+  faCalendarXmark
 );

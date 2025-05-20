@@ -1,54 +1,50 @@
 import InstitutionalInfo from "./institutionalInfo";
 import ShiftActual from "./shiftActual";
 import ShiftsList from "./shiftsList";
-import { InfoCardItem } from "../../../appointment-management/components/InfoCardItem";
 import type { CarroselProps } from "../../../appointment-management/types/carroselType";
-import type { User } from "../../../appointment-management/models/User";
-import type { Shift } from "../../../appointment-management/models/shift";
-import { getTitleClassName } from "../../../appointment-management/utils/specialityColors";
+import { TurnResponse } from "../../types/dto";
+import { useCurrentTurn } from "../../hooks";
+import {
+  ShiftItem,
+  ShowLoading,
+  ShowErrorMessage,
+} from "@modules/appointment-management/components/common";
+import NoShifts from "./NoShifts";
 
 type Props = {
-  shiftItems: (Shift & { namePatient: User["name"]; turn: string })[];
   carroselItems: CarroselProps["items"];
 };
 
-const ShiftsUser = ({ shiftItems, carroselItems }: Props) => {
-  const [firstShift, ...otherShifts] = shiftItems;
+const ShiftsUser = ({ carroselItems }: Props) => {
+  const { data, isLoading, error } = useCurrentTurn();
+
+  const turn: TurnResponse | undefined = data?.data;
+  const showTurn = !isLoading && !error;
 
   return (
     <div className="px-6 py-4">
-      <div className="w-full h-full flex flex-row gap-4">
-        <div className="flex-[2]">
-          <ShiftsList>
-            {otherShifts.map((shift) => (
-              <InfoCardItem
-                key={shift.id}
-                id={shift.id}
-                title={shift.turn}
-                titleClassName={getTitleClassName(shift.specialty)}
-                subtitle={shift.namePatient}
-              >
-                <p className="text-zinc-400">{shift.specialty}</p>
-              </InfoCardItem>
-            ))}
-          </ShiftsList>
-        </div>
+      <div className="w-full flex flex-row gap-4 max-lg:flex-col max-lg:h-auto">
+        <ShiftsList className="w-2/5 max-h-[850px] max-xl:w-1/2 max-lg:w-full max-lg:max-h-[737px]" />
+        <div className="w-3/5 flex flex-col gap-4 h-full  max-xl:w-1/2 max-lg:w-full">
+          <ShiftActual className="min-h-[190px]">
+            {isLoading && (
+              <ShowLoading label="Obteniendo turnos..." size="lg" />
+            )}
 
-        <div className="flex-[3] flex flex-col gap-4 h-full">
-          <ShiftActual>
-            {firstShift && (
-              <InfoCardItem
-                key={firstShift.id}
-                id={firstShift.id}
-                title={firstShift.turn}
-                titleClassName={getTitleClassName(firstShift.specialty)}
-                subtitle={firstShift.namePatient}
-              >
-                <p className="text-zinc-400">{firstShift.specialty}</p>
-              </InfoCardItem>
+            {!isLoading && error && (
+              <ShowErrorMessage
+                message={`Ocurrió un error al cargar los turnos: ${error.message}`}
+              />
+            )}
+
+            {showTurn && !turn && <NoShifts />}
+
+            {showTurn && turn && (
+              <div className="w-full flex m-auto">
+                <ShiftItem className="w-full" turn={turn} showSpeciality />
+              </div>
             )}
           </ShiftActual>
-
           <InstitutionalInfo items={carroselItems} />
         </div>
       </div>

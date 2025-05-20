@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import styles from "./InfoItem.module.css";
+import styles from "@modules/appointment-management/styles/InfoItem.module.css";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type Props = {
