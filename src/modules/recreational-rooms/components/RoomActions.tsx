@@ -1,10 +1,9 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import backgroundImage from "../../../assets/images/recreational-rooms.jpg";
 
-interface CardPageComponentProps {
+interface ActionButtonProps {
     to: string;
-    icon: string;
     label: string;
     description: string;
 }
@@ -12,39 +11,27 @@ interface CardPageComponentProps {
 const RoomActions: React.FC = () => {
     const navigate = useNavigate();
 
-    const roomImage =
-        "https://images.unsplash.com/photo-1503011510-c0e00592713b?q=80&w=500&auto=format";
-    const reservationImage =
-        "https://images.unsplash.com/photo-1503011510-c0e00592713b?q=80&w=500&auto=format";
-    const itemsImage =
-        "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=500&auto=format";
-
     /**
-     * Array of card objects representing different administrative actions
-     * available in the recreational rooms module. Each card contains:
-     * - `icon`: The image/icon associated with the action.
+     * Array of navigation options representing different administrative actions
+     * available in the recreational rooms module. Each option contains:
      * - `label`: The display name of the action.
      * - `description`: A brief explanation of the action.
      * - `to`: The route path to navigate for the action.
      */
-    const cards = [
+    const navigationOptions = [
         {
-            icon: roomImage,
             label: "Salas",
             description: "Administrar salas recreativas disponibles en el campus",
             to: "/modules/recreation/rooms",
         },
         {
-            icon: reservationImage,
             label: "Reservas",
             description: "Administrar reservas de salas y elementos recreativos",
             to: "/modules/recreation/reservations",
         },
         {
-            icon: itemsImage,
             label: "Elementos",
-            description:
-                "Administrar elementos recreativos disponibles para préstamo",
+            description: "Administrar elementos recreativos disponibles para préstamo",
             to: "/modules/recreation/items",
         },
     ];
@@ -56,11 +43,9 @@ const RoomActions: React.FC = () => {
      * @returns {JSX.Element} The title overlay component.
      */
     const Title = () => (
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-end justify-start p-6 md:p-16">
-            <h1 className="text-3xl md:text-5xl font-bold text-white text-left">
-                Bienvenido al módulo de
-                <br />
-                salas recreativas
+        <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-start p-6 md:p-16">
+            <h1 className="text-4xl md:text-6xl font-bold text-white text-left leading-tight drop-shadow-lg">
+                Bienvenido al módulo de<br/>salas recreativas
             </h1>
         </div>
     );
@@ -88,67 +73,65 @@ const RoomActions: React.FC = () => {
             </p>
         </div>
     );
-
-
-
     /**
-     * CardPageComponent renders a clickable card with an image, label, and description.
-     * 
+     * ActionButton renders a clickable button for navigation with a label and optional tooltip.
+     *
      * @param props - The properties for the component.
-     * @param props.to - The navigation path to redirect to when the card is clicked.
-     * @param props.icon - The URL of the icon/image to display at the top of the card.
-     * @param props.label - The main label text displayed on the card.
-     * @param props.description - The description text displayed below the card.
-     * 
-     * @returns A styled card component that navigates to the specified path on click.
+     * @param props.to - The navigation path to redirect to when the button is clicked.
+     * @param props.label - The text displayed on the button.
+     * @param props.description - The description text displayed as a tooltip.
+     *
+     * @returns A styled button component that navigates to the specified path on click.
      */
-    const CardPageComponent: React.FC<CardPageComponentProps> = ({ to, icon, label, description }) => (
-        <div className="flex flex-col items-center">
+    const ActionButton: React.FC<ActionButtonProps> = ({to, label, description}) => (
+        <div className="relative group mx-4">
             <button
                 onClick={() => navigate(to)}
-                className="w-full bg-[#0E7029] rounded-xl overflow-hidden shadow-md hover:bg-green-800 transition-all group"
+                className="text-[#0E7029] font-medium border-b-2 border-[#0E7029] pb-1 hover:border-b-4 hover:pb-0 transition-all duration-200"
+                aria-label={description}
             >
-                <div className="w-full h-40 overflow-hidden">
-                    <img
-                        src={icon}
-                        alt={label}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                </div>
-                <div className="py-3">
-                    <span className="block text-center text-lg font-semibold text-white">
-                        {label}
-                    </span>
-                </div>
+                {label}
             </button>
-            <p className="mt-2 text-center text-sm text-gray-600">
+            <div className="absolute left-0 top-full mt-2 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg
+                      opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
                 {description}
-            </p>
+            </div>
         </div>
     );
 
     return (
         <div className="w-full h-screen flex flex-col">
-            <div
-                className="relative w-full h-64 md:h-80 bg-cover bg-center"
-                style={{ backgroundImage: `url(${backgroundImage})` }}
-            >
-                <Title />
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-6 md:px-16 py-8 w-full">
-                <Description />
-
-                <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {cards.map(({ icon, label, description, to }) => (
-                        <CardPageComponent
+            {/* Barra de navegación minimalista en la parte superior */}
+            <div className="w-full bg-white shadow-sm py-4 px-6 md:px-16">
+                <div className="flex flex-wrap justify-center gap-8 border-b border-gray-200">
+                    {navigationOptions.map(({label, description, to}) => (
+                        <ActionButton
                             key={label}
                             to={to}
-                            icon={icon}
                             label={label}
                             description={description}
                         />
                     ))}
+                </div>
+            </div>
+
+            <div
+                className="relative w-full h-64 md:h-96 bg-cover bg-center"
+                style={{backgroundImage: `url(${backgroundImage})`}}
+            >
+                <Title/>
+            </div>
+
+            {/* Resto del contenido sigue igual */}
+            <div className="flex-1 overflow-y-auto px-6 md:px-16 py-8 w-full">
+                <Description/>
+                <div className="mt-8 p-6 bg-white rounded-xl shadow-sm">
+                    <h3 className="text-xl font-medium text-gray-800 mb-4">Instrucciones</h3>
+                    <p className="text-gray-600">
+                        Selecciona una de las opciones de arriba para gestionar las salas recreativas,
+                        reservas o elementos disponibles. Cada sección te permitirá realizar diferentes
+                        acciones administrativas relacionadas con los espacios recreativos.
+                    </p>
                 </div>
             </div>
         </div>
