@@ -22,11 +22,13 @@ const AvailableClassesPage: FC<AvailableClassesPageProps> = ({ userId }) => {
 
   // Clases por tipo
   const groupedClasses = useMemo(() => {
-  const filtered = searchTerm 
-    ? classes.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : classes;
+  const safeClasses = Array.isArray(classes) ? classes : [];
 
-  const valid = filtered.filter(c => c.type !== null); // ← agrega esto
+  const filtered = searchTerm 
+    ? safeClasses.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : safeClasses;
+
+  const valid = filtered.filter(c => c.type !== null);
 
   return valid.reduce((acc, curr) => {
     if (!acc[curr.type!]) {
@@ -36,6 +38,7 @@ const AvailableClassesPage: FC<AvailableClassesPageProps> = ({ userId }) => {
     return acc;
   }, {} as Record<string, typeof classes>);
 }, [classes, searchTerm]);
+
 
 
   if (loading) {
