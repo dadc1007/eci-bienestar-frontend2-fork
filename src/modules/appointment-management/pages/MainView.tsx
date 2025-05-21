@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { adminItems, doctorItems, secretaryItems } from "../data";
 import { useNavigate } from "react-router-dom";
 
-const items = secretaryItems;
+const items = doctorItems;
 
 function MainView() {
   const navigate = useNavigate();

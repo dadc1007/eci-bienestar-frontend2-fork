@@ -117,3 +117,64 @@ export const skipTurn = async (
     throw error;
   }
 };
+
+export const turnsEnabled = async (): Promise<ApiResponse<boolean>> => {
+  try {
+    const response = await apiClient.get<ApiResponse<boolean>>(
+      "/medical-turns/turns/are-enabled"
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener el estado de los turnos:", error);
+    throw error;
+  }
+};
+
+export const turnsDisabledBySpeciality = async (): Promise<
+  ApiResponse<SpecialityEnum[]>
+> => {
+  try {
+    const response = await apiClient.get<ApiResponse<SpecialityEnum[]>>(
+      "/medical-turns/turns/specialties-disabled"
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener el estado de los turnos:", error);
+    throw error;
+  }
+};
+
+export const toggleTurns = async (
+  action: "enable" | "disable"
+): Promise<ApiResponse<void>> => {
+  try {
+    const response = await apiClient.post<ApiResponse<void>>(
+      `/medical-turns/turns/${action}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error al ${action === "enable" ? "habilitar" : "deshabilitar"} turnos:`,
+      error
+    );
+    throw error;
+  }
+};
+
+export const toggleTurnsBySpeciality = async (
+  action: "enable" | "disable",
+  speciality: SpecialityEnum
+): Promise<ApiResponse<void>> => {
+  try {
+    const response = await apiClient.post<ApiResponse<void>>(
+      `/medical-turns/turns/${action}/${speciality}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error al ${action === "enable" ? "habilitar" : "deshabilitar"} turnos:`,
+      error
+    );
+    throw error;
+  }
+};

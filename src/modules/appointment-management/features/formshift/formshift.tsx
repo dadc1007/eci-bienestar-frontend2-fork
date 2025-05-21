@@ -7,6 +7,7 @@ import Form from "../../components/request/Form"; // Importar el formulario
 import { Card } from "../../../appointment-management/components/confirmation"; // Importar la tarjeta de confirmación
 import { useNavigate } from "react-router-dom";
 import { TurnResponse } from "../../types/dto";
+import { useTurnsDisabledBySpeciality, useTurnsEnabled } from "../../hooks";
 
 const FormShift = () => {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ const FormShift = () => {
   const [userHasTurn, setUserHasTurn] = useState<boolean>(false);
   const [turnResponse, setTurnResponse] = useState<TurnResponse | null>(null);
   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
+  const { data: turnEnabled } = useTurnsEnabled();
+  const { data: turnsDisabledBySpeciality } = useTurnsDisabledBySpeciality();
 
   const handleFormSubmit = (bool: boolean) => {
     setIsFormSubmitted(bool);
@@ -22,7 +25,7 @@ const FormShift = () => {
   return (
     <Layout
       header={
-        <div className="w-full flex flex-row items-center justify-between bg-white py-5 px-7">
+        <div className="w-full flex flex-row items-center justify-between bg-white py-5 px-7 max-[500px]:flex-col max-[500px]:gap-4">
           <h1 className="font-bold text-2xl">Sistema de turnos</h1>
           <div className="flex flex-row items-center justify-between gap-4">
             <Button
@@ -37,34 +40,43 @@ const FormShift = () => {
         </div>
       }
       body={
-        <div className="flex flex-col items-center justify-center w-full h-full p-2">
-          <div className="w-1/2 h-1/2">
+        <div className="w-11/12 flex flex-col items-center justify-center p-2 pb-5 m-auto">
+          <div className="w-full">
             {!isFormSubmitted ? (
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-5 max-w-4xl m-auto">
+                {!turnEnabled?.data && (
+                  <Alert
+                    icon={<FontAwesomeIcon icon={["fas", "calendar-xmark"]} />}
+                    description="Los turnos no se encuentran disponibles por el momento"
+                    title="Turnos deshabilitados"
+                    color="danger"
+                  />
+                )}
+
                 {!userFound && (
                   <Alert
-                    icon={
-                      <FontAwesomeIcon icon={["fas", "user-xmark"]} size="3x" />
-                    }
+                    icon={<FontAwesomeIcon icon={["fas", "user-xmark"]} />}
                     description="El usuario no se encontro en el sistema"
                     title="Usuario no encontrado"
                     color="warning"
                   />
                 )}
+
                 {userHasTurn && (
                   <Alert
-                    icon={
-                      <FontAwesomeIcon icon={["fas", "user-xmark"]} size="3x" />
-                    }
+                    icon={<FontAwesomeIcon icon={["fas", "user-xmark"]} />}
                     description="El usuario ya tiene un turno pendiente"
                     title="Usuario con turno"
                     color="warning"
                   />
                 )}
+
                 <Form
                   setUserFound={setUserFound}
                   setUserHasTurn={setUserHasTurn}
                   setTurnResponse={setTurnResponse}
+                  turnsEnabled={turnEnabled?.data}
+                  turnsDisabledBySpeciality={turnsDisabledBySpeciality?.data}
                   onSubmitAction={handleFormSubmit}
                 />
               </div>

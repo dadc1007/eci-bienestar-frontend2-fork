@@ -32,6 +32,8 @@ interface FormProps {
   setUserFound: (bool: boolean) => void;
   setUserHasTurn: (bool: boolean) => void;
   setTurnResponse: (turnResponse: TurnResponse) => void;
+  turnsEnabled?: boolean;
+  turnsDisabledBySpeciality?: SpecialityEnum[];
   onSubmitAction: (bool: boolean) => void;
 }
 
@@ -39,6 +41,8 @@ const Form: React.FC<FormProps> = ({
   setUserFound,
   setUserHasTurn,
   setTurnResponse,
+  turnsEnabled = true,
+  turnsDisabledBySpeciality,
   onSubmitAction,
 }) => {
   const [id, setId] = useState<string>("");
@@ -107,8 +111,8 @@ const Form: React.FC<FormProps> = ({
   }, [user]);
 
   return (
-    <Card className="p-5">
-      <CardHeader className="flex flex-col items-start gap-2">
+    <Card className=" w-full p-5">
+      <CardHeader className="flex flex-col items-start gap-2 z-0">
         <h1 className="text-3xl font-bold max-sm:text-2xl">
           Registro de usuario
         </h1>
@@ -151,7 +155,7 @@ const Form: React.FC<FormProps> = ({
                 return "El numero de documento debe contener 10 digitos";
               }
             }}
-            isDisabled={isLoading}
+            isDisabled={isLoading || !turnsEnabled}
           />
           {isLoading && (
             <div className="flex flex-row gap-5">
@@ -186,6 +190,8 @@ const Form: React.FC<FormProps> = ({
             onSelectionChange={(keys) =>
               setSpeciality(Array.from(keys)[0] as SpecialityEnum)
             }
+            isDisabled={!turnsEnabled}
+            disabledKeys={turnsDisabledBySpeciality}
           >
             {Object.values(SpecialityEnum).map((speciality) => (
               <SelectItem key={speciality}>
@@ -203,6 +209,7 @@ const Form: React.FC<FormProps> = ({
             classNames={{
               wrapper: "flex flex-row gap-8 max-sm:!flex-col max-sm:!gap-4",
             }}
+            isDisabled={!turnsEnabled}
           >
             <Radio value={PriorityEnum.DISCAPACIDAD}>Discapacidad</Radio>
             <Radio value={PriorityEnum.EMBARAZO}>Embarazo</Radio>
@@ -211,6 +218,7 @@ const Form: React.FC<FormProps> = ({
             className="bg-health-primary text-white w-full"
             type="submit"
             isLoading={isPending}
+            isDisabled={!turnsEnabled}
           >
             Solicitar turno
           </Button>
