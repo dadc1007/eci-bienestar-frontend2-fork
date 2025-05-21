@@ -185,12 +185,12 @@ const RegisterMeasurements = () => {
         </div>
 
         <button
-            type="submit"
-            onClick={() => {navigate("body-measurements")}}
-            className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
-        >
-          Siguiente
-        </button>
+                type="submit"
+                onClick={() => navigate("/modules/gym-management/student/registered-student")}
+                className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+            >
+              Siguiente
+            </button>
       </form>
     </div>
   );
