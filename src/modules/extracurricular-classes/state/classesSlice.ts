@@ -1,14 +1,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { CLASSES_API_URL } from '../lib/config';
+import { API_BASE_URL } from '../lib/config';
 
-export const fetchClasses = createAsyncThunk('classes/fetchClasses', async () => {
-  const response = await axios.get(CLASSES_API_URL);
-  return response.data;
-});
+export const fetchClasses = createAsyncThunk(
+  'classes/fetchClasses',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/classes`);
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue('Error al obtener las clases');
+    }
+  }
+);
 
 export const createClass = createAsyncThunk('classes/createClass', async (newClass) => {
-  const response = await axios.post(CLASSES_API_URL, newClass);
+  const response = await axios.post(`${API_BASE_URL}/classes`, newClass);
   return response.data;
 });
 

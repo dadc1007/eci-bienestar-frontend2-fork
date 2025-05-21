@@ -17,6 +17,11 @@ export interface Class {
   maxStudents: number;
   endTime: string;
   endTimeRepetition: string | null;
+  sessions?: Array<{  // Añade esta propiedad
+    day: string;
+    startTime: string;
+    endTime: string;
+  }>;
 }
 
 const CLASSES_URL = `${API_BASE_URL}/classes`;
@@ -28,11 +33,24 @@ export const getAllClasses = async (): Promise<Class[]> => {
 };
 
 // Obtener clase por ID
+// services/classesService.ts
 export const getClassById = async (classId: string): Promise<Class> => {
-  const response = await axios.get(`${CLASSES_URL}/class`, {
-    params: { classId }
-  });
-  return response.data;
+  try {
+    const response = await axios.get(`${CLASSES_URL}/class`, {
+      params: { 
+        classId: classId  
+      }
+    });
+    
+    if (!response.data) {
+      throw new Error('No se recibieron datos de la clase');
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching class:', error);
+    throw error;
+  }
 };
 
 // Obtener clases por tipo

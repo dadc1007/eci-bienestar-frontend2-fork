@@ -32,48 +32,49 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
   } = useDeleteInscription();
 
   // Obtener detalles adicionales de las clases
-  useEffect(() => {
-    const fetchClassDetails = async () => {
-      if (assistances && assistances.length > 0) {
-        const details: Record<string, ClassDetails> = {};
-        const loadingStates: Record<string, boolean> = {};
+  // Obtener detalles adicionales de las clases
+useEffect(() => {
+  if (!assistances || assistances.length === 0) return;
 
-        for (const assistance of assistances) {
-          try {
-            loadingStates[assistance.classId] = true;
-            setLoadingDetails(prev => ({ ...prev, [assistance.classId]: true }));
-
-            const classInfo = await getClassById(assistance.classId);
-            details[assistance.classId] = {
-              name: classInfo.name,
-              type: classInfo.type || 'Sin tipo',
-              instructor: classInfo.instructorId || 'Instructor no asignado',
-              schedule: `${classInfo.startTime} - ${classInfo.endTime}`
-            };
-          } catch (err) {
-            console.error(`Error obteniendo detalles de clase ${assistance.classId}:`, err);
-            details[assistance.classId] = {
-              name: 'Clase no disponible',
-              type: 'Error',
-              instructor: 'N/A',
-              schedule: 'N/A'
-            };
-          } finally {
-            loadingStates[assistance.classId] = false;
-            setLoadingDetails(prev => ({ ...prev, [assistance.classId]: false }));
+  const fetchClassDetails = async () => {
+    for (const assistance of assistances) {
+      try {
+        setLoadingDetails(prev => ({ ...prev, [assistance.classId]: true }));
+        
+        const classInfo = await getClassById(assistance.classId);
+        
+        setClassDetailsMap(prev => ({
+          ...prev,
+          [assistance.classId]: {
+            name: classInfo.name,
+            type: classInfo.type || 'No disponible',
+            instructor: classInfo.instructorId || 'N/A',
+            schedule: classInfo.sessions?.map(s => 
+              `${s.day} ${s.startTime}-${s.endTime}`).join(', ') || 'N/A'
           }
-        }
-
-        setClassDetailsMap(details);
+        }));
+      } catch (error) {
+        console.error(`Error loading class ${assistance.classId}:`, error);
+        setClassDetailsMap(prev => ({
+          ...prev,
+          [assistance.classId]: {
+            name: `Clase ${assistance.classId}`,
+            type: 'No disponible',
+            instructor: 'N/A',
+            schedule: 'N/A'
+          }
+        }));
+      } finally {
+        setLoadingDetails(prev => ({ ...prev, [assistance.classId]: false }));
       }
-    };
+    }
+  };
 
-    fetchClassDetails();
-  }, [assistances]);
+  fetchClassDetails();
+}, [assistances]); // Depende de assistances
 
   const handleCancelEnrollment = async (classId: string) => {
     try {
-      // Cambiar esta línea: pasar userId y classId como argumentos separados
       await deleteInscription(userId, classId);
       refetch(); // Actualizar la lista después de eliminar
       return true;
@@ -109,7 +110,7 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
       {/* Selector de vista */}
       <div className="flex mb-6">
         <button
-          className={`flex items-center px-4 py-2 rounded-l-lg ${viewType === 'list' ? 'bg-purple-700 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+          className={`flex items-center px-4 py-2 rounded-l-lg ${viewType === 'list' ? 'bg-[#362550] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setViewType('list')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -118,7 +119,7 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
           Vista de lista
         </button>
         <button
-          className={`flex items-center px-4 py-2 rounded-r-lg ${viewType === 'calendar' ? 'bg-purple-700 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+          className={`flex items-center px-4 py-2 rounded-r-lg ${viewType === 'calendar' ? 'bg-[#362550] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setViewType('calendar')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -132,7 +133,7 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
         <>
           <div className="bg-white rounded-lg overflow-hidden shadow">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-purple-900">
+              <thead className="bg-[#362550]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Clase</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tipo</th>
@@ -193,7 +194,7 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
               Anterior
             </button>
             <div className="flex-1 flex justify-center">
-              <span className="px-3 py-1 bg-purple-700 text-white rounded-md">1</span>
+              <span className="px-3 py-1 bg-[#362550] text-white rounded-md">1</span>
             </div>
             <button
               className="flex items-center px-3 py-1 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"

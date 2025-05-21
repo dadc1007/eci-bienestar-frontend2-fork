@@ -7,13 +7,18 @@ interface ClassCardProps {
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({ classData, onEnroll }) => {
+  // Format the schedule from sessions if available
+  const formattedSchedule = classData.sessions
+    ? classData.sessions.map(s => `${s.day} ${s.startTime}-${s.endTime}`).join(', ')
+    : `${classData.startTime} - ${classData.endTime}`; // Fallback to direct times if no sessions
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden mb-4">
       <div className="p-4">
         <h3 className="text-xl font-bold mb-2">{classData.name}</h3>
         <div className="text-sm text-gray-600 mb-2">
           <p><span className="font-medium">Instructor:</span> {classData.instructorId}</p>
-          <p><span className="font-medium">Horario:</span> {classData.startTime} - {classData.endTime}</p>
+          <p><span className="font-medium">Horario:</span> {formattedSchedule}</p>
           <p><span className="font-medium">Ubicación:</span> Coliseo</p>
           <p><span className="font-medium">Capacidad:</span> {classData.maxStudents} estudiantes</p>
         </div>

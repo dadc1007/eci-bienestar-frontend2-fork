@@ -8,7 +8,7 @@ interface CancelEnrollmentButtonProps {
 
 const CancelEnrollmentButton: React.FC<CancelEnrollmentButtonProps> = ({ classId, onCancel }) => {
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleCancel = async () => {
     if (window.confirm('¿Estás seguro de que deseas cancelar tu inscripción a esta clase?')) {
       setIsLoading(true);
@@ -19,14 +19,15 @@ const CancelEnrollmentButton: React.FC<CancelEnrollmentButtonProps> = ({ classId
       }
     }
   };
-  
+
   return (
     <button
       onClick={handleCancel}
       disabled={isLoading}
-      className="text-gray-700 hover:text-red-600 p-2 rounded-md transition-colors"
+      className="text-[#362550] hover:text-red-600 p-2 rounded-md transition-colors"
       title="Cancelar inscripción"
     >
+
       {isLoading ? (
         <span className="inline-block animate-spin">⌛</span>
       ) : (
