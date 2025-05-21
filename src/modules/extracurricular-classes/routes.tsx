@@ -5,28 +5,35 @@ import EnrolledClassesPage from './pages/student/enrolledClassesPage';
 import AvailableClassesPage from './pages/student/availableClassesPage';
 import AttendanceHistoryPage from './pages/student/attendanceHistoryPage';
 // Páginas de docente
-// Páginas de coordinator
-// Páginas de admin
+import ScheduledClassesPage from './pages/teacher/scheduledClassesPage';
+import AttendanceRegisterPage from './pages/teacher/attendanceRegisterPage';
+// Páginas personal de bienestar y admin
+import StatisticsPage from './pages/common/statisticsPage';
+import ClassManagementPage from './pages/common/classManagementPage';
+import NotificationManagementPage from './pages/admin/notificationManagementPage';
+
 interface AppRoutesProps {
-  userRole: 'student' | 'teacher' | 'coordinator' | 'admin';
+  userRole: 'student' | 'teacher' | 'wellnessStaff' | 'admin';
 }
 
 const ExtracurricularClassesRoutes: React.FC<AppRoutesProps> = ({ userRole }) => {
   return (
     <Routes>
       {/* Ruta base que redirige según el rol */}
-      <Route index element={<Navigate to={userRole === 'student' ? 'estudiante' : userRole} replace />} />
+      <Route index element={<Navigate to={
+        userRole === 'student' ? 'estudiante' : 
+        userRole === 'teacher' ? 'profesor' : 
+        'estadisticas'  // Cambiado de 'bienestar' a 'estadisticas' para wellnessStaff y admin
+      } replace />} />
       
       {/* Rutas de estudiante */}
       {userRole === 'student' && (
         <>
-          {/* Ruta principal de estudiante que redirige a clases inscritas */}
           <Route path="estudiante" element={<Navigate to="clases-inscritas" replace />} />
           <Route path="estudiante/clases-inscritas" element={<EnrolledClassesPage />} />
           <Route path="estudiante/clases-disponibles" element={<AvailableClassesPage />} />
           <Route path="estudiante/historial-asistencia" element={<AttendanceHistoryPage />} />
           
-          {/* Agregar rutas directas sin el prefijo "estudiante/" para compatibilidad con los tabs */}
           <Route path="clases-inscritas" element={<EnrolledClassesPage />} />
           <Route path="clases-disponibles" element={<AvailableClassesPage />} />
           <Route path="historial-asistencia" element={<AttendanceHistoryPage />} />
@@ -36,26 +43,45 @@ const ExtracurricularClassesRoutes: React.FC<AppRoutesProps> = ({ userRole }) =>
       {/* Rutas de profesor */}
       {userRole === 'teacher' && (
         <>
-          <Route path="profesor" element={<div>Página de profesor (por implementar)</div>} />
+          <Route path="profesor" element={<Navigate to="clases-programadas" replace />} />
+          <Route path="profesor/clases-programadas" element={<ScheduledClassesPage />} />
+          <Route path="profesor/registro-de-asistencia" element={<AttendanceRegisterPage />} />
+          
+          <Route path="clases-programadas" element={<ScheduledClassesPage />} />
+          <Route path="registro-de-asistencia" element={<AttendanceRegisterPage />} />
         </>
       )}
       
-      {/* Rutas de coordinador */}
-      {userRole === 'coordinator' && (
+      {/* Rutas compartidas para wellnessStaff y admin */}
+      {(userRole === 'wellnessStaff' || userRole === 'admin') && (
         <>
-          <Route path="coordinador" element={<div>Página de coordinador (por implementar)</div>} />
+          {/* Redirige bienestar a estadísticas */}
+          <Route path="bienestar" element={<Navigate to="estadisticas" replace />} />
+          
+          {/* Rutas comunes */}
+          <Route path="bienestar/estadisticas" element={<StatisticsPage />} />
+          <Route path="bienestar/gestion-de-clases" element={<ClassManagementPage />} />
+          
+          {/* Rutas directas sin prefijo */}
+          <Route path="estadisticas" element={<StatisticsPage />} />
+          <Route path="gestion-de-clases" element={<ClassManagementPage />} />
+          
+          {/* Solo admin tiene acceso a notificaciones */}
+          {userRole === 'admin' && (
+            <>
+              <Route path="bienestar/gestion-de-notificaciones" element={<NotificationManagementPage />} />
+              <Route path="gestion-de-notificaciones" element={<NotificationManagementPage />} />
+            </>
+          )}
         </>
       )}
       
-      {/* Rutas de administrador */}
-      {userRole === 'admin' && (
-        <>
-          <Route path="admin" element={<div>Página de administrador (por implementar)</div>} />
-        </>
-      )}
-      
-      {/* Ruta de fallback que redirige según el rol */}
-      <Route path="*" element={<Navigate to={userRole === 'student' ? 'estudiante' : userRole} replace />} />
+      {/* Ruta de fallback */}
+      <Route path="*" element={<Navigate to={
+        userRole === 'student' ? 'estudiante' : 
+        userRole === 'teacher' ? 'profesor' : 
+        'estadisticas'  // Cambiado de 'bienestar' a 'estadisticas' para wellnessStaff y admin
+      } replace />} />
     </Routes>
   );
 };

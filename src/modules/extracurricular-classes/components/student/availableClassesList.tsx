@@ -28,7 +28,7 @@ const AvailableClassesList: React.FC<AvailableClassesListProps> = ({
   return (
     <div className="mb-6">
       <div 
-        className="bg-[#362550] text-white p-4 rounded-t-lg flex justify-between items-center cursor-pointer"
+        className="bg-[#362550] text-white p-4 rounded-t-[30px] flex justify-between items-center cursor-pointer"
         onClick={() => setExpanded(!expanded)}
       >
         <h2 className="text-xl font-bold">{categoryTitle}</h2>
@@ -46,7 +46,7 @@ const AvailableClassesList: React.FC<AvailableClassesListProps> = ({
       </div>
       
       {expanded && (
-        <div className="bg-gray-50 p-4 rounded-b-lg grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-gray-50 p-4 rounded-b-[30px] grid grid-cols-1 md:grid-cols-3 gap-4 border border-[#362550]">
           {classes.map((classItem) => (
             <ClassCard 
               key={classItem.id} 

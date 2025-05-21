@@ -23,7 +23,12 @@ const AttendanceHistoryPage: FC = () => {
 
       {/* Tabs principales */}
       <ModuleTabs tabs={studentTabs} userRole={userRole} />
+      {/* Contenido de la página */}
+      <div className="bg-white rounded-b-lg rounded-tr-lg shadow p-6 border-t-0 border-2 border-gray-200">
+        <h2 className="text-xl font-bold mb-4">Contenido...</h2>
+      </div>
     </div>
+    
   );
 };
 

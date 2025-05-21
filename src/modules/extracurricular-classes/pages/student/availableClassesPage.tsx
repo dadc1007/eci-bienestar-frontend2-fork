@@ -92,26 +92,28 @@ const AvailableClassesPage: FC<AvailableClassesPageProps> = ({ userId }) => {
       <ModuleTabs tabs={studentTabs} userRole={userRole} />
 
       {/* Contenido de la página */}
-      <div className="mt-6">
-        <ClassSearchBar 
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+      <div className="bg-white rounded-b-lg rounded-tr-lg shadow p-6 border-t-0 border-2 border-gray-200">
+        <div className="mt-6">
+          <ClassSearchBar 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
 
-        {Object.keys(groupedClasses).length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500">No se encontraron clases disponibles.</p>
-          </div>
-        ) : (
-          Object.entries(groupedClasses).map(([type, typeClasses]) => (
-            <AvailableClassesList 
-              key={type}
-              categoryTitle={type}
-              classes={typeClasses}
-              userId={userId}
-            />
-          ))
-        )}
+          {Object.keys(groupedClasses).length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No se encontraron clases disponibles.</p>
+            </div>
+          ) : (
+            Object.entries(groupedClasses).map(([type, typeClasses]) => (
+              <AvailableClassesList 
+                key={type}
+                categoryTitle={type}
+                classes={typeClasses}
+                userId={userId}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

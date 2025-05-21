@@ -28,8 +28,10 @@ const EnrolledClassesPage: FC = () => {
       <ModuleTabs tabs={studentTabs} userRole={userRole} />
 
       {/* Listado de clases inscritas - Pasamos el studentId */}
-      <div className="mt-6">
-        <EnrolledClassesList userId={studentId} />
+      <div className="bg-white rounded-b-lg rounded-tr-lg shadow p-6 border-t-0 border-2 border-gray-200">
+        <div className="mt-6">
+          <EnrolledClassesList userId={studentId} />
+        </div>
       </div>
     </div>
   );

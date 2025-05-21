@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { usePendingInscriptions, useDeleteInscription } from '../../hooks/useEnrollment';
-import { getClassById } from '../../services/classesService';
+import { getClassById, Class } from '../../services/classesService';
 import ClassEnrollmentStatus from './classEnrollmentStatus';
 import CancelEnrollmentButton from './cancelEnrollmentButton';
+import Pagination from '../common/pagination';
+import { formatSchedule } from '../../utils/timeFormatUtils';
 
 interface ClassDetails {
   name: string;
@@ -15,7 +17,11 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
   const [viewType, setViewType] = useState<'list' | 'calendar'>('list');
   const [classDetailsMap, setClassDetailsMap] = useState<Record<string, ClassDetails>>({});
   const [loadingDetails, setLoadingDetails] = useState<Record<string, boolean>>({});
-
+  
+  // Estado para la paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  
   // Usamos el hook para obtener las inscripciones pendientes
   const {
     data: assistances,
@@ -24,54 +30,64 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
     isEmpty,
     refetch
   } = usePendingInscriptions(userId);
-
+  
   // Hook para eliminar inscripciones
   const {
     mutate: deleteInscription,
     isLoading: isDeleting
   } = useDeleteInscription();
 
-  // Obtener detalles adicionales de las clases
-  // Obtener detalles adicionales de las clases
-useEffect(() => {
-  if (!assistances || assistances.length === 0) return;
-
-  const fetchClassDetails = async () => {
-    for (const assistance of assistances) {
-      try {
-        setLoadingDetails(prev => ({ ...prev, [assistance.classId]: true }));
-        
-        const classInfo = await getClassById(assistance.classId);
-        
-        setClassDetailsMap(prev => ({
-          ...prev,
-          [assistance.classId]: {
-            name: classInfo.name,
-            type: classInfo.type || 'No disponible',
-            instructor: classInfo.instructorId || 'N/A',
-            schedule: classInfo.sessions?.map(s => 
-              `${s.day} ${s.startTime}-${s.endTime}`).join(', ') || 'N/A'
-          }
-        }));
-      } catch (error) {
-        console.error(`Error loading class ${assistance.classId}:`, error);
-        setClassDetailsMap(prev => ({
-          ...prev,
-          [assistance.classId]: {
-            name: `Clase ${assistance.classId}`,
-            type: 'No disponible',
-            instructor: 'N/A',
-            schedule: 'N/A'
-          }
-        }));
-      } finally {
-        setLoadingDetails(prev => ({ ...prev, [assistance.classId]: false }));
-      }
-    }
+  // Función para formatear la hora (24h -> 12h)
+  const formatTime = (time: string): string => {
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
-  fetchClassDetails();
-}, [assistances]); // Depende de assistances
+  // Obtener detalles adicionales de las clases
+  useEffect(() => {
+    if (!assistances || assistances.length === 0) return;
+    
+    const fetchClassDetails = async () => {
+      for (const assistance of assistances) {
+        try {
+          setLoadingDetails(prev => ({ ...prev, [assistance.classId]: true }));
+          
+          const classInfo = await getClassById(assistance.classId);
+          
+          setClassDetailsMap(prev => ({
+            ...prev,
+            [assistance.classId]: {
+              name: classInfo.name,
+              type: classInfo.type || 'No disponible',
+              instructor: classInfo.instructorId || 'N/A',
+              schedule: formatSchedule(classInfo, formatTime)
+            }
+          }));
+        } catch (error) {
+          console.error(`Error loading class ${assistance.classId}:`, error);
+          setClassDetailsMap(prev => ({
+            ...prev,
+            [assistance.classId]: {
+              name: `Clase ${assistance.classId}`,
+              type: 'No disponible',
+              instructor: 'N/A',
+              schedule: 'N/A'
+            }
+          }));
+        } finally {
+          setLoadingDetails(prev => ({ ...prev, [assistance.classId]: false }));
+        }
+      }
+    };
+    
+    fetchClassDetails();
+    
+    // Calcular el total de páginas
+    const itemsPerPage = 6;
+    setTotalPages(Math.ceil(assistances.length / itemsPerPage));
+  }, [assistances]);
 
   const handleCancelEnrollment = async (classId: string) => {
     try {
@@ -83,6 +99,17 @@ useEffect(() => {
       return false;
     }
   };
+
+  // Función para la paginación
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Calcular los elementos actuales
+  const itemsPerPage = 6;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = assistances ? assistances.slice(indexOfFirstItem, indexOfLastItem) : [];
 
   if (isLoading) {
     return <div className="flex justify-center p-8">Cargando clases...</div>;
@@ -128,7 +155,7 @@ useEffect(() => {
           Vista de calendario
         </button>
       </div>
-
+      
       {viewType === 'list' ? (
         <>
           <div className="bg-white rounded-lg overflow-hidden shadow">
@@ -144,16 +171,14 @@ useEffect(() => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {assistances.map((assistance) => {
+                {currentItems.map((assistance) => {
                   const details = classDetailsMap[assistance.classId] || {
                     name: 'Cargando...',
                     type: 'Cargando...',
                     instructor: 'Cargando...',
                     schedule: 'Cargando...'
                   };
-
                   const isClassLoading = loadingDetails[assistance.classId];
-
                   return (
                     <tr key={assistance.id} className={`hover:bg-gray-50 transition-colors ${isClassLoading ? 'opacity-70' : ''}`}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -175,7 +200,6 @@ useEffect(() => {
                         <CancelEnrollmentButton
                           classId={assistance.classId}
                           onCancel={handleCancelEnrollment}
-                          //disabled={isDeleting || isClassLoading}
                         />
                       </td>
                     </tr>
@@ -184,25 +208,13 @@ useEffect(() => {
               </tbody>
             </table>
           </div>
-
-          {/* Paginación */}
-          <div className="mt-4 flex items-center justify-between">
-            <button
-              className="flex items-center px-3 py-1 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              disabled
-            >
-              Anterior
-            </button>
-            <div className="flex-1 flex justify-center">
-              <span className="px-3 py-1 bg-[#362550] text-white rounded-md">1</span>
-            </div>
-            <button
-              className="flex items-center px-3 py-1 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              disabled
-            >
-              Siguiente
-            </button>
-          </div>
+          
+          {/* Componente de paginación */}
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            paginate={paginate}
+          />
         </>
       ) : (
         <div className="bg-white p-6 rounded-lg shadow">
