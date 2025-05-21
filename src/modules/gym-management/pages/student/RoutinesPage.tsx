@@ -14,111 +14,50 @@ import cuadriceps from "/src/modules/gym-management/assets/images/cuadriceps.png
 import isquiotibiales from "/src/modules/gym-management/assets/images/isquiotibiales.png";
 import gluteos from "/src/modules/gym-management/assets/images/gluteos.png";
 
-const muscleGroups = [
-  { name: "Pectorales", img: pectorales },
-  { name: "Dorsales", img: dorsales },
-  { name: "Trapecios", img: trapecios },
-  { name: "Deltoides", img: deltoides },
-  { name: "Bíceps", img: biceps },
-  { name: "Tríceps", img: triceps },
-  { name: "Abdominales", img: abdominales },
-  { name: "Oblicuos", img: oblicuos },
-  { name: "Cuádriceps", img: cuadriceps },
-  { name: "Isquiotibiales", img: isquiotibiales },
-  { name: "Glúteos", img: gluteos },
+const mockedMuscleGroups = [
+  { id: 1, name: "Pectorales", img: pectorales, description: "Ejercicios para pectorales", exercises: ["Press banca", "Apertura con mancuernas"], durationDays: 15, difficulty: "Intermedio" },
+  { id: 2, name: "Dorsales", img: dorsales, description: "Ejercicios para dorsales", exercises: ["Dominadas", "Remo con barra"], durationDays: 20, difficulty: "Avanzado" },
+  { id: 3, name: "Trapecios", img: trapecios, description: "Ejercicios para trapecios", exercises: ["Encogimiento de hombros", "Remo al mentón"], durationDays: 10, difficulty: "Principiante" },
+  { id: 4, name: "Deltoides", img: deltoides, description: "Ejercicios para deltoides", exercises: ["Press militar", "Elevaciones laterales"], durationDays: 12, difficulty: "Intermedio" },
+  { id: 5, name: "Bíceps", img: biceps, description: "Ejercicios para bíceps", exercises: ["Curl con barra", "Curl martillo"], durationDays: 8, difficulty: "Principiante" },
+  { id: 6, name: "Tríceps", img: triceps, description: "Ejercicios para tríceps", exercises: ["Fondos", "Extensiones de tríceps"], durationDays: 10, difficulty: "Intermedio" },
+  { id: 7, name: "Abdominales", img: abdominales, description: "Ejercicios para abdominales", exercises: ["Crunches", "Elevaciones de piernas"], durationDays: 7, difficulty: "Principiante" },
+  { id: 8, name: "Oblicuos", img: oblicuos, description: "Ejercicios para oblicuos", exercises: ["Twists rusos", "Plancha lateral"], durationDays: 9, difficulty: "Intermedio" },
+  { id: 9, name: "Cuádriceps", img: cuadriceps, description: "Ejercicios para cuádriceps", exercises: ["Sentadillas", "Prensa de piernas"], durationDays: 15, difficulty: "Avanzado" },
+  { id: 10, name: "Isquiotibiales", img: isquiotibiales, description: "Ejercicios para isquiotibiales", exercises: ["Peso muerto", "Curl de piernas"], durationDays: 12, difficulty: "Intermedio" },
+  { id: 11, name: "Glúteos", img: gluteos, description: "Ejercicios para glúteos", exercises: ["Puente de glúteos", "Sentadillas sumo"], durationDays: 10, difficulty: "Principiante" },
 ];
 
-// Mapeo de rutinas por músculo
-const routinesByMuscle: Record<
-  string,
-  { images: string[]; description: string; equipment: string[] }[]
-> = {
+type Exercise = {
+  name: string;
+  repetitions: number;
+  sets: number;
+  duration: number;
+  type: string;
+  muscleGroup: string[];
+  images: string[];
+};
+
+const routinesByMuscle: Record<string, Exercise[]> = {
   Pectorales: [
     {
-      images: [
-        "/src/modules/gym-management/assets/images/barra.jpg",
-        "/src/modules/gym-management/assets/images/paralelas.png",
-        "/src/modules/gym-management/assets/images/mancuernas.png",
-      ],
-      description:
-        "- Flexionarse en un ángulo de 45 grados.\n- Los brazos están a la altura de los hombros.\n- Las mancuernas tienen un peso que sea soportable.\n- Flexionar los brazos a 45 grados y luego extenderlos hacia abajo.",
-      equipment: ["Dumbbells", "Flatbed", "Yoga"],
+      name: "Press de banca",
+      repetitions: 10,
+      sets: 3,
+      duration: 30,
+      type: "Fuerza",
+      muscleGroup: ["Pectorales"],
+      images: ["/src/modules/gym-management/assets/images/pectorales.png"],
     },
+
     {
-      images: [
-        "/src/modules/gym-management/assets/images/mancuernas.png",
-        "/src/modules/gym-management/assets/images/mancuernas2.png",
-      ],
-      description:
-        "- Ejercicio alternativo para el mismo músculo.\n- Mantener postura recta.\n- Respiración controlada.",
-      equipment: ["Barbell", "Smith Machine"],
-    },
-  ],
-  Bíceps: [
-    {
-      images: ["/src/modules/gym-management/assets/images/barra.jpg"],
-      description:
-        "- Curl con barra.\n- Mantener los codos fijos al cuerpo.\n- Subir y bajar lentamente.",
-      equipment: ["Barbell", "Banca"],
-    },
-  ],
-  Tríceps: [
-    {
-      images: [
-        "/src/modules/gym-management/assets/images/mancuernas.png",
-        "/src/modules/gym-management/assets/images/paralelas.png",
-      ],
-      description:
-        "- Fondos en paralelas.\n- Mantener los codos pegados al cuerpo.\n- Bajar hasta que los brazos formen 90° y subir.",
-      equipment: ["Paralelas", "Mancuernas"],
-    },
-  ],
-  Dorsales: [
-    {
-      images: ["/src/modules/gym-management/assets/images/barra.jpg"],
-      description:
-        "- Jalón al pecho.\n- Espalda recta.\n- Llevar la barra al pecho con control.",
-      equipment: ["Polea alta", "Asiento"],
-    },
-  ],
-  Deltoides: [
-    {
-      images: ["/src/modules/gym-management/assets/images/mancuernas.png"],
-      description:
-        "- Elevaciones laterales.\n- Codos ligeramente flexionados.\n- Levantar hasta la altura de los hombros.",
-      equipment: ["Mancuernas"],
-    },
-  ],
-  Abdominales: [
-    {
-      images: ["/src/modules/gym-management/assets/images/mat.png"],
-      description:
-        "- Crunch tradicional.\n- Elevar el torso sin despegar la zona lumbar.\n- Exhalar al subir.",
-      equipment: ["Colchoneta"],
-    },
-  ],
-  Cuádriceps: [
-    {
-      images: ["/src/modules/gym-management/assets/images/barra.jpg"],
-      description:
-        "- Sentadillas con barra.\n- Piernas al ancho de los hombros.\n- Bajar hasta formar ángulo de 90°.",
-      equipment: ["Barra", "Discos", "Jaula de sentadillas"],
-    },
-  ],
-  Isquiotibiales: [
-    {
-      images: ["/src/modules/gym-management/assets/images/mancuernas.png"],
-      description:
-        "- Peso muerto con piernas rígidas.\n- Flexión mínima de rodillas.\n- Bajada lenta y espalda recta.",
-      equipment: ["Mancuernas", "Barra"],
-    },
-  ],
-  Glúteos: [
-    {
-      images: ["/src/modules/gym-management/assets/images/mat.png"],
-      description:
-        "- Puente de glúteo.\n- Pies apoyados en el suelo, elevar cadera apretando glúteos.",
-      equipment: ["Colchoneta", "Disco (opcional)"],
+      name: "Apertura con mancuernas",
+      repetitions: 12,
+      sets: 3,
+      duration: 25,
+      type: "Fuerza",
+      muscleGroup: ["Pectorales"],
+      images: ["/src/modules/gym-management/assets/images/pectorales.png"],
     },
   ],
 };
@@ -136,7 +75,7 @@ export default function RoutinesPage() {
 
       {/* Tarjetas negras con texto blanco */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 bg-white p-4 rounded-b-lg">
-        {muscleGroups.map((muscle) => (
+        {mockedMuscleGroups.map((muscle) => (
           <div
             key={muscle.name}
             onClick={() => setSelectedMuscle(muscle.name)}
@@ -169,7 +108,7 @@ const RoutineDetailModal = ({
   muscleGroup: string;
   onClose: () => void;
 }) => {
-  const routineExercises = routinesByMuscle[muscleGroup] || [];
+  const routineExercises: Exercise[] = routinesByMuscle[muscleGroup] || [];
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
   if (routineExercises.length === 0) {
@@ -204,69 +143,71 @@ const RoutineDetailModal = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex justify-center items-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl relative flex flex-col">
+      <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full max-w-4xl relative flex flex-col space-y-6 overflow-y-auto max-h-[90vh]">
+        {/* Botón de cierre */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-600 hover:text-black"
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
           aria-label="Cerrar modal"
         >
           <XMarkIcon className="w-6 h-6" />
         </button>
 
-        <h2 className="text-2xl font-bold text-black mb-4">
-          Músculo: {muscleGroup} - Ejercicio {currentIndex + 1} de {routineExercises.length}
+        {/* Título */}
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 text-center sm:text-left">
+          Músculo: {muscleGroup} – Ejercicio {currentIndex + 1} de {routineExercises.length}
         </h2>
 
-        {/* Imágenes */}
-        <div className="flex space-x-4 overflow-x-auto pb-4">
-          {currentExercise.images.map((img, index) => (
-            <img
-              key={index}
-              src={img}
-              alt={`rutina-${index}`}
-              className="w-40 h-40 object-contain border rounded"
-            />
-          ))}
-        </div>
-
-        {/* Detalles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 flex-grow">
-          <div className="border p-4 rounded bg-gray-50">
-            <h3 className="font-semibold mb-2">Descripción ejercicio</h3>
-            <pre className="whitespace-pre-wrap">{currentExercise.description}</pre>
+        {/* Contenido principal */}
+        <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
+          {/* Imágenes */}
+          <div className="flex space-x-4 overflow-x-auto sm:w-1/2">
+            {currentExercise.images.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={`rutina-${index}`}
+                className="w-32 h-32 sm:w-40 sm:h-40 object-contain border rounded-lg shadow"
+              />
+            ))}
           </div>
 
-          <div className="border p-4 rounded bg-gray-50">
-            <h3 className="font-semibold mb-2">Maquinaria necesaria</h3>
-            <ul className="space-y-1">
-              {currentExercise.equipment.map((eq, i) => (
-                <li key={i} className="flex items-center space-x-2">
-                  <input type="checkbox" checked readOnly />
-                  <span>{eq}</span>
-                </li>
-              ))}
-            </ul>
+          {/* Detalles */}
+          <div className="bg-gray-50 p-4 rounded-xl shadow-inner w-full sm:w-1/2 text-sm sm:text-base space-y-2">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Detalles del ejercicio</h3>
+            <p><span className="font-semibold">Nombre:</span> {currentExercise.name}</p>
+            <p><span className="font-semibold">Series:</span> {currentExercise.sets}</p>
+            <p><span className="font-semibold">Repeticiones:</span> {currentExercise.repetitions}</p>
+            <p><span className="font-semibold">Duración:</span> {currentExercise.duration} minutos</p>
+            <p><span className="font-semibold">Tipo:</span> {currentExercise.type}</p>
+            <p>
+              <span className="font-semibold">Grupos musculares:</span>{" "}
+              {Array.isArray(currentExercise.muscleGroup)
+                ? currentExercise.muscleGroup.join(", ")
+                : currentExercise.muscleGroup}
+            </p>
           </div>
         </div>
 
-        {/* Flechas de navegación - centradas abajo */}
-        <div className="mt-6 flex justify-center space-x-8">
+        {/* Navegación */}
+        <div className="flex justify-center gap-6 pt-4">
           <button
             onClick={prevExercise}
-            className="text-black hover:text-gray-700 text-2xl font-semibold"
+            className="text-gray-700 hover:text-black text-base sm:text-lg transition"
             aria-label="Ejercicio anterior"
           >
-            &#8592;
+            ← Anterior
           </button>
           <button
             onClick={nextExercise}
-            className="text-black hover:text-gray-700 text-2xl font-semibold"
+            className="text-gray-700 hover:text-black text-base sm:text-lg transition"
             aria-label="Ejercicio siguiente"
           >
-            &#8594;
+            Siguiente →
           </button>
         </div>
       </div>
     </div>
   );
-};
+
+}

@@ -13,21 +13,22 @@ import cuadriceps from "/src/modules/gym-management/assets/images/cuadriceps.png
 import isquiotibiales from "/src/modules/gym-management/assets/images/isquiotibiales.png";
 import gluteos from "/src/modules/gym-management/assets/images/gluteos.png";
 
-export default function RoutinesPage() {
-  const [muscleGroups, setMuscleGroups] = React.useState([
-    { id: 1, name: "Pectorales", img: pectorales },
-    { id: 2, name: "Dorsales", img: dorsales },
-    { id: 3, name: "Trapecios", img: trapecios },
-    { id: 4, name: "Deltoides", img: deltoides },
-    { id: 5, name: "Bíceps", img: biceps },
-    { id: 6, name: "Tríceps", img: triceps },
-    { id: 7, name: "Abdominales", img: abdominales },
-    { id: 8, name: "Oblicuos", img: oblicuos },
-    { id: 9, name: "Cuádriceps", img: cuadriceps },
-    { id: 10, name: "Isquiotibiales", img: isquiotibiales },
-    { id: 11, name: "Glúteos", img: gluteos },
-  ]);
+const mockedMuscleGroups = [
+  { id: 1, name: "Pectorales", img: pectorales, description: "Ejercicios para pectorales", exercises: ["Press banca", "Apertura con mancuernas"], durationDays: 15, difficulty: "Intermedio" },
+  { id: 2, name: "Dorsales", img: dorsales, description: "Ejercicios para dorsales", exercises: ["Dominadas", "Remo con barra"], durationDays: 20, difficulty: "Avanzado" },
+  { id: 3, name: "Trapecios", img: trapecios, description: "Ejercicios para trapecios", exercises: ["Encogimiento de hombros", "Remo al mentón"], durationDays: 10, difficulty: "Principiante" },
+  { id: 4, name: "Deltoides", img: deltoides, description: "Ejercicios para deltoides", exercises: ["Press militar", "Elevaciones laterales"], durationDays: 12, difficulty: "Intermedio" },
+  { id: 5, name: "Bíceps", img: biceps, description: "Ejercicios para bíceps", exercises: ["Curl con barra", "Curl martillo"], durationDays: 8, difficulty: "Principiante" },
+  { id: 6, name: "Tríceps", img: triceps, description: "Ejercicios para tríceps", exercises: ["Fondos", "Extensiones de tríceps"], durationDays: 10, difficulty: "Intermedio" },
+  { id: 7, name: "Abdominales", img: abdominales, description: "Ejercicios para abdominales", exercises: ["Crunches", "Elevaciones de piernas"], durationDays: 7, difficulty: "Principiante" },
+  { id: 8, name: "Oblicuos", img: oblicuos, description: "Ejercicios para oblicuos", exercises: ["Twists rusos", "Plancha lateral"], durationDays: 9, difficulty: "Intermedio" },
+  { id: 9, name: "Cuádriceps", img: cuadriceps, description: "Ejercicios para cuádriceps", exercises: ["Sentadillas", "Prensa de piernas"], durationDays: 15, difficulty: "Avanzado" },
+  { id: 10, name: "Isquiotibiales", img: isquiotibiales, description: "Ejercicios para isquiotibiales", exercises: ["Peso muerto", "Curl de piernas"], durationDays: 12, difficulty: "Intermedio" },
+  { id: 11, name: "Glúteos", img: gluteos, description: "Ejercicios para glúteos", exercises: ["Puente de glúteos", "Sentadillas sumo"], durationDays: 10, difficulty: "Principiante" },
+];
 
+export default function TrainerRoutinesPage() {
+  const [muscleGroups, setMuscleGroups] = React.useState(mockedMuscleGroups);
   const [selectedMuscle, setSelectedMuscle] = React.useState<null | typeof muscleGroups[0]>(null);
   const [editingMuscle, setEditingMuscle] = React.useState<null | typeof muscleGroups[0]>(null);
   const [creating, setCreating] = React.useState(false);
@@ -120,7 +121,7 @@ const RoutineDetailModal = ({
   onEdit,
   onDelete,
 }: {
-  muscleGroup: { id: number; name: string; img: string };
+  muscleGroup: { id: number; name: string; img: string, description: string; exercises: string[]; durationDays: number; difficulty: string };
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -135,9 +136,34 @@ const RoutineDetailModal = ({
         >
           <XMarkIcon className="w-6 h-6" />
         </button>
-        <img src={muscleGroup.img} alt={muscleGroup.name} className="w-40 h-40 object-contain mb-4" />
-        <h2 className="text-3xl font-bold mb-4">{muscleGroup.name}</h2>
+        <div className="flex flex-col items-center text-center">
+          <img
+            src={muscleGroup.img}
+            alt={muscleGroup.name}
+            className="w-40 h-40 object-contain mb-4 rounded-lg"
+          />
+          <h2 className="text-3xl font-bold mb-2">{muscleGroup.name}</h2>
+          <p className="text-gray-600 mb-4">{muscleGroup.description}</p>
 
+          <div className="w-full text-left mb-4">
+            <h3 className="text-lg font-semibold">Ejercicios:</h3>
+            <ul className="list-disc list-inside text-sm text-gray-700 mt-1">
+              {muscleGroup.exercises.map((exercise, index) => (
+                <li key={index}>{exercise}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex justify-between w-full text-sm text-gray-700 mb-6">
+            <div>
+              <span className="font-semibold">Duración:</span>{" "}
+              {muscleGroup.durationDays} días
+            </div>
+            <div>
+              <span className="font-semibold">Dificultad:</span>{" "}
+              {muscleGroup.difficulty}
+            </div>
+          </div>
         <div className="flex gap-2">
           <button
             onClick={onEdit}
@@ -155,21 +181,26 @@ const RoutineDetailModal = ({
         </div>
       </div>
     </div>
+  </div>
   );
-};
-
+}
+  
 const RoutineEditModal = ({
   muscleGroup,
   onClose,
   onSave,
 }: {
-  muscleGroup: { id: number; name: string; img: string };
+  muscleGroup: { id: number; name: string; img: string; description: string; exercises: string[]; durationDays: number; difficulty: string };
   onClose: () => void;
-  onSave: (updated: { name: string; img: string }) => void;
+  onSave: (updated: { name: string; img: string; description: string; exercises: string[]; durationDays: number; difficulty: string }) => void;
 }) => {
   const [name, setName] = React.useState(muscleGroup.name);
   const [localImage, setLocalImage] = React.useState<string | null>(null);
-
+  const [description, setDescription] = React.useState(muscleGroup.description);
+  const [exercises, setExercises] = React.useState(muscleGroup.exercises. join(", "));
+  const [durationDays, setDurationDays] = React.useState(muscleGroup.durationDays);
+  const [difficulty, setDifficulty] = React.useState(muscleGroup.difficulty);
+  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
@@ -181,10 +212,9 @@ const RoutineEditModal = ({
     }
   };
 
-  const isValid = name.trim() !== "" && (localImage !== "");
-
+  const isValid = name.trim() !== "" && description.trim() !== "" &&  exercises.split(",").map(e => e.trim()).filter(Boolean).length > 0 && durationDays > 0 && difficulty.trim() !== "" && (localImage !== "");
   const handleSave = () => {
-    onSave({ name, img: localImage || muscleGroup.img });
+    onSave({ name, img: localImage || muscleGroup.img, description, exercises: exercises.split(",").map((e) => e.trim()).filter(Boolean), durationDays, difficulty });
   };
 
   return (
@@ -207,6 +237,50 @@ const RoutineEditModal = ({
           onChange={(e) => setName(e.target.value)}
           autoFocus
         />
+        <div>
+          <label className="block font-semibold text-gray-700">Descripción</label>
+          <textarea
+            className="w-full border rounded px-3 py-2"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="block font-semibold text-gray-700">Ejercicios (separados por coma)</label>
+          <input
+            className="w-full border rounded px-3 py-2"
+            value={exercises}
+            onChange={(e) => setExercises(e.target.value)}
+          />
+        </div>
+
+        <div className="flex space-x-4">
+          <div className="w-1/2">
+            <label className="block font-semibold text-gray-700">Duración (días)</label>
+            <input
+              type="number"
+              className="w-full border rounded px-3 py-2"
+              value={durationDays}
+              min={1}
+              onChange={(e) => setDurationDays(parseInt(e.target.value))}
+            />
+          </div>
+          <div className="w-1/2">
+            <label className="block font-semibold text-gray-700">Dificultad</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+            >
+              <option value="">Selecciona</option>
+              <option value="Fácil">Fácil</option>
+              <option value="Media">Media</option>
+              <option value="Difícil">Difícil</option>
+            </select>
+          </div>
+        </div>
         <label className="block mb-2 font-semibold text-gray-700">Imagen (local o URL)</label>
         <input
           type="file"
@@ -251,10 +325,14 @@ const RoutineCreateModal = ({
   onSave,
 }: {
   onClose: () => void;
-  onSave: (newRoutine: { name: string; img: string }) => void;
+  onSave: (newRoutine: { name: string; img: string; description: string; exercises: string[]; durationDays: number; difficulty: string; }) => void;
 }) => {
   const [name, setName] = React.useState("");
   const [localImage, setLocalImage] = React.useState<string | null>(null);
+  const [description, setDescription] = React.useState("");
+  const [exercises, setExercises] = React.useState("");
+  const [durationDays, setDurationDays] = React.useState(0);
+  const [difficulty, setDifficulty] = React.useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -267,18 +345,18 @@ const RoutineCreateModal = ({
     }
   };
 
-  const isValid = name.trim() !== "" && localImage;
+  const isValid = name.trim() !== "" && localImage !== null && description.trim() !== "" && exercises.split(",").map(e => e.trim()).filter(Boolean).length > 0 && durationDays > 0 && difficulty.trim() !== "";
 
   const handleSave = () => {
     if (isValid) {
-      onSave({ name, img: localImage! });
+      onSave({ name, img: localImage!, description, exercises: exercises.split(",").map((e) => e.trim()).filter((e) => e !== ""), durationDays, difficulty});
     }
 
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex justify-center items-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex justify-center items-center p-4 overflow-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl relative flex flex-col max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-600 hover:text-black"
@@ -314,7 +392,42 @@ const RoutineCreateModal = ({
           </div>
         )}
 
-        <div className="flex justify-end space-x-4">
+        <label className="block mb-2 font-semibold text-gray-700">Descripción</label>
+        <textarea
+          className="w-full border rounded px-3 py-2 mb-4 resize-y"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+        />
+
+        <label className="block mb-2 font-semibold text-gray-700">Ejercicios (separados por coma)</label>
+        <input
+          className="w-full border rounded px-3 py-2 mb-4"
+          value={exercises}
+          onChange={(e) => setExercises(e.target.value)}
+        />
+
+        <label className="block mb-2 font-semibold text-gray-700">Duración (días)</label>
+        <input
+          type="number"
+          className="w-full border rounded px-3 py-2 mb-4"
+          value={durationDays}
+          onChange={(e) => setDurationDays(Number(e.target.value))}
+          min={1}
+        />
+
+        <label className="block mb-2 font-semibold text-gray-700">Dificultad</label>
+        <select
+          className="w-full border rounded px-3 py-2 mb-6"
+          value={difficulty}
+          onChange={(e) => setDifficulty(e.target.value)}
+        >
+          <option value="Fácil">Fácil</option>
+          <option value="Media">Media</option>
+          <option value="Difícil">Difícil</option>
+        </select>
+
+        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
@@ -334,6 +447,7 @@ const RoutineCreateModal = ({
       </div>
     </div>
   );
+
 };
 
 
