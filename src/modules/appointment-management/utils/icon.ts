@@ -10,6 +10,11 @@ import {
   faUserCheck,
   faUserXmark,
   faCalendarXmark,
+  faPlus,
+  faGear,
+  faHouse,
+  faChartSimple,
+  faPhone,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -20,5 +25,10 @@ library.add(
   faArrowLeft,
   faUserCheck,
   faUserXmark,
-  faCalendarXmark
+  faCalendarXmark,
+  faPlus,
+  faGear,
+  faHouse,
+  faChartSimple,
+  faPhone
 );
