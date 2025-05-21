@@ -1,1 +1,1 @@
-export * from "./ModuleOptionType";
+export * from "./ModuleItemType";

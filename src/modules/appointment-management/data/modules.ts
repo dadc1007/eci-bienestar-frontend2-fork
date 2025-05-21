@@ -1,42 +1,61 @@
-export const commonModules = [
+import { ModuleItemType } from "@modules/appointment-management/types";
+
+export const adminItems: ModuleItemType[] = [
   {
-    id: "manage-shits",
-    title: "Gestionar turnos",
-    imageUrl: new URL(
-      "../../../assets/images/modules/health/manage-shifts.webp",
-      import.meta.url
-    ).href,
-    linkTo: "manage-shifts",
-  },
-  {
-    id: "manage-content",
-    title: "Gestionar contenido informativo",
-    imageUrl: new URL(
-      "../../../assets/images/modules/health/informative-content.webp",
-      import.meta.url
-    ).href,
-    linkTo: "home",
-  },
-  {
-    id: "request-shifts",
+    id: "request-turn",
+    icon: ["fas", "plus"],
     title: "Solicitar turno",
-    imageUrl: new URL(
-      "../../../assets/images/modules/health/request-shift.webp",
-      import.meta.url
-    ).href,
-    linkTo: "request-shifts",
+    description: "Reserva un nuevo turno en nuestro sistema",
+    linkTo: "/modules/appointment-management/request-shifts",
+  },
+  {
+    id: "manage-turn",
+    icon: ["fas", "gear"],
+    title: "Gestionar turnos",
+    description: "Administra la disponibilidad de turnos",
+    linkTo: "/modules/appointment-management/manage-shifts",
+  },
+  {
+    id: "informative-content",
+    icon: ["fas", "house"],
+    title: "Contenido informativo",
+    description:
+      "Observe los turnos en espera y gestione el contenido informativo",
+    linkTo: "/modules/appointment-management/home",
   },
 ];
 
-export const secretaryModules = [
-  ...commonModules,
+export const secretaryItems: ModuleItemType[] = [
+  ...adminItems,
   {
     id: "statistics",
-    title: "Estadísticas",
-    imageUrl: new URL(
-      "../../../assets/images/statistics-reporting.jpg",
-      import.meta.url
-    ).href,
-    linkTo: "statistics",
+    icon: ["fas", "chart-simple"],
+    title: "Ver estadísticas",
+    description: "Visualiza datos y metricas de los turnos",
+    linkTo: "/modules/appointment-management/statistics",
+  },
+];
+
+export const doctorItems: ModuleItemType[] = [
+  {
+    id: "call-turn",
+    icon: ["fas", "phone"],
+    title: "Atender turno",
+    description: "Atiende un turno en nuestro sistema",
+    linkTo: "/modules/appointment-management/call-turns",
+  },
+  {
+    id: "request-turn",
+    icon: ["fas", "plus"],
+    title: "Solicitar turno",
+    description: "Reserva un nuevo turno en nuestro sistema",
+    linkTo: "/modules/appointment-management/request-shifts",
+  },
+  {
+    id: "statistics",
+    icon: ["fas", "chart-simple"],
+    title: "Ver estadísticas",
+    description: "Visualiza datos y metricas de los turnos",
+    linkTo: "/modules/appointment-management/statistics",
   },
 ];
