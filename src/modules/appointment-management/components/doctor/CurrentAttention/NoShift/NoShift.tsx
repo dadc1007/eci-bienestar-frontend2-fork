@@ -5,13 +5,14 @@ import { CallTurnRequest } from "@/modules/appointment-management/types/dto";
 import { SpecialityEnum } from "@/modules/appointment-management/types/enums";
 
 type Props = {
+  readonly speciality: SpecialityEnum;
   readonly onCallTurn: (callTurnRequest: CallTurnRequest) => void;
 };
 
-function NoShift({ onCallTurn }: Props) {
+function NoShift({ speciality, onCallTurn }: Props) {
   const handleCallTurn = () => {
     onCallTurn({
-      speciality: SpecialityEnum.GENERAL_MEDICINE,
+      speciality,
       levelAttention: 0,
     });
   };
