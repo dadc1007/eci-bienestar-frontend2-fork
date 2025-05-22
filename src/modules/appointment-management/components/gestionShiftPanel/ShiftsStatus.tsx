@@ -19,7 +19,7 @@ const ShiftsStatus = ({ isEnabled, onToggle }: Props) => {
         }
       />
       <Button
-        className="w-full my-2"
+        className="w-full my-2 text-white"
         color={isEnabled ? "success" : "danger"}
         onPress={onToggle}
       >

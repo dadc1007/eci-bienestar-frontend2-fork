@@ -9,6 +9,10 @@ import {
   getTurns,
   getTurnsBySpeciality,
   skipTurn,
+  toggleTurns,
+  toggleTurnsBySpeciality,
+  turnsDisabledBySpeciality,
+  turnsEnabled,
 } from "@modules/appointment-management/services";
 
 export const useTurns = () => {
@@ -94,6 +98,59 @@ export const useSkipTurn = () => {
     },
     onError: (error) => {
       console.error("Error al finalizar el turno:", error);
+    },
+  });
+};
+
+export const useTurnsEnabled = () => {
+  return useQuery({
+    queryKey: ["turns-enabled"],
+    queryFn: () => turnsEnabled(),
+  });
+};
+
+export const useTurnsDisabledBySpeciality = () => {
+  return useQuery({
+    queryKey: ["turns-disabled-by-speciality"],
+    queryFn: () => turnsDisabledBySpeciality(),
+  });
+};
+
+export const useToggleTurns = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (action: "enable" | "disable") => toggleTurns(action),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["turns-enabled"] });
+    },
+    onError: (error) => {
+      console.error("Error al cambiar disponibilidad global de turnos:", error);
+    },
+  });
+};
+
+export const useToggleTurnsBySpeciality = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      action,
+      speciality,
+    }: {
+      action: "enable" | "disable";
+      speciality: SpecialityEnum;
+    }) => toggleTurnsBySpeciality(action, speciality),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["turns-disabled-by-speciality"],
+      });
+    },
+    onError: (error) => {
+      console.error(
+        "Error al cambiar disponibilidad de turnos por especialidad:",
+        error
+      );
     },
   });
 };

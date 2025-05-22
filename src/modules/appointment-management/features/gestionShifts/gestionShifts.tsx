@@ -11,7 +11,7 @@ const GestionShifts = () => {
   return (
     <Layout
       header={
-        <div className="w-full flex flex-row items-center justify-between bg-white py-5 px-7">
+        <div className="w-full flex flex-row items-center justify-between bg-white py-5 px-7 max-[500px]:flex-col max-[500px]:gap-4">
           <h1 className="font-bold text-2xl">Sistema de turnos</h1>
           <div className="flex flex-row items-center justify-between gap-4">
             <Button
@@ -27,7 +27,7 @@ const GestionShifts = () => {
       }
       body={
         <div className="flex flex-col items-center justify-center w-full h-full p-2">
-          <div className="w-1/2 h-1/2">
+          <div className="w-11/12 max-w-3xl">
             <GestionShiftPanel />
           </div>
         </div>
