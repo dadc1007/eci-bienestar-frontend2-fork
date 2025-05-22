@@ -14,7 +14,6 @@ interface ClassDetails {
 }
 
 const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
-  const [viewType, setViewType] = useState<'list' | 'calendar'>('list');
   const [classDetailsMap, setClassDetailsMap] = useState<Record<string, ClassDetails>>({});
   const [loadingDetails, setLoadingDetails] = useState<Record<string, boolean>>({});
   
@@ -133,96 +132,66 @@ const EnrolledClassesList: React.FC<{ userId: string }> = ({ userId }) => {
   }
 
   return (
-    <div className="mt-6">
-      {/* Selector de vista */}
-      <div className="flex mb-6">
-        <button
-          className={`flex items-center px-4 py-2 rounded-l-lg ${viewType === 'list' ? 'bg-[#362550] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-          onClick={() => setViewType('list')}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-          </svg>
-          Vista de lista
-        </button>
-        <button
-          className={`flex items-center px-4 py-2 rounded-r-lg ${viewType === 'calendar' ? 'bg-[#362550] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-          onClick={() => setViewType('calendar')}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-          </svg>
-          Vista de calendario
-        </button>
+    <>
+      <div className="bg-white rounded-lg overflow-hidden shadow">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-[#362550]">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Clase</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tipo</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Instructor</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-xs font-medium text-white uppercase tracking-wider">Horario</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Estado</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {currentItems.map((assistance) => {
+              const details = classDetailsMap[assistance.classId] || {
+                name: 'Cargando...',
+                type: 'Cargando...',
+                instructor: 'Cargando...',
+                schedule: 'Cargando...'
+              };
+              const isClassLoading = loadingDetails[assistance.classId];
+
+              return (
+                <tr key={assistance.id} className={`hover:bg-gray-50 transition-colors ${isClassLoading ? 'opacity-70' : ''}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {isClassLoading ? 'Cargando...' : details.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {isClassLoading ? 'Cargando...' : details.type}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {isClassLoading ? 'Cargando...' : details.instructor}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {isClassLoading ? 'Cargando...' : details.schedule}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <ClassEnrollmentStatus isConfirmed={assistance.confirm} />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <CancelEnrollmentButton
+                      classId={assistance.classId}
+                      onCancel={handleCancelEnrollment}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
       
-      {viewType === 'list' ? (
-        <>
-          <div className="bg-white rounded-lg overflow-hidden shadow">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#362550]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Clase</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tipo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Instructor</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Horario</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Estado</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentItems.map((assistance) => {
-                  const details = classDetailsMap[assistance.classId] || {
-                    name: 'Cargando...',
-                    type: 'Cargando...',
-                    instructor: 'Cargando...',
-                    schedule: 'Cargando...'
-                  };
-                  const isClassLoading = loadingDetails[assistance.classId];
-                  return (
-                    <tr key={assistance.id} className={`hover:bg-gray-50 transition-colors ${isClassLoading ? 'opacity-70' : ''}`}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {isClassLoading ? 'Cargando...' : details.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {isClassLoading ? 'Cargando...' : details.type}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {isClassLoading ? 'Cargando...' : details.instructor}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {isClassLoading ? 'Cargando...' : details.schedule}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <ClassEnrollmentStatus isConfirmed={assistance.confirm} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <CancelEnrollmentButton
-                          classId={assistance.classId}
-                          onCancel={handleCancelEnrollment}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          
-          {/* Componente de paginación */}
-          <Pagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            paginate={paginate}
-          />
-        </>
-      ) : (
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Vista de Calendario</h3>
-          <p className="text-gray-500">La vista de calendario estará disponible pronto.</p>
-        </div>
-      )}
-    </div>
+      {/* Componente de paginación */}
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        paginate={paginate}
+      />
+    </>
   );
 };
 

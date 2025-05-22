@@ -79,26 +79,42 @@ return (
   <div className="w-full h-screen flex flex-col">
     {/* Semana actual y navegación */}
     <div className="flex justify-between items-center p-4">
-      <button onClick={() => setCurrentWeek(prev => prev - 1)} className="text-sm px-3 py-1 bg-[#362550] text-white rounded">← Semana anterior</button>
+      <button
+        onClick={() => setCurrentWeek(prev => prev - 1)}
+        className="text-sm px-3 py-1 bg-[#362550] text-white"
+        style={{ borderRadius: '30px' }}
+      >
+        ← Semana anterior
+      </button>
       <h2 className="text-xl font-semibold">Semana {currentWeek + 1}</h2>
-      <button onClick={() => setCurrentWeek(prev => prev + 1)} className="text-sm px-3 py-1 bg-[#362550] text-white rounded">Semana siguiente →</button>
+      <button
+        onClick={() => setCurrentWeek(prev => prev + 1)}
+        className="text-sm px-3 py-1 bg-[#362550] text-white"
+        style={{ borderRadius: '30px' }}
+      >
+        Semana siguiente →
+      </button>
     </div>
 
     {/* Tabla del horario */}
     <div className="flex-1 overflow-auto px-2 pb-4">
-      <div className="rounded-b-3xl overflow-hidden " style={{ boxShadow: "0 0 0 1px #362550" }}>
+      <div
+        className="overflow-hidden"
+        style={{
+          borderRadius: '30px',
+          boxShadow: '0 0 0 1px #362550',
+        }}
+      >
         <table className="w-full border-collapse table-fixed">
           <thead>
-            <tr className="text-white">
+            <tr className="text-white" style={{ backgroundColor: '#362550' }}>
+              <th className="p-3 text-left" style={{ borderTopLeftRadius: '30px' }}>Hora</th>
               {daysOfWeek.map((day, index) => (
                 <th
                   key={index}
                   className="p-3 text-left"
                   style={{
-                    backgroundColor: '#362550',
-                    borderTopLeftRadius: index === 0 ? '30px' : '0',
                     borderTopRightRadius: index === daysOfWeek.length - 1 ? '30px' : '0',
-
                   }}
                 >
                   {day}
@@ -118,12 +134,16 @@ return (
               </td>
 
               {/* Columnas de días */}
-              {daysOfWeek.slice(1).map((day, i) => (
+              {daysOfWeek.map((day, i) => (
                 <td key={i} className="relative align-top border-l border-gray-300">
                   <div className="relative h-[40rem]">
                     {/* Líneas horarias */}
                     {timeSlots.map((_, idx) => (
-                      <div key={`line-${idx}`} className="absolute w-full border-t border-gray-200" style={{ top: `${idx * 4}rem`, height: '1px', zIndex: 1 }} />
+                      <div
+                        key={`line-${idx}`}
+                        className="absolute w-full border-t border-gray-200"
+                        style={{ top: `${idx * 4}rem`, height: '1px', zIndex: 1 }}
+                      />
                     ))}
                     {/* Bloques de clase */}
                     <div className="relative z-10">
