@@ -16,14 +16,13 @@ import {
 
 type Props = {
   readonly className?: string;
+  readonly speciality: SpecialityEnum;
   readonly level: number;
   readonly setLevel: (value: number) => void;
 };
 
-function ShiftsOnHold({ className, level, setLevel }: Props) {
-  const { data, isLoading, error } = useTurnsBySpeciality(
-    SpecialityEnum.GENERAL_MEDICINE
-  );
+function ShiftsOnHold({ className, speciality, level, setLevel }: Props) {
+  const { data, isLoading, error } = useTurnsBySpeciality(speciality);
   const { mutate: callTurn } = useCallTurn();
 
   const turns: TurnResponse[] = data?.data ?? [];

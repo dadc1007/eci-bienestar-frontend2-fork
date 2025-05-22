@@ -19,9 +19,9 @@ type Props = {
 
 const Card = ({ turnResponse, setTurnResponse, onSubmitAction }: Props) => {
   return (
-    <HeroCard>
+    <HeroCard className="max-w-[600px] m-auto">
       <CardHeader
-        className={`${
+        className={`z-0 ${
           styles[`bg-gradient-health-${turnResponse.speciality}`]
         } p-8 flex flex-col gap-5`}
       >

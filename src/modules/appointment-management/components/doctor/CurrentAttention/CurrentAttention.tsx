@@ -19,14 +19,13 @@ import {
 
 type Props = {
   readonly className?: string;
+  readonly speciality: SpecialityEnum;
   readonly level: number;
   readonly setLevel: (value: number) => void;
 };
 
-function CurrentAttention({ className, level, setLevel }: Props) {
-  const { data, isLoading, error } = useCurrentTurnBySpeciality(
-    SpecialityEnum.GENERAL_MEDICINE
-  );
+function CurrentAttention({ className, speciality, level, setLevel }: Props) {
+  const { data, isLoading, error } = useCurrentTurnBySpeciality(speciality);
   const { mutate: callNextTurn } = useCallNextTurn();
 
   const turn: TurnResponse | undefined = data?.data;
@@ -55,7 +54,7 @@ function CurrentAttention({ className, level, setLevel }: Props) {
 
         {!isLoading && !error && turn == null && (
           <div className="flex flex-col items-center justify-center h-full">
-            <NoShift onCallTurn={handleCallNext} />
+            <NoShift speciality={speciality} onCallTurn={handleCallNext} />
           </div>
         )}
 
@@ -63,6 +62,7 @@ function CurrentAttention({ className, level, setLevel }: Props) {
           <div className="flex flex-col items-center justify-center h-full">
             <ShiftInfo
               turn={turn}
+              speciality={speciality}
               level={level}
               setLevel={setLevel}
               onCallTurn={handleCallNext}

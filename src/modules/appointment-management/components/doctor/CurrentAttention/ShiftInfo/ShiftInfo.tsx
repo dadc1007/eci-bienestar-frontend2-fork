@@ -1,12 +1,12 @@
 import { Button, Chip, Slider } from "@heroui/react";
 import InfoItem from "./InfoItem";
-import { SpecialityEnum } from "@/modules/appointment-management/types/enums";
 import {
   CallTurnRequest,
   TurnResponse,
 } from "@/modules/appointment-management/types/dto";
 import { useSkipTurn } from "@/modules/appointment-management/hooks/useTurns";
 import { RoleLabels } from "@/modules/appointment-management/constants";
+import { SpecialityEnum } from "@/modules/appointment-management/types/enums";
 
 const marks = Array.from({ length: 6 }, (_, i) => ({
   value: i,
@@ -15,22 +15,24 @@ const marks = Array.from({ length: 6 }, (_, i) => ({
 
 type Props = {
   readonly turn: TurnResponse;
+  readonly speciality: SpecialityEnum;
   readonly level: number;
   readonly setLevel: (value: number) => void;
   readonly onCallTurn: (callTurnRequest: CallTurnRequest) => void;
 };
 
-function ShiftInfo({ turn, level, setLevel, onCallTurn }: Props) {
+function ShiftInfo({ turn, speciality, level, setLevel, onCallTurn }: Props) {
   const { mutate: skipTurn } = useSkipTurn();
 
   const handleSkipTurn = () => {
-    skipTurn(SpecialityEnum.GENERAL_MEDICINE);
+    skipTurn(speciality);
     setLevel(0);
   };
 
   const handleCallTurn = () => {
+    console.log(speciality);
     onCallTurn({
-      speciality: SpecialityEnum.GENERAL_MEDICINE,
+      speciality,
       levelAttention: level,
     });
     setLevel(0);
