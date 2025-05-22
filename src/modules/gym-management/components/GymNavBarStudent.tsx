@@ -1,7 +1,7 @@
-import GymNavbar from "./GymNavbar";
+import GymNavBar from "./GymNavBar";
 
 const studentTabs = [
-  { label: "Inicio", path: "studentHome" },
+  { label: "Inicio", path: "registered-student" },
   { label: "Mis reservas", path: "reservations" },
   { label: "Reservar", path: "booking" },
   { label: "Rutinas", path: "routines" },
@@ -10,7 +10,7 @@ const studentTabs = [
 ];
 
 const GymNavBarStudent = () => (
-  <GymNavbar
+  <GymNavBar
     tabs={studentTabs}
     ariaLabel="Navegación del estudiante"
   />

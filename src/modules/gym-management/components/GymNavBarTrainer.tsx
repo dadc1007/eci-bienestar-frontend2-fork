@@ -1,4 +1,4 @@
-import GymNavbar from "./GymNavbar";
+import GymNavBar from "./GymNavBar";
 
 const trainerTabs = [
   { label: "Inicio", path: "trainerHome" },
@@ -10,7 +10,7 @@ const trainerTabs = [
 ];
 
 const GymNavBarTrainer = () => (
-  <GymNavbar
+  <GymNavBar
     tabs={trainerTabs}
     ariaLabel="Navegación del entrenador"
   />

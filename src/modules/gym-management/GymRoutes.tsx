@@ -5,6 +5,10 @@ import GymRedirectPage from "@/modules/gym-management/pages/GymRedirectPage";
 import StudentDashboardPage from "@/modules/gym-management/pages/StudentDashboardPage";
 import TrainerDashboardPage from "@/modules/gym-management/pages/TrainerDashboardPage";
 
+// Index
+import StudentIndexPage from "@/modules/gym-management/pages/StudentIndexPage";
+import TrainerIndexPage from "@/modules/gym-management/pages/TrainerIndexPage.tsx";
+
 // Student pages
 import StudentMainPage from "@/modules/gym-management/pages/student/StudentMainPage";
 import ReservationsPage from "@/modules/gym-management/pages/student/ReservationsPage";
@@ -36,6 +40,7 @@ const GymRoutes = () => {
 
       {/* Rutas para estudiantes */}
       <Route path="student" element={<StudentDashboardPage />}>
+        <Route index element={<StudentIndexPage />} />
         <Route path="studentHome" element={<StudentMainPage />} />
         <Route path="reservations" element={<ReservationsPage />} />
         <Route path="booking" element={<BookingPage />} />
@@ -49,6 +54,7 @@ const GymRoutes = () => {
 
       {/* Rutas para entrenadores */}
       <Route path="trainer" element={<TrainerDashboardPage />}>
+        <Route index element={<TrainerIndexPage />} />
         <Route path="trainerHome" element={<TrainerMainPage />} />
         <Route path="trainer-routines" element={<TrainerRoutinesPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
