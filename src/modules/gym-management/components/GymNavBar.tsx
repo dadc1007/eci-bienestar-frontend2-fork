@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 interface Tab {
   label: string;
@@ -7,16 +7,10 @@ interface Tab {
 
 interface GymNavbarProps {
   tabs: Tab[];
-  homePath: string;
   ariaLabel: string;
 }
 
-const GymNavbar = ({ tabs, homePath, ariaLabel }: GymNavbarProps) => {
-  const navigate = useNavigate();
-
-  const handleHomeClick = () => {
-    navigate(homePath);
-  };
+const GymNavbar = ({ tabs, ariaLabel }: GymNavbarProps) => {
 
   return (
     <div className="flex flex-col items-center min-h-screen px-4">
@@ -25,13 +19,6 @@ const GymNavbar = ({ tabs, homePath, ariaLabel }: GymNavbarProps) => {
         aria-label={ariaLabel}
       >
         <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-6 min-w-max">
-          {/* Botón de inicio */}
-          <button
-            onClick={handleHomeClick}
-            className="px-4 py-2 text-sm font-semibold rounded-t-xl bg-yellow-500 text-white hover:bg-yellow-600 transition text-center"
-          >
-            Inicio
-          </button>
 
           {/* Tabs de navegación */}
           {tabs.map((tab) => (

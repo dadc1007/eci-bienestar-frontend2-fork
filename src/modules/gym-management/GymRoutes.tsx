@@ -36,7 +36,7 @@ const GymRoutes = () => {
 
       {/* Rutas para estudiantes */}
       <Route path="student" element={<StudentDashboardPage />}>
-        <Route index element={<StudentMainPage />} />
+        <Route path="studentHome" element={<StudentMainPage />} />
         <Route path="reservations" element={<ReservationsPage />} />
         <Route path="booking" element={<BookingPage />} />
         <Route path="routines" element={<RoutinesPage />} />
@@ -49,7 +49,7 @@ const GymRoutes = () => {
 
       {/* Rutas para entrenadores */}
       <Route path="trainer" element={<TrainerDashboardPage />}>
-        <Route index element={<TrainerMainPage />} />
+        <Route path="trainerHome" element={<TrainerMainPage />} />
         <Route path="trainer-routines" element={<TrainerRoutinesPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="sessions" element={<SessionsPage />} />
