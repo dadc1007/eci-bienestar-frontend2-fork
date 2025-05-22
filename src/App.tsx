@@ -1,12 +1,11 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
-import { HealthRoutes } from "./modules/appointment-management/routes";
+import ForgotPassword from "./modules/auth/components/ForgotPassword";
+import { HealthRoutes } from "@modules/appointment-management/routes";
+import { useAuth } from "./common/context";
+import { Role } from "./common/types";
+import { ProtectedRoute, Root } from "@common/components";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -46,29 +45,29 @@ const ModuleTemplate: React.FC<{ title: string; color: string }> = ({
 );
 
 function App() {
-  const handleLogout = () => {
-    console.log("Cerrando sesión...");
-    // Aquí iría la lógica de logout
-  };
-
+  const { user } = useAuth();
   const handleNotificationsClick = () => {
     console.log("Mostrando notificaciones...");
     // Aquí iría la lógica para mostrar notificaciones
   };
 
   return (
-    <Router>
-      <Routes>
+    <Routes>
+      {/* Ruta inicial - login */}
+      <Route path="/" element={<Root />} />
+
+      {/* Restaurar contrasena*/}
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+
+      <Route element={<ProtectedRoute />}>
         {/* Ruta principal - Dashboard */}
         <Route
-          path="/"
+          path="/home"
           element={
             <Layout
               moduleColor={moduleColors.default}
               showSidebar={true}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
             >
               <Dashboard />
             </Layout>
@@ -77,18 +76,15 @@ function App() {
 
         {/* Módulo de Salud/Turnos */}
         <Route
-          path="/modules/appointment-management/*"
+          path="/modules/health/*"
           element={
             <Layout
               moduleColor={moduleColors.health}
               activeModule={MODULE_MAPPING.health}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
-              showSidebar={true}
+              showSidebar={user?.role === Role.ADMINISTRATOR}
             >
               <HealthRoutes />
-              {/* <DoctorView /> */}
             </Layout>
           }
         />
@@ -100,9 +96,7 @@ function App() {
             <Layout
               moduleColor={moduleColors.recreation}
               activeModule={MODULE_MAPPING.recreation}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
             >
               <ModuleTemplate
                 title="Gestión de Salas Recreativas"
@@ -119,9 +113,7 @@ function App() {
             <Layout
               moduleColor={moduleColors.extracurricular}
               activeModule={MODULE_MAPPING.extracurricular}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
             >
               <ModuleTemplate
                 title="Clases Extracurriculares"
@@ -138,9 +130,7 @@ function App() {
             <Layout
               moduleColor={moduleColors.sports}
               activeModule={MODULE_MAPPING.sports}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
             >
               <ModuleTemplate
                 title="Préstamos Deportivos"
@@ -157,9 +147,7 @@ function App() {
             <Layout
               moduleColor={moduleColors.gym}
               activeModule={MODULE_MAPPING.gym}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
             >
               <ModuleTemplate
                 title="Gestión del Gimnasio"
@@ -176,9 +164,7 @@ function App() {
             <Layout
               moduleColor={moduleColors.statistics}
               activeModule={MODULE_MAPPING.statistics}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
             >
               <ModuleTemplate
                 title="Estadísticas y Reportes"
@@ -195,9 +181,7 @@ function App() {
             <Layout
               moduleColor={moduleColors.users}
               activeModule={MODULE_MAPPING.users}
-              onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
             >
               <ModuleTemplate
                 title="Gestión de Usuarios"
@@ -206,11 +190,11 @@ function App() {
             </Layout>
           }
         />
+      </Route>
 
-        {/* Ruta de fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+      {/* Ruta de fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

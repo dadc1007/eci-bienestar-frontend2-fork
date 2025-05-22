@@ -21,9 +21,7 @@ function Header() {
           <Button
             className="bg-health-primary text-white"
             type="button"
-            onPress={() =>
-              navigate("/modules/appointment-management/request-shifts")
-            }
+            onPress={() => navigate("/modules/health/request-shifts")}
           >
             <FontAwesomeIcon icon={faPlus} /> Pedir turno
           </Button>

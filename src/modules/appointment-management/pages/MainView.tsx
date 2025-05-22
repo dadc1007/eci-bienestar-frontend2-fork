@@ -1,20 +1,36 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Image,
-} from "@heroui/react";
+import { Card, CardBody, CardFooter, CardHeader, Image } from "@heroui/react";
 import image from "@/assets/images/appointment-management.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { adminItems, doctorItems, secretaryItems } from "../data";
+import {
+  adminItems,
+  doctorItems,
+  secretaryItems,
+} from "@modules/appointment-management/data";
 import { useNavigate } from "react-router-dom";
-
-const items = doctorItems;
+import { useAuth } from "@/common/context";
+import { Role } from "@/common/types";
+import { ModuleItemType } from "@modules/appointment-management/types";
 
 function MainView() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  let items: ModuleItemType[] = [];
+
+  switch (user?.role) {
+    case Role.ADMINISTRATOR:
+      items = adminItems;
+      break;
+    case Role.MEDICAL_SECRETARY:
+      items = secretaryItems;
+      break;
+    case Role.MEDICAL_STAFF:
+      items = doctorItems;
+      break;
+    default:
+      items = [];
+      break;
+  }
 
   return (
     <div className="p-10">
