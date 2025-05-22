@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import Navbar from "./navbar";
 import Sidebar, { SidebarModule } from "./sidebar";
+import { useAuth } from "@common/context";
 
 interface LayoutProps {
   children: React.ReactNode;
   moduleColor?: string;
   showSidebar?: boolean;
   activeModule?: string;
-  userEmail?: string;
-  onLogout?: () => void;
   onNotificationsClick?: () => void;
   sidebarModules?: SidebarModule[];
 }
@@ -18,13 +17,12 @@ const Layout: React.FC<LayoutProps> = ({
   moduleColor = "#990000",
   showSidebar = true,
   activeModule,
-  userEmail,
-  onLogout,
   onNotificationsClick,
   sidebarModules,
 }) => {
   // visibilidad sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { logout, user } = useAuth();
 
   // Toggle sidebar visibility
   const toggleSidebar = () => {
@@ -37,8 +35,8 @@ const Layout: React.FC<LayoutProps> = ({
       <div className="fixed w-full z-10">
         <Navbar
           moduleColor={moduleColor}
-          onLogout={onLogout}
-          userEmail={userEmail}
+          onLogout={logout}
+          userEmail={user?.email ?? ""}
           onNotificationsClick={onNotificationsClick}
         />
       </div>
