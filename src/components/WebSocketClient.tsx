@@ -1,38 +1,53 @@
 import { useEffect, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
+import './WebSocketClient.css';   
 
 type Message = {
+  id: number;          
   title: string;
   content: string;
 };
 
+interface StompErrorFrame {
+  headers?: {
+    message?: string;
+  };
+  body?: string;
+}
+
 export default function WebSocketClient() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [client, setClient] = useState<InstanceType<typeof Client> | null>(null);
 
   useEffect(() => {
+    let idCounter = 0; 
+
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
         stompClient.subscribe('/topic/messages', (msg: any) => {
           try {
-            const parsed: Message = JSON.parse(msg.body);
-            setMessages(prev => [...prev, parsed]);
+            const parsed: Omit<Message, 'id'> = JSON.parse(msg.body);
+            const newMessage: Message = { ...parsed, id: idCounter++ };
+
+            setMessages(prev => [...prev, newMessage]);
+
+            setTimeout(() => {
+              setMessages(prev => prev.filter(m => m.id !== newMessage.id));
+            }, 5000);
+
           } catch (error) {
             console.error('Error parsing message:', error);
           }
         });
       },
-      onStompError: (frame: { headers?: { message?: string }; body?: string }) => {
-        console.error('Broker reported error: ' + frame.headers?.message);
-        console.error('Additional details: ' + frame.body);
+      onStompError: (frame: StompErrorFrame) => {
+        console.error('Broker error:', frame.headers?.message);
       },
     });
 
     stompClient.activate();
-    setClient(stompClient);
 
     return () => {
       stompClient.deactivate();
@@ -40,25 +55,21 @@ export default function WebSocketClient() {
   }, []);
 
   return (
-    <div>
-      <h1>Notificaciones</h1>
-      <div style={{ position: 'fixed', top: 10, right: 10 }}>
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            style={{
-              background: '#fefefe',
-              border: '1px solid #ccc',
-              margin: '5px',
-              padding: '10px',
-              borderRadius: '5px',
-            }}
-          >
-            <strong>{msg.title}</strong>
-            <p>{msg.content}</p>
-          </div>
-        ))}
-      </div>
+    <div
+      className="websocket-client-container"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {messages.map(msg => (
+        <div
+          key={msg.id}
+          className="notification-card"     
+          role="alert"
+        >
+          <strong>{msg.title}</strong>
+          <div>{msg.content}</div>
+        </div>
+      ))}
     </div>
   );
 }

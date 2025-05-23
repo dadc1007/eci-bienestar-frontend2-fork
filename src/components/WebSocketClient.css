@@ -1,0 +1,33 @@
+/* Contenedor fijo en esquina superior derecha */
+.websocket-client-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 300px;
+  z-index: 9999;
+  font-family: 'Work Sans', sans-serif;
+}
+
+/* Cada tarjeta de notificación */
+.notification-card {
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Título de la notificación */
+.notification-card strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 1.1rem;
+  color: #88aaff;
+}
+
+/* Contenido de la notificación */
+.notification-card div {
+  font-size: 0.9rem;
+  color: #ccc;
+}

@@ -1,6 +1,6 @@
 import WebSocketClient from './components/WebSocketClient';
 import NotificationPermission from './components/NotificationPermission';
-
+import './App.css';
 
 function App() {
   return (
@@ -11,4 +11,5 @@ function App() {
   );
 }
 
-export default App; 
+
+export default App;
