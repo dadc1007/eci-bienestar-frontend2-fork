@@ -6,7 +6,7 @@ import { HealthRoutes } from "@modules/appointment-management/routes";
 import { useAuth } from "./common/context";
 import { Role } from "./common/types";
 import { ProtectedRoute, Root } from "@common/components";
-import ExtracurricularClassesRoutes from './modules/extracurricular-classes/routes';
+import ExtracurricularClassesRoutes from "./modules/extracurricular-classes/routes";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -116,8 +116,7 @@ function App() {
               activeModule={MODULE_MAPPING.extracurricular}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ExtracurricularClassesRoutes userRole={user.role} />
-
+              <ExtracurricularClassesRoutes userRole="student" />
             </Layout>
           }
         />
