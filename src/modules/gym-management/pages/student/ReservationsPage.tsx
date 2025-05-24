@@ -37,7 +37,7 @@ export default function ReservationPage() {
       trainer: "Diana",
       capacity: 5,
       currentCapacity: 5,
-      status: "Aprovado",
+      status: "Aprobado",
     },
     {
       label: "Sesion gimnasio",

@@ -18,7 +18,6 @@ import RegisterProgressPage from "@/modules/gym-management/pages/student/Registe
 import EvolutionPage from "@/modules/gym-management/pages/student/EvolutionPage";
 import RegisterMeasurements from "@/modules/gym-management/pages/student/RegisterMeasurements";
 import BodyMeasurements from "@/modules/gym-management/pages/student/BodyMeasurements";
-import RegisteredStudentMainPage from "@/modules/gym-management/pages/student/RegisteredStudentMainPage";
 
 // Trainer pages
 import TrainerMainPage from "@/modules/gym-management/pages/trainer/TrainerMainPage";
@@ -49,7 +48,6 @@ const GymRoutes = () => {
         <Route path="evolution" element={<EvolutionPage />} />
         <Route path="first-register" element={<RegisterMeasurements />} />
         <Route path="body-measurements" element={<BodyMeasurements />} />
-        <Route path="registered-student" element={<RegisteredStudentMainPage />} />
       </Route>
 
       {/* Rutas para entrenadores */}

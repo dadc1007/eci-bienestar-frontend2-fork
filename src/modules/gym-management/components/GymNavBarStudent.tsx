@@ -1,7 +1,7 @@
 import GymNavBar from "./GymNavBar";
 
 const studentTabs = [
-  { label: "Inicio", path: "registered-student" },
+  { label: "Inicio", path: "studentHome" },
   { label: "Mis reservas", path: "reservations" },
   { label: "Reservar", path: "booking" },
   { label: "Rutinas", path: "routines" },

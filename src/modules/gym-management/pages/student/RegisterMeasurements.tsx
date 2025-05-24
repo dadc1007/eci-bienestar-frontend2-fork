@@ -58,6 +58,7 @@ const RegisterMeasurements = () => {
   const onSubmit = (data: any) => {
     alert("Datos registrados correctamente");
     console.log(data);
+    navigate("../body-measurements");
   };
 
   const gender = watch("gender");
@@ -84,7 +85,7 @@ const RegisterMeasurements = () => {
                 gender === "male" ? "border-blue-600" : "border-transparent"
               }`}
             >
-              <img src="/male.png" alt="Hombre" />
+              <img src="/src/modules/gym-management/assets/images/hombre.png" alt="Hombre" />
             </button>
             <button
               type="button"
@@ -93,7 +94,7 @@ const RegisterMeasurements = () => {
                 gender === "female" ? "border-pink-500" : "border-transparent"
               }`}
             >
-              <img src="/female.png" alt="Mujer" />
+              <img src="/src/modules/gym-management/assets/images/mujer.png" alt="Mujer" />
             </button>
             <button
               type="button"
@@ -105,11 +106,21 @@ const RegisterMeasurements = () => {
               No especificar
             </button>
           </div>
-          {gender && (
-            <div className="text-center font-semibold mt-2">
-              Seleccionaste: {gender === "male" ? "Hombre" : gender === "female" ? "Mujer" : "No especificar"}
-            </div>
-          )}
+          {gender && (() => {
+            let genderLabel = "";
+            if (gender === "male") {
+              genderLabel = "Hombre";
+            } else if (gender === "female") {
+              genderLabel = "Mujer";
+            } else {
+              genderLabel = "No especificar";
+            }
+            return (
+              <div className="text-center font-semibold mt-2">
+                Seleccionaste: {genderLabel}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Altura */}
@@ -186,7 +197,6 @@ const RegisterMeasurements = () => {
 
         <button
                 type="submit"
-                onClick={() => navigate("/modules/gym-management/student/registered-student")}
                 className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
             >
               Siguiente
