@@ -31,13 +31,13 @@ const mockStudents = [
 const ProgressPage = () => {
   const navigate = useNavigate();
 
-  const handleNavigateToEvolution = (studentId: string, progressId: string) => {
-    navigate(`/trainer/evolution/${studentId}/${progressId}`);
+  const handleNavigateToEvolution = () => {
+    navigate("/modules/gym-management/trainer/my-students-progress");
   };
 
   const handleNavigateToProfile = (studentId: string) => {
     console.log(`Navegar al perfil del usuario con ID: ${studentId}`);
-    // Aquí se puede implementar la navegación al perfil en el futuro
+
   };
 
   return (
@@ -66,10 +66,8 @@ const ProgressPage = () => {
                     Progreso del {progress.date}
                   </span>
                   <button
-                    onClick={() =>
-                      handleNavigateToEvolution(student.id, progress.id)
-                    }
-                    className="bg-yellow-500 text-white px-4 py-1 rounded-md hover:bg-yellow-600 transition"
+                    onClick={handleNavigateToEvolution}
+                    className="bg-[#990000] text-white px-4 py-1 rounded-md hover:bg-red-700 transition"
                   >
                     Ver Evolución
                   </button>

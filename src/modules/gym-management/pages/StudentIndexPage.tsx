@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faCalendarAlt,
+  faDumbbell,
+  faClipboardList,
+  faChartLine,
+  faUserCheck,
+} from "@fortawesome/free-solid-svg-icons";
 
 import image1 from "/src/modules/gym-management/assets/images/gim1.jpg";
 import image2 from "/src/modules/gym-management/assets/images/gim2.jpg";
@@ -77,6 +86,52 @@ const StudentMainPage = () => {
         </div>
       </div>
 
+      {/* Tarjetas de funcionalidades */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
+        <div
+          onClick={() => navigate("/modules/gym-management/student/studentHome")}
+          className="flex flex-col items-center justify-center bg-gray-100 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
+        >
+          <FontAwesomeIcon icon={faHome} size="2x" className="text-blue-500" />
+          <p className="mt-2 font-semibold">Inicio</p>
+        </div>
+        <div
+          onClick={() => navigate("/modules/gym-management/student/reservations")}
+          className="flex flex-col items-center justify-center bg-gray-100 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
+        >
+          <FontAwesomeIcon icon={faCalendarAlt} size="2x" className="text-green-500" />
+          <p className="mt-2 font-semibold">Mis Reservas</p>
+        </div>
+        <div
+          onClick={() => navigate("/modules/gym-management/student/booking")}
+          className="flex flex-col items-center justify-center bg-gray-100 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
+        >
+          <FontAwesomeIcon icon={faDumbbell} size="2x" className="text-red-500" />
+          <p className="mt-2 font-semibold">Reservar</p>
+        </div>
+        <div
+          onClick={() => navigate("/modules/gym-management/student/routines")}
+          className="flex flex-col items-center justify-center bg-gray-100 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
+        >
+          <FontAwesomeIcon icon={faClipboardList} size="2x" className="text-purple-500" />
+          <p className="mt-2 font-semibold">Rutinas</p>
+        </div>
+        <div
+          onClick={() => navigate("/modules/gym-management/student/progress")}
+          className="flex flex-col items-center justify-center bg-gray-100 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
+        >
+          <FontAwesomeIcon icon={faUserCheck} size="2x" className="text-orange-500" />
+          <p className="mt-2 font-semibold">Registro Progreso</p>
+        </div>
+        <div
+          onClick={() => navigate("/modules/gym-management/student/evolution")}
+          className="flex flex-col items-center justify-center bg-gray-100 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
+        >
+          <FontAwesomeIcon icon={faChartLine} size="2x" className="text-teal-500" />
+          <p className="mt-2 font-semibold">Evolución</p>
+        </div>
+      </div>
+
       {/* Contenido reglamento */}
       <section>
         <h2 className="text-xl sm:text-2xl font-semibold mt-6">Aspectos generales</h2>
@@ -98,7 +153,6 @@ const StudentMainPage = () => {
           </li>
         </ul>
       </section>
-
       <section>
         <h2 className="text-xl sm:text-2xl font-semibold mt-6">Implementos</h2>
         <ul className="list-disc list-inside space-y-2">
@@ -129,8 +183,8 @@ const StudentMainPage = () => {
 
       <div className="pt-6 text-center">
         <button
-          onClick={() => navigate("first-register")}
-          className="bg-black text-white font-semibold px-6 py-3 rounded hover:bg-black-500 transition w-full sm:w-auto"
+            onClick={() => navigate("first-register")}
+            className="bg-black text-white font-semibold px-6 py-3 rounded hover:bg-black-500 transition w-full sm:w-auto"
         >
           Inscribirte ahora
         </button>
@@ -138,5 +192,4 @@ const StudentMainPage = () => {
     </div>
   );
 };
-
 export default StudentMainPage;

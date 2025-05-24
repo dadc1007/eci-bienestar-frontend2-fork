@@ -40,7 +40,7 @@ const TrainerIndexPage = () => {
           <Card className="h-full w-72 transition-all hover:-translate-y-1">
             <CardBody className="flex flex-col items-center justify-center p-6 text-center">
               <p className="text-lg font-medium mb-4">Ver sesiones de hoy</p>
-              <Button color="primary" onPress={() => navigate("trainerHome")}>
+              <Button className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center" onPress={() => navigate("trainerHome")}>
                 Ir a sesiones
               </Button>
             </CardBody>
@@ -50,7 +50,7 @@ const TrainerIndexPage = () => {
           <Card className="h-full w-72 transition-all hover:-translate-y-1">
             <CardBody className="flex flex-col items-center justify-center p-6 text-center">
               <p className="text-lg font-medium mb-4">Crear nuevas rutinas</p>
-              <Button color="success" onPress={() => navigate("trainer-routines")}>
+              <Button className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center" onPress={() => navigate("trainer-routines")}>
                 Crear rutina
               </Button>
             </CardBody>
@@ -60,7 +60,7 @@ const TrainerIndexPage = () => {
           <Card className="h-full w-72 transition-all hover:-translate-y-1">
             <CardBody className="flex flex-col items-center justify-center p-6 text-center">
               <p className="text-lg font-medium mb-4">Ver progresos físicos</p>
-              <Button color="secondary" onPress={() => navigate("progress")}>
+              <Button className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center" onPress={() => navigate("progress")}>
                 Ver progreso
               </Button>
             </CardBody>

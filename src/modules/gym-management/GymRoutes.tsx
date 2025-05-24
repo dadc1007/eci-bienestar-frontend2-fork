@@ -26,7 +26,7 @@ import ExercisesPage from "@/modules/gym-management/pages/trainer/ExercisesPage"
 import SessionsPage from "@/modules/gym-management/pages/trainer/SessionsPage";
 import TrainerGenerateReportPage from "@modules/gym-management/pages/trainer/TrainerGenerateReportPage.tsx";
 import ProgressPage from "@/modules/gym-management/pages/trainer/ProgressPage";
-
+import MyStudentsProgress from "@/modules/gym-management/pages/trainer/MyStudentsProgress";
 // NotFound page
 import NotFoundPage from "@/modules/gym-management/pages/NotFoundPage";
 
@@ -48,6 +48,7 @@ const GymRoutes = () => {
         <Route path="evolution" element={<EvolutionPage />} />
         <Route path="first-register" element={<RegisterMeasurements />} />
         <Route path="body-measurements" element={<BodyMeasurements />} />
+        <Route path="my-students-progress" element={<MyStudentsProgress />} />
       </Route>
 
       {/* Rutas para entrenadores */}

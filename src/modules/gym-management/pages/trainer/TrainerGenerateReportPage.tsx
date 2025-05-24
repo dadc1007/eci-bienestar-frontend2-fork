@@ -97,7 +97,7 @@ export default function TrainerGenerateReportPage() {
             id="reportType"
             value={reportType}
             onChange={(e) => setReportType(e.target.value)}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#990000] focus:border-[#990000]"
             required
           >
             <option value="" disabled>
@@ -119,7 +119,7 @@ export default function TrainerGenerateReportPage() {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#990000] focus:border-[#990000]"
             rows={4}
             placeholder="Escribe una descripción para el reporte"
             required
@@ -147,7 +147,7 @@ export default function TrainerGenerateReportPage() {
               <input
                 type="text"
                 value={entry.type === "user" ? userQuery : sessionQuery}
-                onChange={(e) => handleSearch(e.target.value, entry.type, index)}
+                onChange={(e) => handleSearch(e.target.value, entry.type)}
                 className="border p-2 w-full rounded"
                 placeholder={`Buscar ${entry.type === "user" ? "usuario" : "sesión"}`}
               />
@@ -156,7 +156,7 @@ export default function TrainerGenerateReportPage() {
                   {(entry.type === "user" ? filteredUsers : filteredSessions).map((item) => (
                     <li
                       key={item.id}
-                      onClick={() => handleSelect({ id: item.id, name: item.label || item.name}, index)}
+                      onClick={() => handleSelect({ id: item.id, name: item.label || item.name }, index)}
                       className="p-2 hover:bg-gray-100 cursor-pointer"
                     >
                       {item.label || item.name}
@@ -181,7 +181,7 @@ export default function TrainerGenerateReportPage() {
           <button
             type="button"
             onClick={handleAddEntry}
-            className="mt-2 px-4 py-2 bg-yellow-500 text-white font-semibold rounded-md hover:bg-yellow-600 transition"
+            className="mt-2 px-4 py-2 bg-[#990000] text-white font-semibold rounded-md hover:bg-red-700 transition"
           >
             Añadir Etiqueta
           </button>
@@ -190,7 +190,7 @@ export default function TrainerGenerateReportPage() {
         {/* Botón de envío */}
         <button
           type="submit"
-          className="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-md hover:bg-yellow-600 transition"
+          className="px-4 py-2 bg-[#990000] text-white font-semibold rounded-md hover:bg-red-700 transition"
         >
           Generar Reporte
         </button>
