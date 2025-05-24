@@ -3,14 +3,11 @@ import { Button } from "@heroui/react";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-
-import StadisticsShifts from "../../components/StadisticsShifts/StadisticsShifts";
 import {
-  datosPorEspecialidad,
-  datosPorRol,
-  datosPorFecha,
-  datosPorEstado,
-} from "./mockData";
+  getTurnCountBySpeciality,
+  getTurnCountByRole,
+} from "@modules/appointment-management/services/stadistic";
+import StadisticsShifts from "../../components/StadisticsShifts/StadisticsShifts";
 
 const Stadistics = () => {
   const navigate = useNavigate();
@@ -72,80 +69,96 @@ const Stadistics = () => {
     "Actual",
     "Terminado",
   ];
+
+const getDateRange = (label: string): { start: string; end: string } => {
+  const now = new Date();
+  let start: Date;
+
+  switch (label) {
+    case "Última semana":
+      start = new Date();
+      start.setDate(start.getDate() - 7);
+      break;
+    case "Último mes":
+      start = new Date();
+      start.setMonth(start.getMonth() - 1);
+      break;
+    case "Último año":
+      start = new Date();
+      start.setFullYear(start.getFullYear() - 1);
+      break;
+    default:
+      start = new Date(2000, 0, 1);
+  }
+
+  const range = {
+    start: start.toISOString().split("T")[0],
+    end: now.toISOString().split("T")[0],
+  };
+
+  return range;
+};
+
+
   useEffect(() => {
-    let base = 0;
-    const datosGraficoTemp: { name: string; value: number }[] = [];
+    const fetchEstadisticas = async () => {
+      const { start, end } = getDateRange(selectedFecha);
 
-    const especialidadTodos = selectedEspecialidad === "Todos";
-    const rolTodos = selectedRol === "Todos";
-    const fechaTodos = selectedFecha === "Todo el tiempo";
-    const estadoTodos = selectedEstado === "Todos";
+      try {
+        const specialityData = await getTurnCountBySpeciality(
+          start,
+          end,
+          selectedEspecialidad !== "Todos" ? selectedEspecialidad : undefined,
+          selectedEstado !== "Todos" ? selectedEstado : undefined
+        );
+        const especialidadArray = especialidades
+          .filter((esp) => esp !== "Todos")
+          .map((esp) => {
+            const found = specialityData.data.find((d) => d.speciality === esp);
+            return found?.count || 0;
+          });
+        setAttendedBySpeciality(especialidadArray);
 
-    // Solo un "Todos" activo permite mostrar pie chart
-    const isPieChartActive =
-      especialidadTodos || rolTodos || fechaTodos || estadoTodos;
+        const rolData = await getTurnCountByRole(
+          start,
+          end,
+          selectedRol !== "Todos" ? selectedRol : undefined,
+          selectedEstado !== "Todos" ? selectedEstado : undefined
+        );
+        const rolesArray = rolesPaciente
+          .filter((rol) => rol !== "Todos")
+          .map((rol) => {
+            const found = rolData.data.find((d) => d.role === rol);
+            return found?.count || 0;
+          });
+        setAttendedByRol(rolesArray);
 
-    // Calcular datos en base al único "Todos" activo
-    if (especialidadTodos) {
-      Object.entries(datosPorEspecialidad).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-        base += value;
-      });
-    } else if (rolTodos) {
-      Object.entries(datosPorRol).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-        base += value;
-      });
-    } else if (fechaTodos) {
-      Object.entries(datosPorFecha).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-        base += value;
-      });
-    } else if (estadoTodos) {
-      Object.entries(datosPorEstado).forEach(([name, value]) => {
-        datosGraficoTemp.push({ name, value });
-        base += value;
-      });
-    } else {
-      // Si ningún "Todos" está activo, gráfico se vacía
-      if (selectedEspecialidad && selectedEspecialidad !== "Todos") {
-        base = datosPorEspecialidad[selectedEspecialidad] || 0;
-      } else if (selectedRol && selectedRol !== "Todos") {
-        base = datosPorRol[selectedRol] || 0;
-      } else if (selectedFecha && selectedFecha !== "Todo el tiempo") {
-        base = datosPorFecha[selectedFecha] || 0;
-      } else if (selectedEstado && selectedEstado !== "Todos") {
-        base = datosPorEstado[selectedEstado] || 0;
+        const total = specialityData.data.reduce(
+          (acc, curr) => acc + curr.count,
+          0
+        );
+        setTurnAttended(total);
+        setTurnUnAttended(Math.floor(total * 0.4)); 
+
+        const datosGraficoTemp: { name: string; value: number }[] = [];
+        if (selectedEspecialidad === "Todos") {
+          specialityData.data.forEach(({ speciality, count }) => {
+            datosGraficoTemp.push({ name: speciality, value: count });
+          });
+        } else if (selectedRol === "Todos") {
+          rolData.data.forEach(({ role, count }) => {
+            datosGraficoTemp.push({ name: role, value: count });
+          });
+        }
+        setDatosGrafico(datosGraficoTemp);
+      } catch (err) {
+        console.error("Error obteniendo estadísticas reales:", err);
       }
+    };
+
+    if (especialidades.length > 0 && rolesPaciente.length > 0) {
+      fetchEstadisticas();
     }
-
-    setTurnAttended(base);
-    setTurnUnAttended(Math.floor(base * 0.4));
-    setDatosGrafico(isPieChartActive ? datosGraficoTemp : []);
-
-    // Especialidades (sin "Todos")
-    const especialidadArray = especialidades
-      .filter((esp) => esp !== "Todos")
-      .map((esp) =>
-        selectedEspecialidad === "Todos"
-          ? datosPorEspecialidad[esp] || 0
-          : esp === selectedEspecialidad
-          ? datosPorEspecialidad[esp] || 0
-          : 0
-      );
-    setAttendedBySpeciality(especialidadArray);
-
-    // Roles (sin "Todos")
-    const rolesArray = rolesPaciente
-      .filter((rol) => rol !== "Todos")
-      .map((rol) =>
-        selectedRol === "Todos"
-          ? datosPorRol[rol] || 0
-          : rol === selectedRol
-          ? datosPorRol[rol] || 0
-          : 0
-      );
-    setAttendedByRol(rolesArray);
   }, [
     selectedEspecialidad,
     selectedRol,
