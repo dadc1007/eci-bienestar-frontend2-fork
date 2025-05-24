@@ -6,6 +6,7 @@ import { HealthRoutes } from "@modules/appointment-management/routes";
 import { useAuth } from "./common/context";
 import { Role } from "./common/types";
 import { ProtectedRoute, Root } from "@common/components";
+import ExtracurricularClassesRoutes from './modules/extracurricular-classes/routes';
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -17,7 +18,7 @@ const MODULE_MAPPING = {
   statistics: "estadisticas",
 };
 
-// Module colors
+// Module Colors
 const moduleColors = {
   health: "#0078B4", // Turnos de Salud
   recreation: "#0E7029", // Salas Recreativas
@@ -115,10 +116,8 @@ function App() {
               activeModule={MODULE_MAPPING.extracurricular}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Clases Extracurriculares"
-                color={moduleColors.extracurricular}
-              />
+              <ExtracurricularClassesRoutes userRole={user.role} />
+
             </Layout>
           }
         />
