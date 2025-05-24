@@ -1,13 +1,27 @@
-import { useDisclosure } from "@heroui/react";
-import { Card, CardHeader, CardBody, Modal, ModalContent } from "@heroui/react";
+import { useState } from "react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Modal,
+  ModalContent,
+  useDisclosure,
+} from "@heroui/react";
 import Carrosel from "./carrosel/carrosel";
-import { GestionMultimediaPanel } from "../gestionMultimediaPanel";
+import GestionMultimediaPanel from "@/modules/appointment-management/components/gestionMultimediaPanel/gestionMultimediaPanel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { CarroselProps } from "../../types/carroselType";
+import { CarroselItem } from "@/modules/appointment-management/types/carroselType";
 
-const InstitutionalInfo = ({ items }: CarroselProps) => {
+
+const InstitutionalInfo = ({ items: initialItems }: CarroselProps) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [items, setItems] = useState<CarroselItem[]>(initialItems);
+
+  const updateItems = (newList: CarroselItem[]) => {
+    setItems(newList);
+  };
 
   return (
     <>
@@ -41,7 +55,14 @@ const InstitutionalInfo = ({ items }: CarroselProps) => {
         scrollBehavior="inside"
         className="max-h-[90vh] overflow-y-auto"
       >
-        <ModalContent>{() => <GestionMultimediaPanel />}</ModalContent>
+        <ModalContent>
+          {() => (
+            <GestionMultimediaPanel
+              initialItems={items}
+              onItemsUpdate={updateItems}
+            />
+          )}
+        </ModalContent>
       </Modal>
     </>
   );

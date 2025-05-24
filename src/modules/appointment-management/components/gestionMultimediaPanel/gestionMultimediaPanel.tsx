@@ -3,9 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import AddMediaForm from "./addMediaForm";
 import MediaList from "./mediaList";
-import { hookGestionMultimediaPanel } from "../../../appointment-management/hooks";
+import hookGestionMultimediaPanel from "@/modules/appointment-management/hooks/hookGestionMultimediaPanel";
+import { CarroselItem } from "@/modules/appointment-management/types/carroselType";
 
-const GestionMultimediaPanel = () => {
+type GestionMultimediaPanelProps = {
+  initialItems: CarroselItem[];
+  onItemsUpdate: (items: CarroselItem[]) => void;
+};
+
+const GestionMultimediaPanel = ({ initialItems, onItemsUpdate }: GestionMultimediaPanelProps) => {
   const {
     selectedDuration,
     setSelectedDuration,
@@ -14,7 +20,7 @@ const GestionMultimediaPanel = () => {
     handleDelete,
     handleSaveChanges,
     resetPendingDelete,
-  } = hookGestionMultimediaPanel();
+  } = hookGestionMultimediaPanel(initialItems, onItemsUpdate);
 
   return (
     <Card className="p-5">
@@ -30,7 +36,7 @@ const GestionMultimediaPanel = () => {
       <Tabs
         aria-label="Options"
         fullWidth
-        onSelectionChange={() => resetPendingDelete()} 
+        onSelectionChange={() => resetPendingDelete()}
       >
         <Tab key="addMedia" title="Agregar">
           <Card>

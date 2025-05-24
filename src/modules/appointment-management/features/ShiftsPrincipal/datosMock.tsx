@@ -15,6 +15,12 @@ export const carroselItems: {
   },
   {
     type: "image",
+    title: "Programa de bienestar",
+    duration: 4,
+    url: "https://cdn.pixabay.com/photo/2020/10/02/09/01/tablets-5620566_1280.jpg",
+  },
+  {
+    type: "image",
     title: "Programa de salud mental",
     duration: 3,
     url: "https://cdn.pixabay.com/photo/2017/10/07/14/55/depression-2826711_1280.jpg",
