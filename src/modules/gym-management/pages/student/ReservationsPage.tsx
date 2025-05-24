@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { UserIcon } from "@heroicons/react/24/solid";
+
 
 type Session = {
   label: string;
   day: string;
   time: string;
+  trainer?: string;
   capacity: number;
+  currentCapacity: number;
+  status?: string;
 };
 
 const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -31,13 +34,19 @@ export default function ReservationPage() {
       label: "Sesion gimnasio",
       day: "Lunes",
       time: "10:00 AM",
+      trainer: "Diana",
       capacity: 5,
+      currentCapacity: 5,
+      status: "Aprovado",
     },
     {
       label: "Sesion gimnasio",
       day: "Miércoles",
       time: "10:00 AM",
+      trainer: "Tomas",
       capacity: 10,
+      currentCapacity: 8,
+      status: "Pendiente",
     },
   ]);
 
@@ -46,7 +55,7 @@ export default function ReservationPage() {
   return (
     <div className="p-4">
       <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Sesiones creadas</h2>
+        <h2 className="text-lg font-semibold">Reservas</h2>
       </div>
       
       <div className="overflow-x-auto border rounded-b-lg">
@@ -111,10 +120,10 @@ function SessionDetailModal({
             <XMarkIcon className="w-6 h-6" />
           </button>
           <h2 className="text-xl font-semibold mb-4">Detalle de la sesión</h2>
-          <p><strong>Nombre:</strong> {session.label}</p>
-          <p><strong>Día:</strong> {session.day}</p>
-          <p><strong>Hora:</strong> {session.time}</p>
+          <p><strong>Entrenador:</strong> {session.trainer}</p>
           <p><strong>Capacidad:</strong> {session.capacity}</p>
+          <p><strong>Inscritos:</strong> {session.currentCapacity}</p>
+          <p><strong>Estado:</strong> {session.status}</p>
         </div>
       </div>
   );
