@@ -1,95 +1,314 @@
+// src/modules/user-administration/components/DoctorsPage.tsx
+
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faArrowLeft, faChartBar, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faArrowLeft,
+  faChartBar,
+  faTrashAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
+import apiClient from "../../../common/services/apiCliend";
 
-interface ListItemData {
-  id: number;
-  name: string;
+interface DoctorData {
+  id: string;         // en tu backend es string (p. ej. "2231334")
+  idType: string;     // ej. "ANI" o "CC"
+  fullName: string;
+  phone: string;
   email: string;
+  role: string;       // siempre "MEDICAL_STAFF"
   specialty: string;
-  isVerified?: boolean;
+  active: boolean;
 }
 
 const DoctorsPage: React.FC = () => {
   const navigate = useNavigate();
 
-  // State & initial load
-  const [doctors, setDoctors] = useState<ListItemData[]>([]);
+  // ——————— States principales ———————
+  const [doctors, setDoctors] = useState<DoctorData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  // Multi‐select
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Búsqueda
+  const [query, setQuery] = useState<string>("");
+
+  // Paginación
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Modal de estadísticas
+  const [statsDoctor, setStatsDoctor] = useState<DoctorData | null>(null);
+
+  // ——————— Cargar lista de doctores desde backend (MEDICAL_STAFF) ———————
+  const fetchDoctors = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("authToken") || "";
+      const resp = await apiClient.get<DoctorData[]>(
+        "/users-controll/users/by-role/MEDICAL_STAFF",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setDoctors(resp.data);
+    } catch (e: any) {
+      console.error("Error cargando doctores:", e);
+      setError(
+        e.response?.data?.message ||
+          "No se pudo cargar la lista de doctores. Intenta recargar."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const mockData: ListItemData[] = Array.from({ length: 100 }, (_, i) => ({
-      id: i + 1,
-      name: `Doctor muelitas ${i + 1}`,
-      email: `doctors${i + 1}@example.com`,
-      specialty: `Especialidad ${(i % 8) + 1}`,
-      isVerified: Math.random() < 0.5,
-    }));
-    setDoctors(mockData);
+    fetchDoctors();
   }, []);
 
-  // Multi-select logic
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const toggleSelect = (id: number) => {
-    setSelectedIds(prev => {
+  // ——————— Lógica de multi‐selección en la tabla ———————
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
       const copy = new Set(prev);
       copy.has(id) ? copy.delete(id) : copy.add(id);
       return copy;
     });
   };
-  const handleDeleteSelected = () => {
-    if (!selectedIds.size) return;
-    if (window.confirm(`¿Eliminar ${selectedIds.size} doctores seleccionados?`)) {
-      setDoctors(prev => prev.filter(s => !selectedIds.has(s.id)));
+
+  // ——————— Eliminar múltiples seleccionados ———————
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (
+      !window.confirm(
+        `¿Estás seguro de eliminar ${selectedIds.size} ${
+          selectedIds.size > 1 ? "doctores" : "doctor"
+        }?`
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    const token = localStorage.getItem("authToken") || "";
+    try {
+      // Borrar uno a uno
+      for (const id of selectedIds) {
+        await apiClient.delete(`/users-controll/users/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      // Refrescar lista y limpiar selección
+      await fetchDoctors();
       setSelectedIds(new Set());
+    } catch (e: any) {
+      console.error("Error eliminando doctores:", e);
+      setError(
+        e.response?.data?.message || "Error al eliminar. Inténtalo de nuevo."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Search
-  const [query, setQuery] = useState("");
+  // ——————— Agregar un nuevo médico ———————
+  // Para simplificar, pedimos datos con `prompt`. En producción sería mejor un modal/form completo.
+  const handleAddDoctor = async () => {
+    // Obtener datos básicos
+    const id = prompt("ID del nuevo doctor (sin espacios):", "");
+    if (!id) return;
+
+    const idType = prompt("Tipo de documento (ej. CC, ANI):", "");
+    if (!idType) return;
+
+    const fullName = prompt("Nombre completo del doctor:", "");
+    if (!fullName) return;
+
+    const email = prompt("Email:", "");
+    if (!email) return;
+
+    const phone = prompt("Teléfono (solo números):", "");
+    if (!phone) return;
+
+    const specialty = prompt("Especialidad (ej. GENERAL_MEDICINE):", "");
+    if (!specialty) return;
+
+    const password = prompt("Contraseña temporal para el doctor:", "");
+    if (!password) return;
+
+    setLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("authToken") || "";
+      // POST a /staff para crear el médico
+      await apiClient.post(
+        "/staff",
+        {
+          id,
+          idType,
+          fullName,
+          phone,
+          email,
+          role: "MEDICAL_STAFF",
+          password,
+          specialty,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // Refrescar lista
+      await fetchDoctors();
+    } catch (e: any) {
+      console.error("Error creando doctor:", e);
+      setError(
+        e.response?.data?.message ||
+          "No se pudo crear el doctor. Revisa los datos e inténtalo de nuevo."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ——————— Editar un médico existente ———————
+  const handleEditDoctor = async (doctor: DoctorData) => {
+    // Pedimos solo algunos campos modificables (nombre, email, phone, specialty)
+    const newFullName = prompt(
+      "Nuevo nombre completo:",
+      doctor.fullName
+    );
+    if (newFullName === null) return;
+
+    const newEmail = prompt("Nuevo email:", doctor.email);
+    if (newEmail === null) return;
+
+    const newPhone = prompt("Nuevo teléfono:", doctor.phone);
+    if (newPhone === null) return;
+
+    const newSpecialty = prompt(
+      "Nueva especialidad:",
+      doctor.specialty
+    );
+    if (newSpecialty === null) return;
+
+    setLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("authToken") || "";
+      // PUT a /users/{id} para actualizar
+      await apiClient.put(
+        `/users-controll/users/${doctor.id}`,
+        {
+          id: doctor.id,
+          idType: doctor.idType,
+          fullName: newFullName,
+          phone: newPhone,
+          email: newEmail,
+          role: doctor.role, // debería seguir “MEDICAL_STAFF”
+          password: undefined, // no cambiamos contraseña aquí
+          specialty: newSpecialty,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      await fetchDoctors();
+    } catch (e: any) {
+      console.error("Error actualizando doctor:", e);
+      setError(
+        e.response?.data?.message ||
+          "No se pudo actualizar al doctor. Revisa los datos e inténtalo de nuevo."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ——————— Eliminar un solo médico ———————
+  const handleDeleteDoctor = async (id: string) => {
+    if (!window.confirm("¿Eliminar este doctor?")) return;
+    setLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("authToken") || "";
+      await apiClient.delete(`/users-controll/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await fetchDoctors();
+      setSelectedIds((prev) => {
+        const copy = new Set(prev);
+        copy.delete(id);
+        return copy;
+      });
+    } catch (e: any) {
+      console.error("Error eliminando doctor:", e);
+      setError(
+        e.response?.data?.message ||
+          "No se pudo eliminar al doctor. Inténtalo de nuevo."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ——————— Filtrado local (buscador) ———————
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     setCurrentPage(1);
   };
-
-  // Stats modal
-  const [statsDoctor, setStatsDoctor] = useState<ListItemData | null>(null);
-  const openStats = (doctor: ListItemData) => setStatsDoctor(doctor);
-  const closeStats = () => setStatsDoctor(null);
-
-  // Pagination
-  const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-  const filtered = doctors.filter(s =>
-    s.name.toLowerCase().includes(query.toLowerCase()) ||
-    s.email.toLowerCase().includes(query.toLowerCase())
+  const filtered = doctors.filter(
+    (d) =>
+      d.fullName.toLowerCase().includes(query.toLowerCase()) ||
+      d.email.toLowerCase().includes(query.toLowerCase())
   );
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const displayed = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const handlePrev = () => setCurrentPage(p => Math.max(1, p - 1));
-  const handleNext = () => setCurrentPage(p => Math.min(totalPages, p + 1));
+  const displayed = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const handlePrev = () => setCurrentPage((p) => Math.max(1, p - 1));
+  const handleNext = () =>
+    setCurrentPage((p) => Math.min(totalPages, p + 1));
 
   const getInitial = (name: string) => name.charAt(0).toUpperCase();
 
+  // ——————— Modal de estadísticas ———————
+  const openStats = (doctor: DoctorData) => setStatsDoctor(doctor);
+  const closeStats = () => setStatsDoctor(null);
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Header */}
+      {/* Header con botón regresar */}
       <div className="flex items-center mb-4">
-        <button onClick={() => navigate(-1)} className="text-gray-700 hover:text-gray-900 p-2" title="Regresar">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-gray-700 hover:text-gray-900 p-2"
+          title="Regresar"
+        >
           <FontAwesomeIcon icon={faArrowLeft} size="lg" />
         </button>
-        <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">Doctores</h2>
+        <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">
+          Doctores
+        </h2>
       </div>
 
-      {/* Infobox Description */}
+      {/* Info box */}
       <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 text-blue-900">
         <p>
-          Usa el buscador para filtrar por nombre o correo, haz clic en cualquier parte de la fila para seleccionar doctores<br />
-          y emplea los botones para añadir, editar o eliminarlos de forma rápida.
+          Usa el buscador para filtrar por nombre o correo. Haz clic en
+          cualquier fila para seleccionarla. Emplea los botones para
+          añadir, editar o eliminarlos.
         </p>
       </div>
 
-      {/* Search + Add/Delete buttons */}
+      {/* Barra de búsqueda + botones */}
       <div className="flex items-center mb-6 space-x-2">
         <input
           type="text"
@@ -99,7 +318,7 @@ const DoctorsPage: React.FC = () => {
           className="flex-1 p-2 border border-gray-300 rounded"
         />
         <button
-          onClick={() => console.log("Agregar doctor")}
+          onClick={handleAddDoctor}
           className="text-white bg-blue-600 hover:bg-blue-700 rounded-full w-8 h-8 flex items-center justify-center"
           title="Agregar doctor"
         >
@@ -115,7 +334,13 @@ const DoctorsPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Table */}
+      {/* Mensaje de error o loading */}
+      {error && (
+        <p className="text-red-600 mb-4 font-medium text-sm">{error}</p>
+      )}
+      {loading && <p className="text-gray-600 mb-4">Cargando...</p>}
+
+      {/* Tabla */}
       <div className="bg-white rounded-lg shadow overflow-x-auto border border-gray-200">
         <table className="min-w-full table-auto">
           <thead>
@@ -128,35 +353,57 @@ const DoctorsPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {displayed.map(item => (
+            {displayed.map((doc) => (
               <tr
-                key={item.id}
-                className={`border-b hover:bg-gray-50 cursor-pointer ${selectedIds.has(item.id) ? 'bg-gray-100' : ''}`}
-                onClick={() => toggleSelect(item.id)}
+                key={doc.id}
+                className={`border-b hover:bg-gray-50 cursor-pointer ${
+                  selectedIds.has(doc.id) ? "bg-red-100" : ""
+                }`}
+                onClick={() => toggleSelect(doc.id)}
               >
-                <td className="px-4 py-2 text-gray-500">{item.id}</td>
+                <td className="px-4 py-2 text-gray-500">{doc.id}</td>
                 <td className="px-4 py-2 flex items-center space-x-2">
                   <div className="w-8 h-8 bg-red-200 text-red-800 rounded-full flex items-center justify-center font-semibold">
-                    {getInitial(item.name)}
+                    {getInitial(doc.fullName)}
                   </div>
-                  <span className="font-medium text-gray-800">{item.name}</span>
+                  <span className="font-medium text-gray-800">
+                    {doc.fullName}
+                  </span>
                 </td>
-                <td className="px-4 py-2 text-gray-500">{item.email}</td>
-                <td className="px-4 py-2 text-gray-500">{item.specialty}</td>
+                <td className="px-4 py-2 text-gray-500">{doc.email}</td>
+                <td className="px-4 py-2 text-gray-500">
+                  {doc.specialty}
+                </td>
                 <td className="px-4 py-2 flex items-center space-x-2">
                   <button
-                    onClick={(e) => { e.stopPropagation(); console.log("Editar:", item); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditDoctor(doc);
+                    }}
                     className="text-gray-600 hover:text-gray-800 p-1.5 hover:bg-gray-100 rounded"
                     title="Editar"
                   >
                     <FontAwesomeIcon icon={faEdit} size="lg" />
                   </button>
                   <button
-                    onClick={(e) => { e.stopPropagation(); openStats(item); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openStats(doc);
+                    }}
                     className="text-green-600 hover:text-green-800 p-1.5 hover:bg-gray-100 rounded"
                     title="Estadísticas"
                   >
                     <FontAwesomeIcon icon={faChartBar} size="lg" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteDoctor(doc.id);
+                    }}
+                    className="text-red-600 hover:text-red-800 p-1.5 hover:bg-gray-100 rounded"
+                    title="Eliminar este doctor"
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} size="lg" />
                   </button>
                 </td>
               </tr>
@@ -164,10 +411,14 @@ const DoctorsPage: React.FC = () => {
           </tbody>
         </table>
 
-        {filtered.length === 0 && (
-          <p className="text-center text-gray-500 py-4">No hay datos disponibles.</p>
+        {/* Si no hay resultados tras filtrar */}
+        {filtered.length === 0 && !loading && (
+          <p className="text-center text-gray-500 py-4">
+            No hay datos disponibles.
+          </p>
         )}
 
+        {/* Paginación */}
         {filtered.length > itemsPerPage && (
           <div className="flex justify-center items-center space-x-4 p-4">
             <button
@@ -177,7 +428,9 @@ const DoctorsPage: React.FC = () => {
             >
               Anterior
             </button>
-            <span>Página {currentPage} de {totalPages}</span>
+            <span>
+              Página {currentPage} de {totalPages}
+            </span>
             <button
               onClick={handleNext}
               disabled={currentPage === totalPages}
@@ -189,16 +442,23 @@ const DoctorsPage: React.FC = () => {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal de estadísticas (vacío, a completar luego) */}
       {statsDoctor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-1/2">
-            <h3 className="text-xl font-semibold mb-4">Estadísticas de {statsDoctor.name}</h3>
-            <p>Contenido de estadísticas para el doctor.</p>
+            <h3 className="text-xl font-semibold mb-4">
+              Estadísticas de {statsDoctor.fullName}
+            </h3>
+            <p>
+              Aquí irían las gráficas o datos concretos de ese doctor. Queda
+              pendiente implementar la lógica de “estadísticas”.
+            </p>
             <button
               onClick={closeStats}
               className="mt-4 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
-            >Cerrar</button>
+            >
+              Cerrar
+            </button>
           </div>
         </div>
       )}

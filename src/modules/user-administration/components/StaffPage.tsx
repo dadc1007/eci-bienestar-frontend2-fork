@@ -131,7 +131,7 @@ const StaffPage: React.FC = () => {
             {displayed.map(item => (
               <tr
                 key={item.id}
-                className={`border-b hover:bg-gray-50 cursor-pointer ${selectedIds.has(item.id) ? 'bg-gray-100' : ''}`}
+                className={`border-b hover:bg-gray-50 cursor-pointer ${selectedIds.has(item.id) ? 'bg-red-100' : ''}`}
                 onClick={() => toggleSelect(item.id)}
               >
                 <td className="px-4 py-2 text-gray-500">{item.id}</td>

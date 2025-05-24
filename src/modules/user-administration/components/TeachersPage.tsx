@@ -5,30 +5,95 @@ import { faPlus, faArrowLeft, faChartBar, faTrashAlt } from '@fortawesome/free-s
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 
 interface ListItemData {
-  id: number;
-  name: string;
-  email: string;
-  isVerified?: boolean;
+  id: string;           
+  name: string;         
+  email: string;        
+  isVerified: boolean;  
 }
 
 const TeachersPage: React.FC = () => {
   const navigate = useNavigate();
 
-  // State & initial load
   const [teacher, setTeacher] = useState<ListItemData[]>([]);
-  useEffect(() => {
-    const mockData: ListItemData[] = Array.from({ length: 100 }, (_, i) => ({
-      id: i + 1,
-      name: `Andrés Cantor ${i + 1}`,
-      email: `teacher${i + 1}@example.com`,
-      isVerified: Math.random() < 0.5,
-    }));
-    setTeacher(mockData);
-  }, []);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Multi-select logic
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const toggleSelect = (id: number) => {
+  useEffect(() => {
+    const API_URL = "https://suoeltmtp2.execute-api.us-east-1.amazonaws.com/users-controll/users/by-role/TEACHER";
+
+    setLoading(true);
+    setError(null);
+
+
+
+  fetch(API_URL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // Si necesitas autorización, añade aquí:
+        // "Authorization": `Bearer ${token}`
+      }
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          // Si el servidor responde con error, leemos el texto y lanzamos excepción
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status}: ${text}`);
+        }
+        return res.json();
+      })
+      .then((data: Array<{
+        id: string;
+        idType: string;
+        fullName: string;
+        phone: string;
+        email: string;
+        role: string;
+        active: boolean;
+      }>) => {
+        // Mapear cada objeto JSON a nuestro ListItemData
+        const mapped: ListItemData[] = data.map((u) => ({
+          id: u.id,
+          name: u.fullName,
+          email: u.email,
+          isVerified: u.active
+        }));
+        setTeacher(mapped);
+      })
+      .catch((err: Error) => {
+        console.error("Error al obtener profesores:", err);
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []); // arreglo de dependencias vacío → se ejecuta solo una vez
+
+  //
+  // 4) Mostrar mensajes de carga o error si corresponde:
+  //
+  if (loading) {
+    return (
+      <div className="p-6 bg-gray-100 min-h-screen">
+        <p className="text-gray-700 text-center">Cargando profesores…</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="p-6 bg-gray-100 min-h-screen">
+        <p className="text-red-600 text-center">Error: {error}</p>
+      </div>
+    );
+  }
+
+  //
+  // 5) El resto del componente (sin simulación de datos) permanece igual:
+  //
+
+  // Lógica de multiselección
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
       const copy = new Set(prev);
       copy.has(id) ? copy.delete(id) : copy.add(id);
@@ -43,19 +108,19 @@ const TeachersPage: React.FC = () => {
     }
   };
 
-  // Search
+  // Búsqueda
   const [query, setQuery] = useState("");
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     setCurrentPage(1);
   };
 
-  // Stats modal
+  // Modal de estadísticas
   const [statsTeacher, setStatsTeacher] = useState<ListItemData | null>(null);
-  const openStats = (teacher: ListItemData) => setStatsTeacher(teacher);
+  const openStats = (t: ListItemData) => setStatsTeacher(t);
   const closeStats = () => setStatsTeacher(null);
 
-  // Pagination
+  // Paginación
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const filtered = teacher.filter(s =>
@@ -69,6 +134,9 @@ const TeachersPage: React.FC = () => {
 
   const getInitial = (name: string) => name.charAt(0).toUpperCase();
 
+  //
+  // 6) Renderizado final de la tabla:
+  //
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Header */}
@@ -79,7 +147,7 @@ const TeachersPage: React.FC = () => {
         <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">Profesores</h2>
       </div>
 
-      {/* Infobox Description */}
+      {/* Infobox Descripción */}
       <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 text-blue-900">
         <p>
           Usa el buscador para filtrar por nombre o correo, haz clic en cualquier parte de la fila para seleccionar profesores<br />
@@ -87,7 +155,7 @@ const TeachersPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Search + Add/Delete buttons */}
+      {/* Búsqueda + Botones de Agregar/Eliminar */}
       <div className="flex items-center mb-6 space-x-2">
         <input
           type="text"
@@ -113,7 +181,7 @@ const TeachersPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Table */}
+      {/* Tabla */}
       <div className="bg-white rounded-lg shadow overflow-x-auto border border-gray-200">
         <table className="min-w-full table-auto">
           <thead>
