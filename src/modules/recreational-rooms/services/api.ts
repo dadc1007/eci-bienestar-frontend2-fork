@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const API_BASE_URL = "https://ecibienestar-booking-hnbeerf3caafcacs.canadacentral-01.azurewebsites.net";
@@ -238,7 +237,8 @@ export const stringToLocalTime = (timeString: string): LocalTime => {
 };
 
 // Función de ayuda para convertir LocalTime a string de tiempo
-export const localTimeToString = (time: LocalTime): string => {
+export const localTimeToString = (time: LocalTime | undefined): string => {
+	if (!time) return "00:00";
 	return `${time.hour.toString().padStart(2, "0")}:${time.minute.toString().padStart(2, "0")}`;
 };
 

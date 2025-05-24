@@ -1,5 +1,5 @@
 import axios from "axios";
-import {HallEntity} from "../types/RoomTypes.ts";
+import { HallEntity } from "../../../services/api";
 const API_BASE_URL = "https://ecibienestar-booking-hnbeerf3caafcacs.canadacentral-01.azurewebsites.net";
 
 export const hallsApi = {
@@ -73,3 +73,5 @@ export const hallsApi = {
         }
     },
 };
+
+export type { HallEntity };

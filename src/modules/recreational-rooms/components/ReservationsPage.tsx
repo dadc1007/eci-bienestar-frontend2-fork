@@ -85,9 +85,10 @@ const ReservationsPage: React.FC = () => {
 
 				const transformedReservations: Reservation[] = await Promise.all(
 					bookingsResponse.map(async (booking: any) => {
-						const loans = await bookingsApi.getLoansByBookingId(booking.id);
+						const loansResponse = await bookingsApi.getLoansByBookingId(booking.id);
+						const loans = Array.isArray(loansResponse) ? loansResponse : [];
 
-						const hall = await hallsApi.getHallById(booking.hallId);
+						const hall = await hallsApi.getHallById(booking.hallId.id);
 
 						const reservedItems: ReservedItem[] = await Promise.all(
 							loans.map(async (loan: any) => {
@@ -135,8 +136,10 @@ const ReservationsPage: React.FC = () => {
 	}, []);
 
 	const mapUserRole = (
-		role: string,
+		role: string | undefined,
 	): "Estudiante" | "Docente" | "Administrativo" | "Servicios Generales" => {
+		if (!role) return "Estudiante";
+		
 		switch (role.toUpperCase()) {
 			case "ESTUDIANTE":
 				return "Estudiante";
