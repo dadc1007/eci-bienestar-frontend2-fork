@@ -18,3 +18,24 @@ export interface HallEntity {
     description: string;
     capacity: number;
 }
+
+export interface BookingRequestDTO {
+    date: string;
+    startTime: {
+        hour: number;
+        minute: number;
+        second: number;
+        nano: number;
+    };
+    endTime: {
+        hour: number;
+        minute: number;
+        second: number;
+        nano: number;
+    };
+    hallId: number;
+    itemsLoans: {
+        idItem: number;
+        quantity: number;
+    }[];
+}

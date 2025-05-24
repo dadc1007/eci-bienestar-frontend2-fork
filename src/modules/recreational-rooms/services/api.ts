@@ -1,7 +1,7 @@
 
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "https://ecibienestar-booking-hnbeerf3caafcacs.canadacentral-01.azurewebsites.net";
 
 export interface HallEntity {
 	id?: number;

@@ -1,13 +1,11 @@
-
 import axios from "axios";
 import {HallEntity} from "../types/RoomTypes.ts";
-const API_BASE_URL = "http://localhost:8080";
-
+const API_BASE_URL = "https://ecibienestar-booking-hnbeerf3caafcacs.canadacentral-01.azurewebsites.net";
 
 export const hallsApi = {
     getAllHalls: async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/halls/all`, {});
+            const response = await axios.get(`${API_BASE_URL}/api/halls/all`);
             return response.data;
         } catch (error) {
             console.error("Error fetching halls:", error);
@@ -41,6 +39,16 @@ export const hallsApi = {
             return response.data;
         } catch (error) {
             console.error(`Error deleting hall with ID ${id}:`, error);
+            throw error;
+        }
+    },
+
+    updateHallStatus: async (id: number, status: string) => {
+        try {
+            const response = await axios.put(`${API_BASE_URL}/api/halls/${id}/status`, { status });
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating hall status with ID ${id}:`, error);
             throw error;
         }
     },
