@@ -103,7 +103,8 @@ function App() {
               />
             </Layout>
           }
-        />        {/* Módulo de Recreación/Salas */}
+        />        
+        {/* Módulo de Recreación/Salas */}
         <Route
           path="/modules/recreation/*"
           element={
@@ -114,8 +115,8 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               userEmail="administrador@ejemplo.com"
             >
-              <div className="w-full h-full flex flex-col p-6 lg:p-8">
-                <div className="container mx-auto px-4 py-8 h-full">
+              <div className="">
+                <div className="">
                   <div className="bg-white rounded-lg shadow p-6 h-full">
                     <Outlet />
                   </div>
