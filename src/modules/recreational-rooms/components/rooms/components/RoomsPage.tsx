@@ -1025,7 +1025,7 @@ const RoomsPage: React.FC = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-3xl bg-white p-8 text-left shadow-2xl transition-all border border-gray-200">
+                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all border-gray-200">
                   {roomToView && (
                     <>
                       <div className="flex items-center justify-between bg-green-700 px-6 py-4 rounded-t-2xl">

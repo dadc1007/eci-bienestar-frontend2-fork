@@ -1,31 +1,31 @@
-import { CalendarDaysIcon, Cog6ToothIcon, InformationCircleIcon, ChartBarIcon } from "@heroicons/react/24/outline";
+import { CalendarDaysIcon, CubeIcon, UsersIcon, ChartBarIcon, FireIcon } from "@heroicons/react/24/outline";
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../../assets/images/recreational-rooms.jpg";
 
 const navigationOptions = [
 	{
-		label: "Solicitar turno",
-		description: "Reserva un nuevo turno en nuestro sistema",
-		to: "/turns/request",
+		label: "Salas",
+		description: "Administra las salas recreativas disponibles en el campus",
+		to: "/modules/recreation/rooms",
+		icon: CubeIcon,
+	},
+	{
+		label: "Reservas",
+		description: "Gestiona las reservas de salas y elementos recreativos",
+		to: "/modules/recreation/reservations",
 		icon: CalendarDaysIcon,
 	},
 	{
-		label: "Gestionar turnos",
-		description: "Administra la disponibilidad de turnos",
-		to: "/turns/manage",
-		icon: Cog6ToothIcon,
+		label: "Elementos",
+		description: "Administra los elementos recreativos disponibles para préstamo",
+		to: "/modules/recreation/items",
+		icon: FireIcon,
 	},
 	{
-		label: "Contenido informativo",
-		description: "Observe los turnos en espera y gestione el contenido informativo",
-		to: "/turns/info",
-		icon: InformationCircleIcon,
-	},
-	{
-		label: "Ver estadísticas",
-		description: "Visualiza datos y métricas de los turnos",
-		to: "/turns/stats",
+		label: "Reportes",
+		description: "Genera reportes de reservas y elementos",
+		to: "/modules/recreation/reports",
 		icon: ChartBarIcon,
 	},
 ];
