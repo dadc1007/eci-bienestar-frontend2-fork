@@ -1,8 +1,8 @@
-import { TypeEnum } from "../../enums";
+import { TypeEnum } from "@modules/appointment-management/types/enums";
 
 export interface CreateMultimediaRequest {
   name: string;
-  url: string;
+  file: File;
   duration: number;
   type: TypeEnum;
 }

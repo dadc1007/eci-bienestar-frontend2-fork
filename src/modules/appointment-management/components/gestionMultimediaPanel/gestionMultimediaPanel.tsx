@@ -11,16 +11,14 @@ type GestionMultimediaPanelProps = {
   onItemsUpdate: (items: CarroselItem[]) => void;
 };
 
-const GestionMultimediaPanel = ({ initialItems, onItemsUpdate }: GestionMultimediaPanelProps) => {
-  const {
-    selectedDuration,
-    setSelectedDuration,
-    list,
-    pendingDelete,
-    handleDelete,
-    handleSaveChanges,
-    resetPendingDelete,
-  } = hookGestionMultimediaPanel(initialItems, onItemsUpdate);
+const GestionMultimediaPanel = ({
+  initialItems,
+  onItemsUpdate,
+}: GestionMultimediaPanelProps) => {
+  const { handleSaveChanges, resetPendingDelete } = hookGestionMultimediaPanel(
+    initialItems,
+    onItemsUpdate
+  );
 
   return (
     <Card className="p-5">
@@ -41,10 +39,7 @@ const GestionMultimediaPanel = ({ initialItems, onItemsUpdate }: GestionMultimed
         <Tab key="addMedia" title="Agregar">
           <Card>
             <CardBody className="flex flex-col gap-4">
-              <AddMediaForm
-                selectedDuration={selectedDuration}
-                setSelectedDuration={setSelectedDuration}
-              />
+              <AddMediaForm />
             </CardBody>
           </Card>
         </Tab>
@@ -52,15 +47,11 @@ const GestionMultimediaPanel = ({ initialItems, onItemsUpdate }: GestionMultimed
         <Tab key="deleteMedia" title="Eliminar">
           <Card>
             <CardBody>
-              <MediaList
-                list={list}
-                pendingDelete={pendingDelete}
-                handleDelete={handleDelete}
-              />
+              <MediaList />
               <Button
                 className="w-full my-2 bg-health-primary text-white"
                 type="button"
-                onClick={handleSaveChanges}
+                onPress={handleSaveChanges}
               >
                 <FontAwesomeIcon icon={faFloppyDisk} /> Guardar cambios
               </Button>
