@@ -13,6 +13,11 @@ import {
 	XCircleIcon,
 	SparklesIcon,
 	WrenchScrewdriverIcon,
+	CalendarIcon,
+	ClockIcon,
+	UserIcon,
+	IdentificationIcon,
+	AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import toast, { Toaster } from "react-hot-toast";
 import {
@@ -35,6 +40,15 @@ interface RecreationalItem {
 	lastMaintenance?: string;
 	image?: string;
 	hallId?: number;
+	lastReservation?: {
+		userName: string;
+		userIdentification: string;
+		userRole: string;
+		date: string;
+		startTime: string;
+		endTime: string;
+		status: string;
+	};
 }
 
 const ItemsPage: React.FC = () => {
@@ -64,6 +78,9 @@ const ItemsPage: React.FC = () => {
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterCategory, setFilterCategory] = useState("");
+	const [filterStatus, setFilterStatus] = useState<string>("");
+	const [sortField, setSortField] = useState<string>("name");
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -184,6 +201,31 @@ const ItemsPage: React.FC = () => {
 
 		return matchesSearch && matchesCategory;
 	});
+
+	const handleSort = (field: string) => {
+		if (sortField === field) {
+			setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+		} else {
+			setSortField(field);
+			setSortDirection("asc");
+		}
+	};
+
+	const sortedAndFilteredItems = filteredItems
+		.filter((item) => {
+			if (!filterStatus) return true;
+			return item.condition === filterStatus;
+		})
+		.sort((a, b) => {
+			const aValue = a[sortField as keyof RecreationalItem];
+			const bValue = b[sortField as keyof RecreationalItem];
+			if (typeof aValue === "string" && typeof bValue === "string") {
+				return sortDirection === "asc"
+					? aValue.localeCompare(bValue)
+					: bValue.localeCompare(aValue);
+			}
+			return 0;
+		});
 
 	const handleAddItem = async () => {
 		if (
@@ -441,36 +483,51 @@ const ItemsPage: React.FC = () => {
 					<h1 className="text-2xl font-bold text-gray-800">Gestión de Elementos</h1>
 				</div>
 				<div className="flex space-x-4">
-					<div className="relative">
-						<input
-							type="text"
-							placeholder="Buscar elementos..."
-							className="border rounded-lg px-4 py-2 w-64"
-							value={searchQuery}
-							onChange={(e) => handleSearch(e.target.value)}
-							aria-label="Buscar elementos"
-						/>
-						<svg
-							className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+					<div className="flex space-x-2">
+						<div className="relative">
+							<input
+								type="text"
+								placeholder="Buscar elementos..."
+								className="border rounded-lg px-4 py-2 w-64"
+								value={searchQuery}
+								onChange={(e) => handleSearch(e.target.value)}
+								aria-label="Buscar elementos"
 							/>
-						</svg>
+							<svg
+								className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+								/>
+							</svg>
+						</div>
+						<select
+							className="border rounded-lg px-4 py-2"
+							value={filterStatus}
+							onChange={(e) => setFilterStatus(e.target.value)}
+							aria-label="Filtrar por estado"
+						>
+							<option value="">Todos los estados</option>
+							<option value="Nuevo">Nuevo</option>
+							<option value="Buen estado">Buen estado</option>
+							<option value="Regular">Regular</option>
+							<option value="Requiere mantenimiento">Requiere mantenimiento</option>
+						</select>
 					</div>
 					<button
 						type="button"
 						onClick={() => setIsFormModalOpen(true)}
-						className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+						className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center gap-2"
 						aria-label="Añadir nuevo elemento"
 					>
+						<SparklesIcon className="h-5 w-5" />
 						Añadir Elemento
 					</button>
 				</div>
@@ -501,23 +558,71 @@ const ItemsPage: React.FC = () => {
 				<table className="min-w-full divide-y divide-gray-200">
 					<thead className="bg-gray-50">
 						<tr>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								ID
+							<th
+								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+								onClick={() => handleSort("id")}
+							>
+								<div className="flex items-center gap-2">
+									ID
+									{sortField === "id" && (
+										<span>{sortDirection === "asc" ? "↑" : "↓"}</span>
+									)}
+								</div>
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Nombre
+							<th
+								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+								onClick={() => handleSort("name")}
+							>
+								<div className="flex items-center gap-2">
+									Nombre
+									{sortField === "name" && (
+										<span>{sortDirection === "asc" ? "↑" : "↓"}</span>
+									)}
+								</div>
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Categoría
+							<th
+								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+								onClick={() => handleSort("category")}
+							>
+								<div className="flex items-center gap-2">
+									Categoría
+									{sortField === "category" && (
+										<span>{sortDirection === "asc" ? "↑" : "↓"}</span>
+									)}
+								</div>
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Cantidad
+							<th
+								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+								onClick={() => handleSort("availableQuantity")}
+							>
+								<div className="flex items-center gap-2">
+									Disponibilidad
+									{sortField === "availableQuantity" && (
+										<span>{sortDirection === "asc" ? "↑" : "↓"}</span>
+									)}
+								</div>
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Estado
+							<th
+								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+								onClick={() => handleSort("condition")}
+							>
+								<div className="flex items-center gap-2">
+									Estado
+									{sortField === "condition" && (
+										<span>{sortDirection === "asc" ? "↑" : "↓"}</span>
+									)}
+								</div>
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Ubicación
+							<th
+								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+								onClick={() => handleSort("location")}
+							>
+								<div className="flex items-center gap-2">
+									Ubicación
+									{sortField === "location" && (
+										<span>{sortDirection === "asc" ? "↑" : "↓"}</span>
+									)}
+								</div>
 							</th>
 							<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
 								Acciones
@@ -525,19 +630,40 @@ const ItemsPage: React.FC = () => {
 						</tr>
 					</thead>
 					<tbody className="bg-white divide-y divide-gray-200">
-						{filteredItems.map((item) => (
+						{sortedAndFilteredItems.map((item) => (
 							<tr key={item.id} className="hover:bg-gray-50">
 								<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
 									{item.id}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{item.name}
+									<div className="flex items-center gap-2">
+										<span>{item.name}</span>
+										{item.lastReservation && (
+											<span
+												className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+												title={`Última reserva: ${item.lastReservation.userName}`}
+											>
+												<CalendarIcon className="h-3 w-3 mr-1" />
+												Reservado
+											</span>
+										)}
+									</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									{item.category}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{item.availableQuantity}/{item.totalQuantity}
+									<div className="flex items-center gap-2">
+										<span
+											className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+												item.availableQuantity > 0
+													? "bg-green-100 text-green-800"
+													: "bg-red-100 text-red-800"
+											}`}
+										>
+											{item.availableQuantity}/{item.totalQuantity}
+										</span>
+									</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
@@ -545,24 +671,27 @@ const ItemsPage: React.FC = () => {
 											item.condition === "Nuevo"
 												? "bg-green-100 text-green-800"
 												: item.condition === "Buen estado"
-													? "bg-blue-100 text-blue-800"
-													: item.condition === "Regular"
-														? "bg-yellow-100 text-yellow-800"
-														: "bg-red-100 text-red-800"
+												? "bg-blue-100 text-blue-800"
+												: item.condition === "Regular"
+												? "bg-yellow-100 text-yellow-800"
+												: "bg-red-100 text-red-800"
 										}`}
 									>
 										{item.condition}
 									</span>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{item.location}
+									<div className="flex items-center gap-2">
+										<MapPinIcon className="h-4 w-4 text-gray-400" />
+										{item.location}
+									</div>
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
 									<div className="flex justify-center space-x-3">
 										<button
 											type="button"
 											onClick={() => handleViewItem(item)}
-											className="text-blue-600 hover:text-blue-800"
+											className="text-blue-600 hover:text-blue-800 transition-colors"
 											aria-label={`Ver detalles del elemento ${item.name}`}
 										>
 											<EyeIcon className="h-5 w-5" />
@@ -570,7 +699,7 @@ const ItemsPage: React.FC = () => {
 										<button
 											type="button"
 											onClick={() => handleEditItem(item.id)}
-											className="text-yellow-600 hover:text-yellow-800"
+											className="text-yellow-600 hover:text-yellow-800 transition-colors"
 											aria-label={`Editar elemento ${item.name}`}
 										>
 											<PencilIcon className="h-5 w-5" />
@@ -578,7 +707,7 @@ const ItemsPage: React.FC = () => {
 										<button
 											type="button"
 											onClick={() => openDeleteModal(item.id)}
-											className="text-red-600 hover:text-red-800"
+											className="text-red-600 hover:text-red-800 transition-colors"
 											aria-label={`Eliminar elemento ${item.name}`}
 										>
 											<TrashIcon className="h-5 w-5" />
@@ -587,7 +716,7 @@ const ItemsPage: React.FC = () => {
 								</td>
 							</tr>
 						))}
-						{filteredItems.length === 0 && (
+						{sortedAndFilteredItems.length === 0 && (
 							<tr>
 								<td
 									colSpan={7}
