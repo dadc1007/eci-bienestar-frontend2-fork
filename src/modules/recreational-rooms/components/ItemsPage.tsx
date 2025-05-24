@@ -1,13 +1,27 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Dialog, Transition } from "@headlessui/react";
+import {
+	EyeIcon,
+	PencilIcon,
+	TrashIcon,
+	XMarkIcon,
+	MapPinIcon,
+	ClipboardDocumentIcon,
+	CheckCircleIcon,
+	XCircleIcon,
+	SparklesIcon,
+	WrenchScrewdriverIcon,
+} from "@heroicons/react/24/outline";
+import toast, { Toaster } from "react-hot-toast";
 import {
 	type HallEntity,
 	type ItemEntity,
 	type ItemEntityRequest,
 	itemsApi,
 } from "../services/api";
-import {hallsApi} from "@modules/recreational-rooms/components/rooms/services/RoomService.ts";
+import { hallsApi } from "@modules/recreational-rooms/components/rooms/services/RoomService.ts";
 
 interface RecreationalItem {
 	id: string;
@@ -26,14 +40,18 @@ interface RecreationalItem {
 const ItemsPage: React.FC = () => {
 	const navigate = useNavigate();
 
-	const categories = ["Juegos", "mesa"];
-
 	const [items, setItems] = useState<RecreationalItem[]>([]);
 	const [halls, setHalls] = useState<HallEntity[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const [showAddForm, setShowAddForm] = useState(false);
+	const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+	const [selectedItem, setSelectedItem] = useState<string | null>(null);
+	const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+	const [itemToView, setItemToView] = useState<RecreationalItem | null>(null);
+
 	const [newItem, setNewItem] = useState<Partial<RecreationalItem>>({
 		name: "",
 		category: "",
@@ -43,7 +61,7 @@ const ItemsPage: React.FC = () => {
 		location: "",
 		description: "",
 	});
-	const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterCategory, setFilterCategory] = useState("");
 
@@ -84,6 +102,10 @@ const ItemsPage: React.FC = () => {
 				setError(
 					"Hubo un problema al cargar los datos. Por favor, intenta de nuevo más tarde.",
 				);
+				toast.error("Error al cargar los elementos", {
+					icon: "❌",
+					duration: 3000,
+				});
 			} finally {
 				setLoading(false);
 			}
@@ -121,6 +143,32 @@ const ItemsPage: React.FC = () => {
 				return "M";
 			default:
 				return "B";
+		}
+	};
+
+	const handleSearch = (query: string) => {
+		setSearchQuery(query);
+		const filteredResults = items.filter(
+			(item) =>
+				item.name.toLowerCase().includes(query.toLowerCase()) ||
+				item.description?.toLowerCase().includes(query.toLowerCase()) ||
+				item.location.toLowerCase().includes(query.toLowerCase())
+		);
+
+		if (query && filteredResults.length > 0) {
+			toast.success(`${filteredResults.length} elementos encontrados`, {
+				icon: "��",
+				duration: 1500,
+				style: {
+					background: "#3B82F6",
+					color: "white",
+				},
+			});
+		} else if (query && filteredResults.length === 0) {
+			toast.error("No se encontraron elementos con esos criterios", {
+				icon: "🔍",
+				duration: 1500,
+			});
 		}
 	};
 
@@ -169,18 +217,30 @@ const ItemsPage: React.FC = () => {
 				};
 
 				setItems([...items, newItemWithId]);
-				resetForm();
+				setIsFormModalOpen(false);
+				setNewItem({
+					name: "",
+					category: "",
+					totalQuantity: 1,
+					availableQuantity: 1,
+					condition: "Nuevo",
+					location: "",
+					description: "",
+				});
 				setError(null);
+				toast.success("Elemento añadido con éxito");
 			} catch (err) {
 				console.error("Error al añadir el elemento:", err);
 				setError(
 					"Hubo un problema al añadir el elemento. Por favor, intenta de nuevo.",
 				);
+				toast.error("Error al añadir el elemento");
 			} finally {
 				setLoading(false);
 			}
 		} else {
 			setError("Por favor, completa todos los campos obligatorios.");
+			toast.error("Por favor, completa todos los campos obligatorios");
 		}
 	};
 
@@ -188,14 +248,14 @@ const ItemsPage: React.FC = () => {
 		const itemToEdit = items.find((item) => item.id === itemId);
 		if (itemToEdit) {
 			setNewItem(itemToEdit);
-			setEditingItemId(itemId);
-			setShowAddForm(true);
+			setSelectedItem(itemId);
+			setIsFormModalOpen(true);
 		}
 	};
 
 	const handleSaveEdit = async () => {
 		if (
-			editingItemId &&
+			selectedItem &&
 			newItem.name &&
 			newItem.category &&
 			newItem.location &&
@@ -205,7 +265,7 @@ const ItemsPage: React.FC = () => {
 				setLoading(true);
 
 				const itemToUpdate: ItemEntity = {
-					id: Number.parseInt(editingItemId),
+					id: Number.parseInt(selectedItem),
 					name: newItem.name,
 					description: newItem.description || "",
 					status: mapConditionToStatus(newItem.condition || "Buen estado"),
@@ -216,13 +276,13 @@ const ItemsPage: React.FC = () => {
 					hall: newItem.hallId,
 				};
 
-				await itemsApi.updateItem(Number.parseInt(editingItemId), itemToUpdate);
+				await itemsApi.updateItem(Number.parseInt(selectedItem), itemToUpdate);
 
 				const hall = halls.find((h) => h.id === newItem.hallId);
 
 				setItems(
 					items.map((item) =>
-						item.id === editingItemId
+						item.id === selectedItem
 							? {
 									...item,
 									name: newItem.name || item.name,
@@ -241,141 +301,122 @@ const ItemsPage: React.FC = () => {
 					),
 				);
 
-				resetForm();
+				setIsFormModalOpen(false);
+				setSelectedItem(null);
+				setNewItem({
+					name: "",
+					category: "",
+					totalQuantity: 1,
+					availableQuantity: 1,
+					condition: "Nuevo",
+					location: "",
+					description: "",
+				});
 				setError(null);
+				toast.success("Elemento actualizado con éxito");
 			} catch (err) {
 				console.error("Error al actualizar el elemento:", err);
 				setError(
 					"Hubo un problema al actualizar el elemento. Por favor, intenta de nuevo.",
 				);
+				toast.error("Error al actualizar el elemento");
 			} finally {
 				setLoading(false);
 			}
 		} else {
 			setError("Por favor, completa todos los campos obligatorios.");
+			toast.error("Por favor, completa todos los campos obligatorios");
 		}
 	};
 
 	const handleDeleteItem = async (itemId: string) => {
-		if (window.confirm("¿Estás seguro de que deseas eliminar este elemento?")) {
-			try {
-				setLoading(true);
-
-				await itemsApi.deleteItem(Number.parseInt(itemId));
-
-				setItems(items.filter((item) => item.id !== itemId));
-				setError(null);
-			} catch (err) {
-				console.error("Error al eliminar el elemento:", err);
-				setError(
-					"Hubo un problema al eliminar el elemento. Por favor, intenta de nuevo.",
-				);
-			} finally {
-				setLoading(false);
-			}
-		}
-	};
-
-	const resetForm = () => {
-		setNewItem({
-			name: "",
-			category: "",
-			totalQuantity: 1,
-			availableQuantity: 1,
-			condition: "Nuevo",
-			location: "",
-			description: "",
-		});
-		setEditingItemId(null);
-		setShowAddForm(false);
-	};
-
-	const handleUpdateAvailability = async (
-		itemId: string,
-		available: number,
-	) => {
 		try {
 			setLoading(true);
-
-			const item = items.find((i) => i.id === itemId);
-			if (!item) return;
-
-			const itemToUpdate: ItemEntity = {
-				id: Number.parseInt(itemId),
-				name: item.name,
-				description: item.description || "",
-				status: mapConditionToStatus(item.condition),
-				category: item.category,
-				quantity: item.totalQuantity,
-				quantityAvailable: available,
-				available: available > 0,
-				hall: item.hallId || 0,
-			};
-
-			await itemsApi.updateItem(Number.parseInt(itemId), itemToUpdate);
-
-			setItems(
-				items.map((i) =>
-					i.id === itemId ? { ...i, availableQuantity: available } : i,
-				),
-			);
-
-			setError(null);
+			await itemsApi.deleteItem(Number.parseInt(itemId));
+			setItems(items.filter((item) => item.id !== itemId));
+			setIsDeleteModalOpen(false);
+			setItemToDelete(null);
+			toast.success("Elemento eliminado con éxito");
 		} catch (err) {
-			console.error("Error al actualizar la disponibilidad:", err);
+			console.error("Error al eliminar el elemento:", err);
 			setError(
-				"Hubo un problema al actualizar la disponibilidad. Por favor, intenta de nuevo.",
+				"Hubo un problema al eliminar el elemento. Por favor, intenta de nuevo.",
 			);
+			toast.error("Error al eliminar el elemento");
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const handleRegisterMaintenance = async (itemId: string) => {
-		try {
-			setLoading(true);
-
-			const today = new Date().toISOString().split("T")[0];
-			const item = items.find((i) => i.id === itemId);
-			if (!item) return;
-
-			const itemToUpdate: ItemEntity = {
-				id: Number.parseInt(itemId),
-				name: item.name,
-				description: item.description || "",
-				status: "B",
-				category: item.category,
-				quantity: item.totalQuantity,
-				quantityAvailable: item.availableQuantity,
-				available: item.availableQuantity > 0,
-				hall: item.hallId || 0,
-			};
-
-			await itemsApi.updateItem(Number.parseInt(itemId), itemToUpdate);
-
-			setItems(
-				items.map((i) =>
-					i.id === itemId
-						? { ...i, lastMaintenance: today, condition: "Buen estado" }
-						: i,
-				),
-			);
-
-			setError(null);
-		} catch (err) {
-			console.error("Error al registrar el mantenimiento:", err);
-			setError(
-				"Hubo un problema al registrar el mantenimiento. Por favor, intenta de nuevo.",
-			);
-		} finally {
-			setLoading(false);
-		}
+	const handleViewItem = (item: RecreationalItem) => {
+		setItemToView(item);
+		setIsViewModalOpen(true);
 	};
+
+	const openDeleteModal = (itemId: string) => {
+		setItemToDelete(itemId);
+		setIsDeleteModalOpen(true);
+	};
+
+	const InfoItem = ({
+		icon: Icon,
+		label,
+		value,
+	}: {
+		icon: React.ElementType;
+		label: string;
+		value: React.ReactNode;
+	}) => (
+		<div className="flex items-start gap-3 bg-gray-50 p-4 rounded-xl shadow-inner">
+			<div className="flex-shrink-0 text-green-600">
+				<Icon className="h-5 w-5" />
+			</div>
+			<div className="text-sm text-gray-700">
+				<h4 className="font-semibold text-gray-600">{label}</h4>
+				<p className="mt-1">{value}</p>
+			</div>
+		</div>
+	);
+
 	return (
 		<div className="container mx-auto px-4 py-6">
+			<Toaster
+				position="top-right"
+				reverseOrder={false}
+				gutter={8}
+				toastOptions={{
+					duration: 3000,
+					success: {
+						style: {
+							background: "#10B981",
+							color: "white",
+							padding: "16px",
+							borderRadius: "8px",
+						},
+						iconTheme: {
+							primary: "white",
+							secondary: "#10B981",
+						},
+					},
+					error: {
+						style: {
+							background: "#EF4444",
+							color: "white",
+							padding: "16px",
+							borderRadius: "8px",
+						},
+						iconTheme: {
+							primary: "white",
+							secondary: "#EF4444",
+						},
+					},
+				}}
+			/>
+
 			<div className="flex justify-between items-center mb-6">
 				<div className="flex items-center">
 					<button
+						type="button"
 						onClick={() => navigate("/modules/recreation")}
 						className="mr-4 text-green-700 hover:text-green-900 flex items-center"
 						aria-label="Volver a opciones de salas recreativas"
@@ -385,6 +426,9 @@ const ItemsPage: React.FC = () => {
 							className="h-5 w-5 mr-1"
 							viewBox="0 0 20 20"
 							fill="currentColor"
+							aria-hidden="true"
+							role="img"
+							aria-label="Icono de volver"
 						>
 							<path
 								fillRule="evenodd"
@@ -394,9 +438,7 @@ const ItemsPage: React.FC = () => {
 						</svg>
 						Volver
 					</button>
-					<h1 className="text-2xl font-bold text-gray-800">
-						Gestión de Elementos Recreativos
-					</h1>
+					<h1 className="text-2xl font-bold text-gray-800">Gestión de Elementos</h1>
 				</div>
 				<div className="flex space-x-4">
 					<div className="relative">
@@ -405,7 +447,8 @@ const ItemsPage: React.FC = () => {
 							placeholder="Buscar elementos..."
 							className="border rounded-lg px-4 py-2 w-64"
 							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
+							onChange={(e) => handleSearch(e.target.value)}
+							aria-label="Buscar elementos"
 						/>
 						<svg
 							className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
@@ -422,23 +465,13 @@ const ItemsPage: React.FC = () => {
 							/>
 						</svg>
 					</div>
-					<select
-						className="border rounded-lg px-4 py-2"
-						value={filterCategory}
-						onChange={(e) => setFilterCategory(e.target.value)}
-					>
-						<option value="">Todas las categorías</option>
-						{categories.map((category) => (
-							<option key={category} value={category}>
-								{category}
-							</option>
-						))}
-					</select>
 					<button
-						onClick={() => setShowAddForm(!showAddForm)}
-						className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300"
+						type="button"
+						onClick={() => setIsFormModalOpen(true)}
+						className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+						aria-label="Añadir nuevo elemento"
 					>
-						{showAddForm ? "Cancelar" : "Añadir Elemento"}
+						Añadir Elemento
 					</button>
 				</div>
 			</div>
@@ -464,196 +497,6 @@ const ItemsPage: React.FC = () => {
 				</div>
 			)}
 
-			{showAddForm && (
-				<div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
-					<h2 className="text-xl font-semibold mb-4">
-						{editingItemId ? "Editar Elemento" : "Añadir Nuevo Elemento"}
-					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Nombre del Elemento
-							</label>
-							<input
-								type="text"
-								className="w-full px-3 py-2 border border-gray-300 rounded-md"
-								value={newItem.name}
-								onChange={(e) =>
-									setNewItem({ ...newItem, name: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Categoría
-							</label>
-							<select
-								className="w-full px-3 py-2 border border-gray-300 rounded-md"
-								value={newItem.category}
-								onChange={(e) =>
-									setNewItem({ ...newItem, category: e.target.value })
-								}
-								required
-							>
-								<option value="">Selecciona una categoría</option>
-								{categories.map((category) => (
-									<option key={category} value={category}>
-										{category}
-									</option>
-								))}
-							</select>
-						</div>
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Cantidad Total
-							</label>
-							<input
-								type="number"
-								className="w-full px-3 py-2 border border-gray-300 rounded-md"
-								value={newItem.totalQuantity}
-								onChange={(e) => {
-									const value = Number.parseInt(e.target.value) || 1;
-									setNewItem({
-										...newItem,
-										totalQuantity: value,
-										availableQuantity: editingItemId
-											? newItem.availableQuantity
-											: value,
-									});
-								}}
-								min="1"
-								required
-							/>
-						</div>
-						{editingItemId && (
-							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									Cantidad Disponible
-								</label>
-								<input
-									type="number"
-									className="w-full px-3 py-2 border border-gray-300 rounded-md"
-									value={newItem.availableQuantity}
-									onChange={(e) => {
-										const value = Number.parseInt(e.target.value) || 0;
-										setNewItem({
-											...newItem,
-											availableQuantity: Math.min(
-												value,
-												newItem.totalQuantity || 1,
-											),
-										});
-									}}
-									min="0"
-									max={newItem.totalQuantity}
-									required
-								/>
-							</div>
-						)}
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Ubicación
-							</label>
-							<input
-								type="text"
-								className="w-full px-3 py-2 border border-gray-300 rounded-md"
-								value={newItem.location}
-								onChange={(e) =>
-									setNewItem({ ...newItem, location: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Estado
-							</label>
-							<select
-								className="w-full px-3 py-2 border border-gray-300 rounded-md"
-								value={newItem.condition}
-								onChange={(e) =>
-									setNewItem({ ...newItem, condition: e.target.value as never })
-								}
-								required
-							>
-								<option value="Nuevo">Nuevo</option>
-								<option value="Buen estado">Buen estado</option>
-								<option value="Regular">Regular</option>
-								<option value="Requiere mantenimiento">
-									Requiere mantenimiento
-								</option>
-							</select>
-						</div>
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Último Mantenimiento
-							</label>
-							<input
-								type="date"
-								className="w-full px-3 py-2 border border-gray-300 rounded-md"
-								value={newItem.lastMaintenance}
-								onChange={(e) =>
-									setNewItem({ ...newItem, lastMaintenance: e.target.value })
-								}
-							/>
-						</div>
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Sala
-							</label>
-							<select
-								className="w-full px-3 py-2 border border-gray-300 rounded-md"
-								value={newItem.hallId}
-								onChange={(e) =>
-									setNewItem({
-										...newItem,
-										hallId: Number.parseInt(e.target.value),
-									})
-								}
-								required
-							>
-								<option value="">Selecciona una sala</option>
-								{halls.map((hall) => (
-									<option key={hall.id} value={hall.id}>
-										{hall.name}
-									</option>
-								))}
-							</select>
-						</div>
-					</div>
-
-					<div className="mb-4">
-						<label className="block text-sm font-medium text-gray-700 mb-1">
-							Descripción
-						</label>
-						<textarea
-							className="w-full px-3 py-2 border border-gray-300 rounded-md"
-							value={newItem.description}
-							onChange={(e) =>
-								setNewItem({ ...newItem, description: e.target.value })
-							}
-							rows={3}
-						/>
-					</div>
-
-					<div className="flex justify-end space-x-3">
-						<button
-							onClick={resetForm}
-							className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-						>
-							Cancelar
-						</button>
-						<button
-							onClick={editingItemId ? handleSaveEdit : handleAddItem}
-							className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-						>
-							{editingItemId ? "Guardar Cambios" : "Añadir Elemento"}
-						</button>
-					</div>
-				</div>
-			)}
-
 			<div className="bg-white rounded-lg shadow overflow-hidden">
 				<table className="min-w-full divide-y divide-gray-200">
 					<thead className="bg-gray-50">
@@ -662,7 +505,7 @@ const ItemsPage: React.FC = () => {
 								ID
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Elemento
+								Nombre
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								Categoría
@@ -676,10 +519,7 @@ const ItemsPage: React.FC = () => {
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								Ubicación
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Sala
-							</th>
-							<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+							<th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
 								Acciones
 							</th>
 						</tr>
@@ -691,25 +531,13 @@ const ItemsPage: React.FC = () => {
 									{item.id}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<div>
-										<p className="font-medium">{item.name}</p>
-										{item.description && (
-											<p className="text-xs text-gray-400 truncate max-w-xs">
-												{item.description}
-											</p>
-										)}
-									</div>
+									{item.name}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									{item.category}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<div>
-										<p>Disponible: {item.availableQuantity}</p>
-										<p className="text-xs text-gray-400">
-											Total: {item.totalQuantity}
-										</p>
-									</div>
+									{item.availableQuantity}/{item.totalQuantity}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<span
@@ -725,61 +553,36 @@ const ItemsPage: React.FC = () => {
 									>
 										{item.condition}
 									</span>
-									{item.lastMaintenance && (
-										<p className="text-xs text-gray-400 mt-1">
-											Mant.:{" "}
-											{new Date(item.lastMaintenance).toLocaleDateString()}
-										</p>
-									)}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									{item.location}
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{item.hallId
-										? halls.find((hall) => hall.id === item.hallId)?.name
-										: "Sin sala"}
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-									<div className="flex justify-end space-x-2">
+								<td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+									<div className="flex justify-center space-x-3">
 										<button
-											onClick={() => handleEditItem(item.id)}
-											className="text-indigo-600 hover:text-indigo-900"
+											type="button"
+											onClick={() => handleViewItem(item)}
+											className="text-blue-600 hover:text-blue-800"
+											aria-label={`Ver detalles del elemento ${item.name}`}
 										>
-											Editar
+											<EyeIcon className="h-5 w-5" />
 										</button>
-										<div className="relative group">
-											<button className="text-gray-600 hover:text-gray-900">
-												Más ▼
-											</button>
-											<div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block z-10">
-												<div className="py-1">
-													<button
-														onClick={() =>
-															handleUpdateAvailability(
-																item.id,
-																item.totalQuantity,
-															)
-														}
-														className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-													>
-														Restablecer Disponibilidad
-													</button>
-													<button
-														onClick={() => handleRegisterMaintenance(item.id)}
-														className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-													>
-														Registrar Mantenimiento
-													</button>
-													<button
-														onClick={() => handleDeleteItem(item.id)}
-														className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
-													>
-														Eliminar
-													</button>
-												</div>
-											</div>
-										</div>
+										<button
+											type="button"
+											onClick={() => handleEditItem(item.id)}
+											className="text-yellow-600 hover:text-yellow-800"
+											aria-label={`Editar elemento ${item.name}`}
+										>
+											<PencilIcon className="h-5 w-5" />
+										</button>
+										<button
+											type="button"
+											onClick={() => openDeleteModal(item.id)}
+											className="text-red-600 hover:text-red-800"
+											aria-label={`Eliminar elemento ${item.name}`}
+										>
+											<TrashIcon className="h-5 w-5" />
+										</button>
 									</div>
 								</td>
 							</tr>
@@ -787,7 +590,7 @@ const ItemsPage: React.FC = () => {
 						{filteredItems.length === 0 && (
 							<tr>
 								<td
-									colSpan={8}
+									colSpan={7}
 									className="px-6 py-4 text-center text-sm text-gray-500"
 								>
 									No se encontraron elementos con los criterios de búsqueda.
@@ -797,6 +600,440 @@ const ItemsPage: React.FC = () => {
 					</tbody>
 				</table>
 			</div>
+
+			{/* Form Modal */}
+			<Transition appear show={isFormModalOpen} as={Fragment}>
+				<Dialog
+					as="div"
+					className="relative z-10"
+					onClose={() => setIsFormModalOpen(false)}
+				>
+					<Transition.Child
+						as={Fragment}
+						enter="ease-out duration-300"
+						enterFrom="opacity-0"
+						enterTo="opacity-100"
+						leave="ease-in duration-200"
+						leaveFrom="opacity-100"
+						leaveTo="opacity-0"
+					>
+						<div className="fixed inset-0 bg-black bg-opacity-25" />
+					</Transition.Child>
+
+					<div className="fixed inset-0 overflow-y-auto">
+						<div className="flex min-h-full items-center justify-center p-4 text-center">
+							<Transition.Child
+								as={Fragment}
+								enter="ease-out duration-300"
+								enterFrom="opacity-0 scale-95"
+								enterTo="opacity-100 scale-100"
+								leave="ease-in duration-200"
+								leaveFrom="opacity-100 scale-100"
+								leaveTo="opacity-0 scale-95"
+							>
+								<Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-3xl bg-white shadow-2xl transition-all border border-gray-200">
+									<div className="flex items-center justify-between bg-green-700 px-6 py-4 rounded-t-2xl">
+										<div className="flex items-center gap-2">
+											<SparklesIcon className="h-6 w-6 text-white" />
+											<h3 className="text-white text-xl font-bold tracking-wide">
+												{selectedItem ? "Editar Elemento" : "Añadir Nuevo Elemento"}
+											</h3>
+										</div>
+										<button
+											type="button"
+											onClick={() => setIsFormModalOpen(false)}
+											className="rounded-full p-1 hover:bg-green-800 transition"
+											aria-label="Cerrar formulario"
+										>
+											<XMarkIcon className="h-5 w-5 text-white" />
+										</button>
+									</div>
+
+									<div className="px-6 py-4 border-b border-gray-200">
+										<p className="text-sm text-gray-600">
+											{selectedItem
+												? "Modifica los detalles del elemento según sea necesario"
+												: "Complete el formulario para añadir un nuevo elemento al sistema"}
+										</p>
+									</div>
+
+									<div className="p-6">
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+											<div>
+												<label
+													htmlFor="itemName"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Nombre
+												</label>
+												<input
+													type="text"
+													id="itemName"
+													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+													value={newItem.name}
+													onChange={(e) =>
+														setNewItem({ ...newItem, name: e.target.value })
+													}
+													required
+												/>
+											</div>
+
+											<div>
+												<label
+													htmlFor="itemCategory"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Categoría
+												</label>
+												<select
+													id="itemCategory"
+													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+													value={newItem.category}
+													onChange={(e) =>
+														setNewItem({ ...newItem, category: e.target.value })
+													}
+													required
+												>
+													<option value="">Seleccione una categoría</option>
+													<option value="Juegos">Juegos</option>
+													<option value="Mesa">Mesa</option>
+												</select>
+											</div>
+
+											<div>
+												<label
+													htmlFor="itemLocation"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Ubicación
+												</label>
+												<select
+													id="itemLocation"
+													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+													value={newItem.hallId?.toString() || ""}
+													onChange={(e) =>
+														setNewItem({
+															...newItem,
+															hallId: Number.parseInt(e.target.value),
+															location: halls.find(
+																(h) => h.id === Number.parseInt(e.target.value),
+															)?.name || "",
+														})
+													}
+													required
+												>
+													<option value="">Seleccione una ubicación</option>
+													{halls.map((hall) => (
+														<option key={hall.id} value={hall.id}>
+															{hall.name}
+														</option>
+													))}
+												</select>
+											</div>
+
+											<div>
+												<label
+													htmlFor="itemCondition"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Estado
+												</label>
+												<select
+													id="itemCondition"
+													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+													value={newItem.condition}
+													onChange={(e) =>
+														setNewItem({
+															...newItem,
+															condition: e.target.value as RecreationalItem["condition"],
+														})
+													}
+													required
+												>
+													<option value="Nuevo">Nuevo</option>
+													<option value="Buen estado">Buen estado</option>
+													<option value="Regular">Regular</option>
+													<option value="Requiere mantenimiento">
+														Requiere mantenimiento
+													</option>
+												</select>
+											</div>
+
+											<div>
+												<label
+													htmlFor="itemTotalQuantity"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Cantidad Total
+												</label>
+												<input
+													type="number"
+													id="itemTotalQuantity"
+													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+													value={newItem.totalQuantity}
+													onChange={(e) =>
+														setNewItem({
+															...newItem,
+															totalQuantity: Number.parseInt(e.target.value) || 0,
+															availableQuantity: Number.parseInt(e.target.value) || 0,
+														})
+													}
+													min="1"
+													required
+												/>
+											</div>
+
+											<div>
+												<label
+													htmlFor="itemDescription"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Descripción
+												</label>
+												<textarea
+													id="itemDescription"
+													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+													value={newItem.description}
+													onChange={(e) =>
+														setNewItem({ ...newItem, description: e.target.value })
+													}
+													rows={3}
+												/>
+											</div>
+										</div>
+									</div>
+
+									<div className="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+										<button
+											type="button"
+											onClick={() => {
+												setIsFormModalOpen(false);
+												setSelectedItem(null);
+												setNewItem({
+													name: "",
+													category: "",
+													totalQuantity: 1,
+													availableQuantity: 1,
+													condition: "Nuevo",
+													location: "",
+													description: "",
+												});
+												toast("Operación cancelada", {
+													icon: "❌",
+													style: {
+														background: "#6B7280",
+														color: "white",
+													},
+													duration: 1500,
+												});
+											}}
+											className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition flex items-center gap-2"
+										>
+											<XMarkIcon className="h-4 w-4" />
+											Cancelar
+										</button>
+										<button
+											type="button"
+											onClick={selectedItem ? handleSaveEdit : handleAddItem}
+											className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+										>
+											{selectedItem ? "Guardar Cambios" : "Añadir Elemento"}
+										</button>
+									</div>
+								</Dialog.Panel>
+							</Transition.Child>
+						</div>
+					</div>
+				</Dialog>
+			</Transition>
+
+			{/* Delete Modal */}
+			<Transition appear show={isDeleteModalOpen} as={Fragment}>
+				<Dialog
+					as="div"
+					className="relative z-10"
+					onClose={() => setIsDeleteModalOpen(false)}
+				>
+					<Transition.Child
+						as={Fragment}
+						enter="ease-out duration-300"
+						enterFrom="opacity-0"
+						enterTo="opacity-100"
+						leave="ease-in duration-200"
+						leaveFrom="opacity-100"
+						leaveTo="opacity-0"
+					>
+						<div className="fixed inset-0 bg-black bg-opacity-25" />
+					</Transition.Child>
+
+					<div className="fixed inset-0 overflow-y-auto">
+						<div className="flex min-h-full items-center justify-center p-4 text-center">
+							<Transition.Child
+								as={Fragment}
+								enter="ease-out duration-300"
+								enterFrom="opacity-0 scale-95"
+								enterTo="opacity-100 scale-100"
+								leave="ease-in duration-200"
+								leaveFrom="opacity-100 scale-100"
+								leaveTo="opacity-0 scale-95"
+							>
+								<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+									<Dialog.Title
+										as="h3"
+										className="text-lg font-medium leading-6 text-gray-900"
+									>
+										Confirmar Eliminación
+									</Dialog.Title>
+									<div className="mt-2">
+										<p className="text-sm text-gray-500">
+											¿Estás seguro de que deseas eliminar este elemento? Esta acción
+											no se puede deshacer.
+										</p>
+									</div>
+
+									<div className="mt-4 flex justify-end gap-3">
+										<button
+											type="button"
+											className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
+											onClick={() => setIsDeleteModalOpen(false)}
+										>
+											Cancelar
+										</button>
+										<button
+											type="button"
+											className="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+											onClick={() => itemToDelete && handleDeleteItem(itemToDelete)}
+										>
+											Eliminar
+										</button>
+									</div>
+								</Dialog.Panel>
+							</Transition.Child>
+						</div>
+					</div>
+				</Dialog>
+			</Transition>
+
+			{/* View Modal */}
+			<Transition appear show={isViewModalOpen} as={Fragment}>
+				<Dialog
+					as="div"
+					className="relative z-10"
+					onClose={() => setIsViewModalOpen(false)}
+				>
+					<Transition.Child
+						as={Fragment}
+						enter="ease-out duration-300"
+						enterFrom="opacity-0"
+						enterTo="opacity-100"
+						leave="ease-in duration-200"
+						leaveFrom="opacity-100"
+						leaveTo="opacity-0"
+					>
+						<div className="fixed inset-0 bg-black bg-opacity-30" />
+					</Transition.Child>
+
+					<div className="fixed inset-0 overflow-y-auto">
+						<div className="flex min-h-full items-center justify-center p-4 text-center">
+							<Transition.Child
+								as={Fragment}
+								enter="ease-out duration-300"
+								enterFrom="opacity-0 scale-95"
+								enterTo="opacity-100 scale-100"
+								leave="ease-in duration-200"
+								leaveFrom="opacity-100 scale-100"
+								leaveTo="opacity-0 scale-95"
+							>
+								<Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all border-gray-200">
+									{itemToView && (
+										<>
+											<div className="flex items-center justify-between bg-green-700 px-6 py-4 rounded-t-2xl">
+												<h3 className="text-white text-xl font-bold tracking-wide">
+													{itemToView.name}
+												</h3>
+												<button
+													onClick={() => setIsViewModalOpen(false)}
+													className="rounded-full p-1 hover:bg-green-800 transition"
+												>
+													<XMarkIcon className="h-5 w-5 text-white" />
+												</button>
+											</div>
+
+											<div className="px-6 py-4 border-b border-gray-200">
+												<div className="flex items-center gap-2">
+													<SparklesIcon className="h-5 w-5 text-green-600" />
+													<h4 className="text-lg font-semibold text-gray-800">
+														Detalles del Elemento
+													</h4>
+												</div>
+												<p className="mt-1 text-sm text-gray-600">
+													Información completa sobre el elemento y sus características
+												</p>
+											</div>
+
+											<div className="p-6">
+												<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+													<InfoItem
+														icon={ClipboardDocumentIcon}
+														label="ID"
+														value={itemToView.id}
+													/>
+													<InfoItem
+														icon={MapPinIcon}
+														label="Ubicación"
+														value={itemToView.location}
+													/>
+													<InfoItem
+														icon={SparklesIcon}
+														label="Categoría"
+														value={itemToView.category}
+													/>
+													<InfoItem
+														icon={WrenchScrewdriverIcon}
+														label="Estado"
+														value={
+															<span
+																className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+																	itemToView.condition === "Nuevo"
+																		? "bg-green-100 text-green-800"
+																		: itemToView.condition === "Buen estado"
+																		? "bg-blue-100 text-blue-800"
+																		: itemToView.condition === "Regular"
+																		? "bg-yellow-100 text-yellow-800"
+																		: "bg-red-100 text-red-800"
+																}`}
+															>
+																{itemToView.condition}
+															</span>
+														}
+													/>
+													<InfoItem
+														icon={ClipboardDocumentIcon}
+														label="Cantidad"
+														value={`${itemToView.availableQuantity}/${itemToView.totalQuantity}`}
+													/>
+												</div>
+
+												<div className="mt-8 space-y-6">
+													<div className="bg-gray-50 rounded-xl p-4">
+														<h4 className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+															<ClipboardDocumentIcon className="h-4 w-4" />
+															Descripción
+														</h4>
+														<p className="text-gray-700 leading-relaxed">
+															{itemToView.description || "Sin descripción"}
+														</p>
+													</div>
+												</div>
+											</div>
+										</>
+									)}
+								</Dialog.Panel>
+							</Transition.Child>
+						</div>
+					</div>
+				</Dialog>
+			</Transition>
 		</div>
 	);
 };
