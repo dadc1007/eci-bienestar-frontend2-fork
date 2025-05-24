@@ -1,7 +1,8 @@
 import { Card, CardHeader, CardBody } from "@heroui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarCheck, faClockRotateLeft, faFutbol } from "@fortawesome/free-solid-svg-icons";
+import { faBoxes, faChartColumn } from "@fortawesome/free-solid-svg-icons";
 import coliseoImg from "@modules/sports-equipment/Images-sport-equipment/coliseo.jpg";
+import detalleImg from "@modules/sports-equipment/Images-sport-equipment/equipment.jpg";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -17,17 +18,18 @@ const Home = () => {
                 />
 
                 <h2 className="text-3xl font-semibold mb-4 text-[#3D2B1F]">
-                    Bienvenido al sistema de préstamos deportivos
+                    Bienvenido ADMIN al sistema de equipos deportivos
                 </h2>
 
                 <p className="text-gray-800 mb-4 text-lg leading-relaxed">
-                    Este apartado permite a los miembros de la comunidad reservar y acceder al préstamo de equipos deportivos en el coliseo. Aquí puedes solicitar artículos deportivos, llevar el control de tus reservas y facilitar la devolución de elementos. Además, el personal de bienestar se encarga de administrar el inventario y verificar el estado de los equipos.
+                    Esta sección permite a los funcionarios gestionar el inventario de equipos deportivos,
+                    administrar las reservas y consultar estadísticas clave para la toma de decisiones.
                 </p>
                 <p className="text-gray-600 italic mb-3">
-                    Utiliza el menú superior para navegar por las diferentes secciones.
+                    Recuerda mantener actualizado el inventario para asegurar la disponibilidad y el buen estado de los equipos.
                 </p>
                 <p className="text-gray-700 mb-8">
-                    Conoce más sobre lo que ofrece nuestro campus en:{" "}
+                    Más información en el{" "}
                     <a
                         href="https://www.escuelaing.edu.co/es/campus/coliseo-el-otono/"
                         className="text-blue-600 underline hover:text-blue-800 transition"
@@ -38,52 +40,46 @@ const Home = () => {
                     </a>
                 </p>
 
-                {/* Tarjetas de opciones */}
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-8">
+                {/* Tarjetas de opciones para el admin */}
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-8 mb-10">
                     <Card className="w-72 py-6 shadow-lg hover:shadow-2xl transition duration-300">
                         <CardHeader className="pb-0 pt-2 px-4 flex-col items-center text-center">
-                            <FontAwesomeIcon icon={faFutbol} className="text-5xl text-[#5B1F00] mb-3" />
-                            <h4 className="font-bold text-lg text-gray-800">Reservar</h4>
+                            <FontAwesomeIcon icon={faBoxes} className="text-5xl text-[#5B1F00] mb-3" />
+                            <h4 className="font-bold text-lg text-gray-800">Administrar Inventario</h4>
                         </CardHeader>
                         <CardBody className="py-4 flex justify-center">
                             <button
-                                onClick={() => navigate("/modules/sports/available")}
+                                onClick={() => navigate("/modules/sports/availableAdmin")}
                                 className="bg-[#5B1F00] text-white px-6 py-3 text-base rounded-lg border border-[#47210e] shadow-md hover:bg-[#441b00] hover:scale-105 transition transform duration-200"
                             >
-                                Acceder
+                                Ir
                             </button>
                         </CardBody>
                     </Card>
 
                     <Card className="w-72 py-6 shadow-lg hover:shadow-2xl transition duration-300">
                         <CardHeader className="pb-0 pt-2 px-4 flex-col items-center text-center">
-                            <FontAwesomeIcon icon={faCalendarCheck} className="text-5xl text-[#5B1F00] mb-3" />
-                            <h4 className="font-bold text-lg text-gray-800">Mi Calendario</h4>
+                            <FontAwesomeIcon icon={faChartColumn} className="text-5xl text-[#5B1F00] mb-3" />
+                            <h4 className="font-bold text-lg text-gray-800">Ver Estadísticas</h4>
                         </CardHeader>
                         <CardBody className="py-4 flex justify-center">
                             <button
-                                onClick={() => navigate("/modules/sports/Loaned")}
+                                onClick={() => navigate("/modules/sports/statsAdmin")}
                                 className="bg-[#5B1F00] text-white px-6 py-3 text-base rounded-lg border border-[#47210e] shadow-md hover:bg-[#441b00] hover:scale-105 transition transform duration-200"
                             >
                                 Ver
                             </button>
                         </CardBody>
                     </Card>
+                </div>
 
-                    <Card className="w-72 py-6 shadow-xl transition-transform transform hover:scale-105">
-                        <CardHeader className="pb-0 pt-2 px-4 flex-col items-center text-center">
-                            <FontAwesomeIcon icon={faClockRotateLeft} className="text-5xl text-[#5B1F00] mb-3" />
-                            <h4 className="font-bold text-lg text-gray-800">Historial</h4>
-                        </CardHeader>
-                        <CardBody className="py-4 flex justify-center">
-                            <button
-                                onClick={() => navigate("/modules/sports/LoanedList")}
-                                className="bg-[#5B1F00] text-white px-6 py-3 text-base rounded-lg border border-[#47210e] shadow-md hover:bg-[#441b00] hover:scale-105 transition transform duration-200"
-                            >
-                                Consultar
-                            </button>
-                        </CardBody>
-                    </Card>
+                {/* Imagen adicional */}
+                <div className="flex justify-center">
+                    <img
+                        src={detalleImg}
+                        alt="Detalle del coliseo"
+                        className="w-full max-w-md h-56 object-cover rounded border-2 border-[#5B1F00] shadow-md"
+                    />
                 </div>
             </section>
 
