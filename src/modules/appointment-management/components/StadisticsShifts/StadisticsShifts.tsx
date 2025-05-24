@@ -19,7 +19,7 @@ type Props = {
   turnUnAttended: number;
   attendedBySpeciality: number[];
   attendedByRol: number[];
-  datosGrafico: { name: string; value: number }[]
+  datosGrafico: { name: string; value: number }[];
 };
 
 const StadisticsShifts = ({
@@ -62,6 +62,8 @@ const StadisticsShifts = ({
             turnUnAttended={turnUnAttended}
             attendedBySpeciality={attendedBySpeciality}
             attendedByRol={attendedByRol}
+            specialityLabels={especialidades.filter(e => e !== "Todos")}
+            rolLabels={rolesPaciente.filter(r => r !== "Todos")}
           />
         </div>
         <div className="flex-1">

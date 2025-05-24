@@ -11,6 +11,7 @@ import StadisticsShifts from "../../components/StadisticsShifts/StadisticsShifts
 
 const Stadistics = () => {
   const navigate = useNavigate();
+
   const [especialidades, setEspecialidades] = useState<string[]>([]);
   const [rolesPaciente, setRolesPaciente] = useState<string[]>([]);
   const [rangosFecha, setRangosFecha] = useState<string[]>([]);
@@ -70,78 +71,159 @@ const Stadistics = () => {
     "Terminado",
   ];
 
-const getDateRange = (label: string): { start: string; end: string } => {
-  const now = new Date();
-  let start: Date;
-
-  switch (label) {
-    case "Última semana":
-      start = new Date();
-      start.setDate(start.getDate() - 7);
-      break;
-    case "Último mes":
-      start = new Date();
-      start.setMonth(start.getMonth() - 1);
-      break;
-    case "Último año":
-      start = new Date();
-      start.setFullYear(start.getFullYear() - 1);
-      break;
-    default:
-      start = new Date(2000, 0, 1);
-  }
-
-  const range = {
-    start: start.toISOString().split("T")[0],
-    end: now.toISOString().split("T")[0],
-  };
-
-  return range;
+  const especialidadMap: Record<string, string> = {
+  "Medicina General": "GENERAL_MEDICINE",
+  "Odontologia": "DENTISTRY",
+  "Psicologia": "PSYCHOLOGY",
 };
 
+const rolMap: Record<string, string> = {
+  "Estudiante": "STUDENT",
+  "Docente": "TEACHER",
+  "Administrativo": "ADMINISTRATOR",
+  "Servicios generales": "GENERAL_SERVICES",
+};
+
+  const getDateRange = (label: string): { start: string; end: string } => {
+    const now = new Date();
+    let start: Date;
+
+    switch (label) {
+      case "Última semana":
+        start = new Date();
+        start.setDate(now.getDate() - 7);
+        break;
+      case "Último mes":
+        start = new Date();
+        start.setMonth(now.getMonth() - 1);
+        break;
+      case "Último año":
+        start = new Date();
+        start.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        start = new Date(2000, 0, 1);
+    }
+
+    return {
+      start: start.toISOString().split("T")[0],
+      end: now.toISOString().split("T")[0],
+    };
+  };
 
   useEffect(() => {
+    if (especialidades.length === 0 || rolesPaciente.length === 0) return;
     const fetchEstadisticas = async () => {
       const { start, end } = getDateRange(selectedFecha);
 
       try {
+        // Traduce filtros
+        const apiEspecialidad =
+          selectedEspecialidad !== "Todos"
+            ? especialidadMap[selectedEspecialidad]
+            : undefined;
+        const apiRol =
+          selectedRol !== "Todos" ? rolMap[selectedRol] : undefined;
+        const apiEstado =
+          selectedEstado !== "Todos" ? selectedEstado.toUpperCase() : undefined;
+
+        // Por especialidad
         const specialityData = await getTurnCountBySpeciality(
           start,
           end,
-          selectedEspecialidad !== "Todos" ? selectedEspecialidad : undefined,
-          selectedEstado !== "Todos" ? selectedEstado : undefined
+          apiEspecialidad,
+          apiEstado
         );
+
         const especialidadArray = especialidades
           .filter((esp) => esp !== "Todos")
           .map((esp) => {
-            const found = specialityData.data.find((d) => d.speciality === esp);
+            const apiValue = especialidadMap[esp];
+            const found = specialityData.data.find(
+              (d) => d.speciality === apiValue
+            );
             return found?.count || 0;
           });
         setAttendedBySpeciality(especialidadArray);
 
-        const rolData = await getTurnCountByRole(
-          start,
-          end,
-          selectedRol !== "Todos" ? selectedRol : undefined,
-          selectedEstado !== "Todos" ? selectedEstado : undefined
-        );
+        // Por rol
+        const rolData = await getTurnCountByRole(start, end, apiRol, apiEstado);
         const rolesArray = rolesPaciente
           .filter((rol) => rol !== "Todos")
           .map((rol) => {
-            const found = rolData.data.find((d) => d.role === rol);
+            const apiValue = rolMap[rol];
+            const found = rolData.data.find((d) => d.role === apiValue);
             return found?.count || 0;
           });
         setAttendedByRol(rolesArray);
 
-        const total = specialityData.data.reduce(
+        // Turnos atendidos (COMPLETED)
+        const attendedData = await getTurnCountByRole(
+          start,
+          end,
+          undefined,
+          "COMPLETED"
+        );
+        const attendedTotal = attendedData.data.reduce(
           (acc, curr) => acc + curr.count,
           0
         );
-        setTurnAttended(total);
-        setTurnUnAttended(Math.floor(total * 0.4)); 
+        setTurnAttended(attendedTotal);
 
+        // Turnos no atendidos (otros estados)
+        const unAttendedStatuses = ["PENDING", "CURRENT", "FINISHED"];
+        let unAttendedTotal = 0;
+        for (const status of unAttendedStatuses) {
+          const response = await getTurnCountByRole(
+            start,
+            end,
+            undefined,
+            status
+          );
+          unAttendedTotal += response.data.reduce(
+            (acc, curr) => acc + curr.count,
+            0
+          );
+        }
+        setTurnUnAttended(unAttendedTotal);
+
+        // Datos para gráfico
         const datosGraficoTemp: { name: string; value: number }[] = [];
-        if (selectedEspecialidad === "Todos") {
+
+        const isEstadoFilterOnly =
+          selectedEstado !== "Todos" &&
+          selectedEspecialidad === "Todos" &&
+          selectedRol === "Todos";
+
+        if (isEstadoFilterOnly) {
+          const statusLabels = {
+            PENDING: "Pendiente",
+            COMPLETED: "Completado",
+            CURRENT: "Actual",
+            FINISHED: "Terminado",
+          } as const;
+
+          type StatusKey = keyof typeof statusLabels;
+          const statuses: StatusKey[] = [
+            "PENDING",
+            "COMPLETED",
+            "CURRENT",
+            "FINISHED",
+          ];
+          for (const status of statuses) {
+            const response = await getTurnCountByRole(
+              start,
+              end,
+              undefined,
+              status
+            );
+            const total = response.data.reduce(
+              (acc, curr) => acc + curr.count,
+              0
+            );
+            datosGraficoTemp.push({ name: statusLabels[status], value: total });
+          }
+        } else if (selectedEspecialidad === "Todos") {
           specialityData.data.forEach(({ speciality, count }) => {
             datosGraficoTemp.push({ name: speciality, value: count });
           });
@@ -150,15 +232,14 @@ const getDateRange = (label: string): { start: string; end: string } => {
             datosGraficoTemp.push({ name: role, value: count });
           });
         }
+
         setDatosGrafico(datosGraficoTemp);
-      } catch (err) {
-        console.error("Error obteniendo estadísticas reales:", err);
+      } catch (error) {
+        console.error("Error obteniendo estadísticas reales:", error);
       }
     };
 
-    if (especialidades.length > 0 && rolesPaciente.length > 0) {
-      fetchEstadisticas();
-    }
+    fetchEstadisticas();
   }, [
     selectedEspecialidad,
     selectedRol,
@@ -175,7 +256,7 @@ const getDateRange = (label: string): { start: string; end: string } => {
         <Button
           className="bg-health-primary text-white px-4 py-2"
           type="button"
-          onPress={() => navigate(-1)}
+          onClick={() => navigate(-1)}
         >
           <FontAwesomeIcon icon={faArrowLeft} size="lg" color="white" /> Volver
         </Button>
