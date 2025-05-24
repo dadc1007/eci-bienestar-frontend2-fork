@@ -1,12 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/icons/panoramic.jpg";
-import studentIcon from "../../../assets/images/icons/students.png";
-import teacherIcon from "../../../assets/images/icons/teachers.jpg";
-import staffIcon from "../../../assets/images/icons/staff.png";
-import doctorIcon from "../../../assets/images/icons/doctors.jpeg";
+import studentIcon from "../../../modules/user-administration/assets/images/students.png";
+import teacherIcon from "../../../modules/user-administration/assets/images/teachers.jpg";
+import staffIcon from "../../../modules/user-administration/assets/images//staff.png";
+import doctorIcon from "../../../modules/user-administration/assets/images/doctors.jpeg";
 
-const UserActions: React.FC = () => {
+const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const cards = [
@@ -95,6 +95,6 @@ const UserActions: React.FC = () => {
   );
 };
 
-export default UserActions;
+export default AdminDashboard;
 
 

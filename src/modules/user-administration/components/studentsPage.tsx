@@ -328,23 +328,23 @@ const StudentsPage: React.FC = () => {
           <FontAwesomeIcon icon={faArrowLeft} size="lg" />
         </button>
         <h2 className="ml-4 text-4xl font-semibold text-[#b30000]">
-          Students
+          Estudiantes
         </h2>
       </div>
 
       {/* --- Infobox --- */}
       <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 text-blue-900">
         <p>
-          Use the search box to filter by name or email. Click any row
-          to select students. Use the buttons to add, edit, or delete
-          quickly.
+          Usa el buscador para filtrar por nombre o correo electrónico. 
+          Haz clic en cualquier fila para seleccionar estudiantes. 
+          Usa los botones para añadir, editar o eliminar rápidamente.
         </p>
       </div>
 
       {/* --- Loading / Error --- */}
       {isLoading && (
         <p className="text-center text-gray-700 py-4">
-          Loading students...
+          Cargando estudiantes...
         </p>
       )}
       {error && (
@@ -357,7 +357,7 @@ const StudentsPage: React.FC = () => {
           type="text"
           value={query}
           onChange={handleSearchChange}
-          placeholder="Search by name or email… 🔍"
+          placeholder="Busca por nombre o correo… 🔍"
           className="flex-1 p-2 border border-gray-300 rounded"
         />
         <button
@@ -383,10 +383,10 @@ const StudentsPage: React.FC = () => {
           <thead>
             <tr className="bg-gray-50">
               <th className="px-4 py-2 text-left">ID</th>
-              <th className="px-4 py-2 text-left">Name</th>
-              <th className="px-4 py-2 text-left">Email</th>
-              <th className="px-4 py-2 text-left">Semester</th>
-              <th className="px-4 py-2 text-left">Actions</th>
+              <th className="px-4 py-2 text-left">Nombre</th>
+              <th className="px-4 py-2 text-left">Correo</th>
+              <th className="px-4 py-2 text-left">Semestre</th>
+              <th className="px-4 py-2 text-left">Acciones</th>
             </tr>
           </thead>
           <tbody>

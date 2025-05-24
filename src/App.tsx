@@ -7,9 +7,9 @@ import {
 } from "react-router-dom";
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
-import Login from "./modules/auth/components/LoginForm";
-import ForgotPassword from "./modules/auth/components/ForgotPassword";
-import UserActions from "./modules/user-administration/components/UserActions";
+import Login from "./modules/auth/pages/LoginPage";
+import ForgotPassword from "./modules/auth/pages/ForgotPasswordPage";
+import AdminDashboard from "./modules/user-administration/components/AdminDashboard";
 import Students from "./modules/user-administration/components/StudentsPage";
 import Teachers from "./modules/user-administration/components/TeachersPage";
 import Staff from "./modules/user-administration/components/StaffPage";
@@ -225,7 +225,7 @@ function App() {
           }
         >
           {/* Ruta principal del módulo */}
-          <Route index element={<UserActions />} />
+          <Route index element={<AdminDashboard />} />
   
           {/* Subrutas */}
           <Route path="students" element={<Students />} />
