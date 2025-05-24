@@ -14,6 +14,9 @@ const BookingPage = () => {
   const [endTimeRange, setEndTimeRange] = useState("");
   const [filterEndTime, setFilterEndTime] = useState("");
 
+  const [reservingId, setReservingId] = useState<string | null>(null);
+  const [reservationMessage, setReservationMessage] = useState<string | null>(null);
+
   const filterByTimeRange = (start: string, end: string, session: any) => {
     if (!start && !end) return true;
     const toMinutes = (time: string) => {
@@ -36,9 +39,30 @@ const BookingPage = () => {
     return matchesDate && matchesTimeRange && matchesEndTime;
   });
 
-  const handleReserve = (sessionId: string) => {
-    alert(`Sesión con ID ${sessionId} reservada (simulado)`);
+  const handleReserve = async (sessionId: string) => {
+    setReservingId(sessionId);
+    setReservationMessage(null);
+
+    try {
+      const response = await fetch(`/api/sessions/${sessionId}/reserve`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Error al reservar la sesión");
+
+      setReservationMessage("✅ ¡Sesión reservada con éxito!");
+      // Opcional: recargar datos o actualizar capacidad
+    } catch (error) {
+      console.error(error);
+      setReservationMessage("❌ No se pudo reservar la sesión.");
+    } finally {
+      setReservingId(null);
+    }
   };
+
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
@@ -86,6 +110,17 @@ const BookingPage = () => {
               className="p-2 border border-gray-300 rounded"
             />
           </div>
+          <button
+            onClick={() => {
+              setFilterDate("");
+              setStartTimeRange("");
+              setEndTimeRange("");
+              setFilterEndTime("");
+            }}
+            className="text-sm text-black-600 hover:underline mt-2"
+          >
+            Limpiar filtros
+          </button>
         </div>
 
 
@@ -108,14 +143,20 @@ const BookingPage = () => {
                 </div>
                 <button
                   onClick={() => handleReserve(session.id)}
-                  disabled={session.currentCapacity >= session.capacity}
+                  disabled={session.currentCapacity >= session.capacity || reservingId === session.id}
                   className={`px-4 py-2 rounded ${
                     session.currentCapacity >= session.capacity
                       ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-500 hover:bg-green-600 text-white"
+                      : reservingId === session.id
+                        ? "bg-yellow-500 cursor-wait"
+                        : "bg-green-500 hover:bg-green-600 text-white"
                   }`}
                 >
-                  {session.currentCapacity >= session.capacity ? "Llena" : "Reservar"}
+                  {session.currentCapacity >= session.capacity
+                    ? "Llena"
+                    : reservingId === session.id
+                      ? "Reservando..."
+                      : "Reservar"}
                 </button>
               </div>
             ))

@@ -153,16 +153,13 @@ const RoutineDetailModal = ({
               ))}
             </ul>
           </div>
-
-          <div className="flex justify-between w-full text-sm text-gray-700 mb-6">
-            <div>
-              <span className="font-semibold">Duración:</span>{" "}
-              {muscleGroup.durationDays} días
-            </div>
-            <div>
-              <span className="font-semibold">Dificultad:</span>{" "}
-              {muscleGroup.difficulty}
-            </div>
+          <div>
+            <span className="font-semibold">Duración:</span>{" "}
+            {muscleGroup.durationDays} días 
+          </div>
+          <div>
+            <span className="font-semibold"> Dificultad:</span>{" "}
+            {muscleGroup.difficulty}
           </div>
         <div className="flex gap-2">
           <button
