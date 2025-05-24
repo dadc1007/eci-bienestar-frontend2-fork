@@ -20,7 +20,7 @@ const Stadistics = () => {
   const [selectedEspecialidad, setSelectedEspecialidad] =
     useState<string>("Todos");
   const [selectedRol, setSelectedRol] = useState<string>("Todos");
-  const [selectedFecha, setSelectedFecha] = useState<string>("Todo el tiempo");
+  const [selectedFecha, setSelectedFecha] = useState<string>("Todos");
   const [selectedEstado, setSelectedEstado] = useState<string>("Todos");
 
   const [turnAttended, setTurnAttended] = useState<number>(0);
@@ -58,7 +58,7 @@ const Stadistics = () => {
     "Servicios generales",
   ];
   const fetchRangosFecha = async () => [
-    "Todo el tiempo",
+    "Todos",
     "Última semana",
     "Último mes",
     "Último año",

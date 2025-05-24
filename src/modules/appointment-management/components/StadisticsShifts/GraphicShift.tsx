@@ -21,7 +21,7 @@ type Props = {
 
 const GraphicShift = ({ data, title }: Props) => {
   return (
-    <div className="drop-shadow-xl bg-white w-[43vw] border-2 rounded-[12px] p-3 h-[55vh] flex flex-col">
+    <div className="drop-shadow-xl bg-white w-full border-2 rounded-[12px] p-3 h-80 sm:h-[55vh] flex flex-col">
       <h1 className="text-xl font-semibold mb-4">{title}</h1>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
