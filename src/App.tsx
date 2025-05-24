@@ -1,3 +1,4 @@
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,6 +9,8 @@ import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import Login from "./modules/auth/components/LoginForm";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
+import ExtracurricularClassesRoutes from './modules/extracurricular-classes/routes';
+
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -19,7 +22,7 @@ const MODULE_MAPPING = {
   statistics: "estadisticas",
 };
 
-// Module colors
+// Module Colors
 const moduleColors = {
   health: "#0078B4", // Turnos de Salud
   recreation: "#0E7029", // Salas Recreativas
@@ -47,6 +50,9 @@ const ModuleTemplate: React.FC<{ title: string; color: string }> = ({
 );
 
 function App() {
+  // En una aplicación real, esto se determinaría por autenticación
+  const userRole = 'student';
+  
   const handleLogout = () => {
     console.log("Cerrando sesión...");
     localStorage.removeItem("user");
@@ -130,12 +136,10 @@ function App() {
               activeModule={MODULE_MAPPING.extracurricular}
               onLogout={handleLogout}
               onNotificationsClick={handleNotificationsClick}
-              userEmail="administrador@ejemplo.com"
+              userEmail="estudiante@ejemplo.com"
             >
-              <ModuleTemplate
-                title="Clases Extracurriculares"
-                color={moduleColors.extracurricular}
-              />
+              <ExtracurricularClassesRoutes userRole={userRole} />
+
             </Layout>
           }
         />
