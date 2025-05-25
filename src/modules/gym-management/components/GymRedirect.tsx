@@ -33,7 +33,7 @@ function GymRedirect() {
                 // Redirección por rol
                 if (user.role === Role.ADMINISTRATOR) {
                     console.log("Redirigiendo a administrador");
-                    navigate("administrator", { replace: true });
+                    navigate("administrator/index", { replace: true });
                     return;
                 }else if (user.role === Role.TRAINER) {
                     console.log("Redirigiendo a entrenador");
@@ -45,7 +45,7 @@ function GymRedirect() {
                         navigate("student/index", { replace: true });
                     }else{
                         console.log("Redirigiendo a estudiante");
-                        navigate("student", { replace: true });
+                        navigate("student/home", { replace: true });
                     }
                 }
             } catch (error) {
