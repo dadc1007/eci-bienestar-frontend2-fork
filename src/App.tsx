@@ -3,6 +3,7 @@ import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
 import { HealthRoutes } from "@modules/appointment-management/routes";
+import { GymRoutes } from "@modules/gym-management/routes";
 import { useAuth } from "./common/context";
 import { Role } from "./common/types";
 import { ProtectedRoute, Root } from "@common/components";
@@ -24,7 +25,7 @@ const moduleColors = {
   recreation: "#0E7029", // Salas Recreativas
   extracurricular: "#362550", // Clases Extra
   sports: "#5B1F00", // Préstamos Deportivos
-  gym: "#000000", // Gimnasio/Seguimiento
+  gym: "#1A1A1A", // Gimnasio/Seguimiento
   users: "#990000", // Gestión Usuarios
   statistics: "#990000", // Estadísticas
   default: "#990000", // Color por defecto para dashboard
@@ -146,11 +147,9 @@ function App() {
               moduleColor={moduleColors.gym}
               activeModule={MODULE_MAPPING.gym}
               onNotificationsClick={handleNotificationsClick}
+              showSidebar={user?.role === Role.STUDENT}
             >
-              <ModuleTemplate
-                title="Gestión del Gimnasio"
-                color={moduleColors.gym}
-              />
+              <GymRoutes />
             </Layout>
           }
         />
