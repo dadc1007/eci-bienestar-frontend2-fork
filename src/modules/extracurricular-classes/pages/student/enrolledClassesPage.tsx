@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import ModuleTabs from '../../components/common/moduleTabs';
 import BackButton from '../../components/common/backButton';
 import EnrolledClassesList from '../../components/student/enrolledClassesList';
-import CalendarView from '../../components/common/calendarView';
+import CalendarViewMain from '../../components/common/calendarViewMain';
 
 const EnrolledClassesPage: FC = () => {
   // Hardcodeamos el ID del estudiante como ejemplo
@@ -67,7 +67,7 @@ const EnrolledClassesPage: FC = () => {
         {viewType === 'list' ? (
           <EnrolledClassesList userId={studentId} />
         ) : (
-          <CalendarView userId={studentId}/>
+          <CalendarViewMain userId={studentId} userRole={userRole}/>
         )}
       </div>
     </div>
