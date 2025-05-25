@@ -11,9 +11,9 @@ import Login from "./modules/auth/pages/LoginPage";
 import ForgotPassword from "./modules/auth/pages/ForgotPasswordPage";
 import AdminDashboard from "./modules/user-administration/pages/AdminDashboardPage";
 import Students from "./modules/user-administration/pages/StudentsPage";
-import Staff from "./modules/user-administration/components/TeachersPage";
+import Staff from "./modules/user-administration/pages/StaffPage";
 import Teachers from "./modules/user-administration/pages/TeachersPage";
-import Doctors from "./modules/user-administration/components/DoctorsPage";
+import Doctors from "./modules/user-administration/pages/DoctorsPage";
 
 const MODULE_MAPPING = {
   health: "turnos",
