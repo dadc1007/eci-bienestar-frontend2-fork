@@ -2,6 +2,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
 
 // Validación con Yup
 const schema = yup.object().shape({
@@ -66,18 +67,60 @@ const BodyMeasurements = () => {
   } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      waists: 80,
-      chest: 90,
-      rightarm: 30,
-      leftarm: 30,
-      rightleg: 60,
-      leftleg: 60,
+      waists: 80.0,
+      chest: 90.0,
+      rightarm: 30.0,
+      leftarm: 30.0,
+      rightleg: 60.0,
+      leftleg: 60.0,
     },
   });
 
   const navigate = useNavigate();
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
+    const email = sessionStorage.getItem("email");
+    
+    const getUrl = `https://ecibienestar-age6hsb9g4dmegea.canadacentral-01.azurewebsites.net/api/user/users/email?email=${email}`;
+    console.log("Consultando usuario en backend:", getUrl);
+
+    const response = await axios.get(getUrl);
+    const userData = response.data?.data;
+    console.log("Respuesta del backend:", userData);
+    
+    const postUrl = `https://ecibienestar-age6hsb9g4dmegea.canadacentral-01.azurewebsites.net/api/user/progress`;
+    console.log("Registrando medidas en backend:", postUrl);
+
+    console.log("waists:", data.waists);
+    console.log("chest:", data.chest);
+    console.log("rightarm:", data.rightarm);
+    console.log("leftarm:", data.leftarm);
+    console.log("rightleg:", data.rightleg);
+    console.log("leftleg:", data.leftleg);
+
+    await axios.post(postUrl, {
+      userId: userData.id,
+      routine: {
+        id: "68334f5a28573362a4c2b825",
+        name: "Base",
+        description: "Base",
+        exercises: [],
+        durationDays: 0,
+        difficulty: "FACIL",
+      },
+      goal: "",
+      registrationDate: new Date().toISOString(),
+      weight: sessionStorage.getItem("weight"),
+      height: sessionStorage.getItem("height"),
+      waists: data.waists,
+      chest: data.chest,
+      rightarm: data.rightarm,
+      leftarm: data.leftarm,
+      rightleg: data.rightleg,
+      leftleg: data.leftleg,
+    });
+    console.log("Medidas registradas:", data);
+
     alert("Datos registrados correctamente");
     console.log(data);
     // Aquí puedes hacer una petición a tu API
@@ -106,21 +149,23 @@ const BodyMeasurements = () => {
               name={name as keyof FormData}
               control={control}
               render={({ field }) => (
-                <>
-                  <input
-                    type="number"
-                    {...field}
-                    className={`border rounded px-3 py-2 w-full ${
-                      errors[name as keyof FormData] ? "border-red-500" : ""
-                    }`}
-                  />
-                  {errors[name as keyof FormData] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[name as keyof FormData]?.message}
-                    </p>
-                  )}
-                </>
-              )}
+              <>
+                <input
+                  type="number"
+                  step="0.1"
+                  {...field}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  className={`border rounded px-3 py-2 w-full ${
+                    errors[name as keyof FormData] ? "border-red-500" : ""
+                  }`}
+                />
+                {errors[name as keyof FormData] && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors[name as keyof FormData]?.message}
+                  </p>
+                )}
+              </>
+            )}
             />
           </div>
         ))}

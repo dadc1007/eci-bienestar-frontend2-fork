@@ -2,8 +2,6 @@ import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/common/context";
 import axios from "axios";
 
 // Validación del formulario con Yup
@@ -51,63 +49,49 @@ const RegisterMeasurements = () => {
   } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      gender: "HOMBRE", // Set a valid default value
+      gender: "OTRO", // Set a valid default value
       height: 160,
       age: 20,
       weight: 60,
     },
   });
 
-  const navigate = useNavigate();
+  const onSubmit = async (data: any) => {
+    const email = sessionStorage.getItem("email");
+    
+    const getUrl = `https://ecibienestar-age6hsb9g4dmegea.canadacentral-01.azurewebsites.net/api/user/users/email?email=${email}`;
+    console.log("Consultando usuario en backend:", getUrl);
+
+    const response = await axios.get(getUrl);
+    const userData = response.data?.data;
+
+    sessionStorage.setItem("height", data.height);
+    sessionStorage.setItem("weight", data.weight);
+
+    console.log("Respuesta del backend:", userData);
+    console.log("id del usuario:", userData.id);
+    const putUrl = `https://ecibienestar-age6hsb9g4dmegea.canadacentral-01.azurewebsites.net/api/users/${userData.id}`;
+    console.log("Actualizando usuario en backend:", putUrl);
+    await axios.put(putUrl, {
+      id: userData.id,
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+      role: userData.role,
+      gender: data.gender,
+      registered: true,
+      registrationDate: new Date().toISOString().split("T")[0]
+    });
+    console.log("Usuario actualizado correctamente");
+
+    alert("Datos registrados correctamente");
+    console.log(data);
+    navigate("../student/body-measurements");
+  };
+
   const gender = watch("gender");
 
-  const [userId, setUserId] = useState<string | null>(null);
-  const userEmail = sessionStorage.getItem("email");
-
-  useEffect(() => {
-    if (userEmail) {
-      axios
-        .get(`https://netherita-gymnasium-service-d8hvgjameybudsh3.canadacentral-01.azurewebsites.net/api/user/users?email=${userEmail}`)
-        .then((response) => {
-          const user = response.data.data[0]; // Ajustado a la respuesta del backend
-          if (user && user.id) {
-            setUserId(user.id);
-          } else {
-            alert("No se encontró el usuario.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error al obtener el usuario:", error);
-          alert("Error al obtener la información del usuario.");
-        });
-    } else {
-      alert("No se encontró el correo del usuario en sesión.");
-    }
-  }, [userEmail]);
-
-  const onSubmit = async (data: FormData) => {
-    if (!userId) {
-      alert("No se pudo obtener el ID del usuario. Intenta de nuevo.");
-      return;
-    }
-
-    try {
-      await axios.put(
-        `https://netherita-gymnasium-service-d8hvgjameybudsh3.canadacentral-01.azurewebsites.net/api/users/${userId}`,
-        {
-          gender: data,
-          registered: true,
-          registracionDate: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD
-        }
-      );
-
-      alert("Datos registrados correctamente");
-      navigate("../student/body-measurements");
-    } catch (error) {
-      console.error("Error al registrarse", error);
-      alert("Error al registrar los datos. Por favor, intenta de nuevo.");
-    }
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">

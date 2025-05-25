@@ -37,7 +37,7 @@ function GymRedirect() {
                     return;
                 }else if (user.role === Role.TRAINER) {
                     console.log("Redirigiendo a entrenador");
-                    navigate("trainer", { replace: true });
+                    navigate("trainer/index", { replace: true });
                     return;
                 }else if (user.role === Role.STUDENT) {
                     if(!userData.registered){
