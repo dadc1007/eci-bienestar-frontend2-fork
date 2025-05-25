@@ -61,7 +61,7 @@ const AvailableClassesList: React.FC<AvailableClassesListProps> = ({
         isOpen={isOpen}
         onClose={closeModal}
         classData={modalData}
-        userId={userId}
+        userId={"123"}
       />
     </div>
   );

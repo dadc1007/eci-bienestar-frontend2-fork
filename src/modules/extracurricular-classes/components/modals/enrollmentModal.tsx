@@ -3,6 +3,7 @@ import Modal from '../common/modal';
 import { Class } from '../../services/classesService';
 import { useEnrollUser } from '../../hooks/useEnrollment';
 
+
 interface EnrollmentModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,41 +19,98 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
 }) => {
   const [confirmEnroll, setConfirmEnroll] = useState(false);
   const [showError, setShowError] = useState(false);
-  const { mutate, isLoading, isSuccess, error, reset } = useEnrollUser();
+  const [errorMessage, setErrorMessage] = useState('');
+  const { mutate, isLoading, isSuccess, error } = useEnrollUser();
 
-  // Resetear estados cuando se abre/cierra el modal
+  useEffect(() => {
+  if (isOpen && classData) {
+    console.log('Datos completos de la clase recibidos:', JSON.stringify(classData, null, 2));
+  }
+}, [isOpen, classData]);
+
   useEffect(() => {
     if (!isOpen) {
       setConfirmEnroll(false);
       setShowError(false);
-      reset();
+      setErrorMessage('');
     }
-  }, [isOpen, reset]);
+  }, [isOpen]);
 
-  // Formatear el horario según las sesiones o los tiempos directos
-  const formattedSchedule = classData?.sessions
-    ? classData.sessions.map(s => `${s.day} ${s.startTime}-${s.endTime}`).join(', ')
-    : `${classData?.startTime} - ${classData?.endTime}`;
-
-  const handleEnroll = async () => {
-    if (!classData) return;
-    
-    try {
-      await mutate("123", classData.id);
+  useEffect(() => {
+    if (isSuccess) {
       setConfirmEnroll(true);
       setShowError(false);
-    } catch (error) {
-      setShowError(true);
-      console.error('Error al inscribirse:', error);
     }
-  };
+  }, [isSuccess]);
 
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+      setErrorMessage(error.message || 'Error al procesar la inscripción');
+      console.log('Error en inscripción:', error);
+    }
+  }, [error]);
+
+  const formattedSchedule = classData?.sessions
+    ? classData.sessions.map(s => `${s.day} ${s.startTime}-${s.endTime}`).join(', ')
+    : `${classData?.startDate} - ${classData?.endTime}`;
+
+  const handleEnroll = async () => {
+  if (!classData?.id || !userId) {
+    setErrorMessage(!classData?.id ? 'Clase no seleccionada' : 'Usuario no identificado');
+    setShowError(true);
+    return;
+  }
+
+  try {
+    if (!classData.startDate) {
+      throw new Error('La clase no tiene fecha de inicio definida');
+    }
+
+    // Extraer solo la parte de la fecha (YYYY-MM-DD)
+    const dateOnly = classData.startDate.split('T')[0];
+    
+    // Validar formato de fecha
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+      throw new Error(`Formato de fecha inválido: ${classData.startDate}`);
+    }
+
+    const result = await mutate({ 
+      userId, 
+      classId: classData.id, 
+      startDate: classData.startDate.split('T')[0]
+    });
+
+    // Manejar tanto respuesta JSON como texto plano
+    if (typeof result === 'string') {
+      console.log('Respuesta del servidor (texto):', result);
+    } else {
+      console.log('Respuesta del servidor (JSON):', result);
+    }
+
+    setConfirmEnroll(true);
+    
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Error desconocido';
+    console.error('Error en inscripción:', {
+      error: err,
+      classData,
+      userId
+    });
+    setErrorMessage(message);
+    setShowError(true);
+  }
+};
   const handleClose = () => {
-    setConfirmEnroll(false);
     onClose();
+    setConfirmEnroll(false);
+    setShowError(false);
   };
 
-  if (!classData) return null;
+  if (!classData) {
+    return null;
+  }
+    
 
   return (
     <Modal

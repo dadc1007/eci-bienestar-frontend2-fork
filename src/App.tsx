@@ -117,7 +117,7 @@ function App() {
               activeModule={MODULE_MAPPING.extracurricular}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ExtracurricularClassesRoutes userRole="wellnessStaff" />
+              <ExtracurricularClassesRoutes userRole="student" />
             </Layout>
           }
         />

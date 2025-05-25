@@ -13,11 +13,12 @@ export interface Class {
   repetition: string | null;
   resources: Resource[] | null;
   instructorId: string | null;
-  startTime: string;
+  startDate: string;
   maxStudents: number;
   endTime: string;
   endTimeRepetition: string | null;
   sessions?: Array<{  // Añade esta propiedad
+    id: string;
     day: string;
     startTime: string;
     endTime: string;

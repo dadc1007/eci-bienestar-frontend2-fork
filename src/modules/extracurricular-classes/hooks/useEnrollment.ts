@@ -23,14 +23,14 @@ export const useInscriptions = () => {
   const fetchInscriptions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(INSCRIPTIONS_URL);
-      
+
       if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status}`);
       }
-      
+
       const result = await response.json();
       setData(result);
     } catch (err) {
@@ -64,23 +64,23 @@ export const usePendingInscriptions = (userId: string) => {
     setIsLoading(true);
     setError(null);
     setIsEmpty(false);
-    
+
     try {
       const url = new URL(`${INSCRIPTIONS_URL}/my-inscriptions`);
       url.searchParams.append('userId', userId);
-      
+
       const response = await fetch(url.toString());
-      
+
       if (response.status === 204) {
         setIsEmpty(true);
         setData([]);
         return;
       }
-      
+
       if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status}`);
       }
-      
+
       const result = await response.json();
       setData(result);
     } catch (err) {
@@ -104,61 +104,66 @@ export const usePendingInscriptions = (userId: string) => {
   return { data, isLoading, error, isEmpty, refetch };
 };
 
-// Hook para inscribir a un usuario (existente)
-
 export const useEnrollUser = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [state, setState] = useState({
+    isLoading: false,
+    isSuccess: false,
+    error: null as Error | null
+  });
 
-  const enrollUserMutation = async (userId: string, classId: string) => {
-    setIsLoading(true);
-    setError(null);
-    setIsSuccess(false);
+  const mutate = async (params: {
+  userId: string;
+  classId: string;
+  startDate: string;
+}) => {
+  setState({ isLoading: true, isSuccess: false, error: null });
+
+  try {
+    // Validaciones y construcción de URL...
+    const url = new URL(`${INSCRIPTIONS_URL}/inscribe`);
+    url.searchParams.append('userId', params.userId);
+    url.searchParams.append('classId', params.classId);
+    url.searchParams.append('startDate', params.startDate);
+
+    const response = await fetch(url.toString(), {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    // Manejo inteligente de la respuesta
+    const responseText = await response.text();
     
-    try {
-      const url = new URL(`${INSCRIPTIONS_URL}/inscribe`);
-      url.searchParams.append('userId', userId);
-      url.searchParams.append('classId', classId);
-      
-      const response = await fetch(url.toString(), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        // Manejar específicamente errores 400
-        if (response.status === 400) {
-          const errorText = await response.text();
-          throw new Error(errorText || 'Error al inscribir usuario');
-        }
-        throw new Error(`Error en el servidor: ${response.status}`);
-      }
-      
-      const result = await response.text();
-      setIsSuccess(true);
-      return result; // Devuelve "Usuario inscrito exitosamente"
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Error desconocido al inscribir usuario');
-      setError(error);
-      console.error('Error al inscribir usuario:', error);
-      throw error; // Re-lanzamos el error para que pueda ser capturado en el componente
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      // Si es error, lanzar el mensaje tal cual viene
+      throw new Error(responseText || `Error ${response.status}`);
     }
-  };
 
-  return { 
-    mutate: enrollUserMutation, 
-    isLoading, 
-    error, 
-    isSuccess,
-    reset: () => {
-      setIsSuccess(false);
-      setError(null);
+    // Intentar parsear JSON solo si parece ser JSON válido
+    let result;
+    try {
+      result = responseText ? JSON.parse(responseText) : { success: true };
+    } catch (e) {
+      // Si no es JSON válido, devolver el texto como mensaje
+      result = { message: responseText };
     }
+
+    setState({ isLoading: false, isSuccess: true, error: null });
+    return result;
+
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error('Error desconocido');
+    console.error('Error en mutate:', {
+      error: err,
+    });
+    setState({ isLoading: false, isSuccess: false, error: err });
+    throw err;
+  }
+};
+
+  return {
+    mutate,
+    ...state,
+    reset: () => setState({ isLoading: false, isSuccess: false, error: null })
   };
 };
 
@@ -172,24 +177,24 @@ export const useDeleteInscription = () => {
     setIsLoading(true);
     setError(null);
     setIsSuccess(false);
-    
+
     try {
       const url = new URL(`${INSCRIPTIONS_URL}/delete`);
       url.searchParams.append('userId', userId);
       url.searchParams.append('classId', classId);
-      
+
       const response = await fetch(url.toString(), {
         method: 'DELETE',
       });
-      
+
       if (response.status === 404) {
         throw new Error('Inscripción no encontrada');
       }
-      
+
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
-      
+
       setIsSuccess(true);
       return await response.text(); // Devuelve el mensaje de éxito del backend
     } catch (err) {
@@ -202,10 +207,10 @@ export const useDeleteInscription = () => {
     }
   };
 
-  return { 
-    mutate: deleteInscriptionMutation, 
-    isLoading, 
-    error, 
+  return {
+    mutate: deleteInscriptionMutation,
+    isLoading,
+    error,
     isSuccess,
     reset: () => {
       setIsSuccess(false);
@@ -224,23 +229,23 @@ export const useHistoricalAssistances = (userId: string) => {
     setIsLoading(true);
     setError(null);
     setIsEmpty(false);
-    
+
     try {
       const url = new URL(`${INSCRIPTIONS_URL}/my-Historical`);
       url.searchParams.append('userId', userId);
-      
+
       const response = await fetch(url.toString());
-      
+
       if (response.status === 204) {
         setIsEmpty(true);
         setData([]);
         return;
       }
-      
+
       if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status}`);
       }
-      
+
       const result = await response.json();
       setData(result);
     } catch (err) {
@@ -261,11 +266,11 @@ export const useHistoricalAssistances = (userId: string) => {
     fetchHistoricalAssistances();
   };
 
-  return { 
-    data, 
-    isLoading, 
-    error, 
-    isEmpty, 
-    refetch 
+  return {
+    data,
+    isLoading,
+    error,
+    isEmpty,
+    refetch
   };
 };
