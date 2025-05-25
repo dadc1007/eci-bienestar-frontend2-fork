@@ -11,7 +11,7 @@ import carousel3 from "../assets/images/carousel/img3.jpg";
 
 const ForgotPasswordPage: React.FC = () => {
   const carouselImages = [carousel1, carousel2, carousel3];
-  const { currentIdx, prevSlide, nextSlide, setCurrentIdx } = useCarousel(
+  const { currentIdx, setCurrentIdx } = useCarousel(
     carouselImages.length,
     5000
   );

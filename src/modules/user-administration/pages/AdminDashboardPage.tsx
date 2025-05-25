@@ -7,7 +7,6 @@ import {
   CardHeader,
   Image,
 } from "@heroui/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserGraduate,
   faChalkboardTeacher,

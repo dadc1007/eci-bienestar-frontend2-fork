@@ -9,10 +9,10 @@ import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import Login from "./modules/auth/pages/LoginPage";
 import ForgotPassword from "./modules/auth/pages/ForgotPasswordPage";
-import AdminDashboard from "./modules/user-administration/components/AdminDashboard";
-import Students from "./modules/user-administration/components/StudentsPage";
-import Teachers from "./modules/user-administration/components/TeachersPage";
-import Staff from "./modules/user-administration/components/StaffPage";
+import AdminDashboard from "./modules/user-administration/pages/AdminDashboardPage";
+import Students from "./modules/user-administration/pages/StudentsPage";
+import Staff from "./modules/user-administration/components/TeachersPage";
+import Teachers from "./modules/user-administration/pages/TeachersPage";
 import Doctors from "./modules/user-administration/components/DoctorsPage";
 
 const MODULE_MAPPING = {
@@ -40,7 +40,6 @@ const moduleColors = {
 // Componentes de módulos
 const ModuleTemplate: React.FC<{ title: string; color: string }> = ({
   title,
-  color,
 }) => (
   <div className="container mx-auto px-4 py-8">
     <h1 className="text-3xl font-bold text-gray-800 mb-6">{title}</h1>
