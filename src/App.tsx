@@ -30,7 +30,7 @@ const moduleColors = {
   default: "#990000", // Color por defecto para dashboard
 };
 
-// Componentes de módulos
+// Componentes de módulos genéricos en desarrollo
 const ModuleTemplate: React.FC<{ title: string; color: string }> = ({
   title,
   color,
@@ -47,6 +47,7 @@ const ModuleTemplate: React.FC<{ title: string; color: string }> = ({
 
 function App() {
   const { user } = useAuth();
+
   const handleNotificationsClick = () => {
     console.log("Mostrando notificaciones...");
     // Aquí iría la lógica para mostrar notificaciones
@@ -57,7 +58,7 @@ function App() {
       {/* Ruta inicial - login */}
       <Route path="/" element={<Root />} />
 
-      {/* Restaurar contrasena*/}
+      {/* Restaurar contraseña */}
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
       <Route element={<ProtectedRoute />}>
@@ -116,11 +117,7 @@ function App() {
               activeModule={MODULE_MAPPING.extracurricular}
               onNotificationsClick={handleNotificationsClick}
             >
-<<<<<<< HEAD
-              <ExtracurricularClassesRoutes userRole={"student"} />
-=======
               <ExtracurricularClassesRoutes userRole="wellnessStaff" />
->>>>>>> 895e89525c800e1f3d84a25d1b8e1bc884ce1ea4
             </Layout>
           }
         />

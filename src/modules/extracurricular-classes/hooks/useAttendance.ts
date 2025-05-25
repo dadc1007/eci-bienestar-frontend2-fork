@@ -1,110 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
-<<<<<<< HEAD
-import { API_BASE_URL } from '../lib/config';
-
-const ASSISTANCE_URL = `${API_BASE_URL}/assistance`;
-
-export interface Assistance {
-  id: string;
-  startTime: string; // Cambiado a string para facilitar el manejo
-  endTime: string;
-  userId: string;
-  instructorId: string;
-  classId: string;
-  sessionId: string;
-  confirm: boolean;
-  // Considera añadir más campos si la API los devuelve
-}
-
-export const useHistoricalAssistances = (userId: string) => {
-  const [data, setData] = useState<Assistance[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [isEmpty, setIsEmpty] = useState(false);
-
-  const fetchHistoricalAssistances = useCallback(async () => {
-    if (!userId) {
-      setIsEmpty(true);
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const url = new URL(`${ASSISTANCE_URL}/my-Historical`);
-      url.searchParams.append('userId', userId);
-      
-      const response = await fetch(url.toString());
-      
-      if (response.status === 204) {
-        setIsEmpty(true);
-        setData([]);
-        return;
-      }
-      
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      
-      // Validación básica de la respuesta
-      if (!Array.isArray(result)) {
-        throw new Error('Formato de respuesta inválido');
-      }
-      
-      setData(result);
-      setIsEmpty(result.length === 0);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Error desconocido');
-      setError(error);
-      console.error('Error fetching historical assistances:', error);
-      setIsEmpty(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    fetchHistoricalAssistances();
-  }, [fetchHistoricalAssistances]);
-
-  return { 
-    data, 
-    isLoading, 
-    error, 
-    isEmpty, 
-    refetch: fetchHistoricalAssistances // Eliminé la función redundante
-=======
 import {
   Attendance,
   AttendanceConfirmParams,
   AttendanceStatsParams,
   AttendanceByClassParams,
-  confirmAttendance,
-  getConfirmedAttendanceStats,
-  getAttendanceByClass,
-  getAttendanceHistory,
-  getAllConfirmedAttendances,
-  getAbsences,
+  confirmAttendance as apiConfirmAttendance,
+  getConfirmedAttendanceStats as apiGetStats,
+  getAttendanceByClass as apiGetByClass,
+  getAttendanceHistory as apiGetHistory,
+  getAllConfirmedAttendances as apiGetAllConfirmed,
+  getAbsences as apiGetAbsences,
   calculateAttendancePercentage,
-  getCurrentMonthAttendances,
+  getCurrentMonthAttendances as apiGetCurrentMonth
 } from '../services/attendanceService';
 
 // Hook para confirmar asistencia
 export const useConfirmAttendance = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [success, setSuccess] = useState(false);
 
   const confirm = async (params: AttendanceConfirmParams) => {
     try {
       setLoading(true);
       setError(null);
       setSuccess(false);
-      
-      await confirmAttendance(params);
+      await apiConfirmAttendance(params);
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al confirmar asistencia');
@@ -121,17 +42,17 @@ export const useConfirmAttendance = () => {
   return { confirm, loading, error, success, reset };
 };
 
-// Hook para obtener estadísticas de asistencia
+// Hook para estadísticas de asistencia
 export const useAttendanceStats = (params?: AttendanceStatsParams) => {
   const [stats, setStats] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = useCallback(async (queryParams: AttendanceStatsParams) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getConfirmedAttendanceStats(queryParams);
+      const data = await apiGetStats(queryParams);
       setStats(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar estadísticas');
@@ -142,25 +63,23 @@ export const useAttendanceStats = (params?: AttendanceStatsParams) => {
   }, []);
 
   useEffect(() => {
-    if (params) {
-      fetchStats(params);
-    }
+    if (params) fetchStats(params);
   }, [params, fetchStats]);
 
   return { stats, loading, error, refetch: fetchStats };
 };
 
-// Hook para obtener asistencias por clase
+// Hook para asistencias por clase
 export const useAttendanceByClass = (params?: AttendanceByClassParams) => {
   const [classAttendance, setClassAttendance] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchClassAttendance = useCallback(async (queryParams: AttendanceByClassParams) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAttendanceByClass(queryParams);
+      const data = await apiGetByClass(queryParams);
       setClassAttendance(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar asistencias por clase');
@@ -171,25 +90,23 @@ export const useAttendanceByClass = (params?: AttendanceByClassParams) => {
   }, []);
 
   useEffect(() => {
-    if (params) {
-      fetchClassAttendance(params);
-    }
+    if (params) fetchClassAttendance(params);
   }, [params, fetchClassAttendance]);
 
   return { classAttendance, loading, error, refetch: fetchClassAttendance };
 };
 
-// Hook para obtener historial de asistencias
+// Hook para historial de asistencias (compatible con useHistoricalAssistances)
 export const useAttendanceHistory = (userId?: string) => {
   const [history, setHistory] = useState<Attendance[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchHistory = useCallback(async (userIdParam: string) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAttendanceHistory(userIdParam);
+      const data = await apiGetHistory(userIdParam);
       setHistory(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar historial');
@@ -200,42 +117,30 @@ export const useAttendanceHistory = (userId?: string) => {
   }, []);
 
   useEffect(() => {
-    if (userId) {
-      fetchHistory(userId);
-    }
+    if (userId) fetchHistory(userId);
   }, [userId, fetchHistory]);
 
-  // Calcular estadísticas del historial
-  const attendancePercentage = calculateAttendancePercentage(history);
-  const totalSessions = history.length;
-  const confirmedAttendances = history.filter(att => att.confirm).length;
-  const absences = totalSessions - confirmedAttendances;
-
-  return {
-    history,
-    loading,
-    error,
-    refetch: fetchHistory,
-    stats: {
-      attendancePercentage,
-      totalSessions,
-      confirmedAttendances,
-      absences,
-    },
+  const stats = {
+    attendancePercentage: calculateAttendancePercentage(history),
+    totalSessions: history.length,
+    confirmedAttendances: history.filter(att => att.confirm).length,
+    absences: history.length - history.filter(att => att.confirm).length,
   };
+
+  return { history, loading, error, refetch: fetchHistory, stats };
 };
 
-// Hook para obtener todas las asistencias confirmadas
+// Hook para todas las asistencias confirmadas
 export const useAllConfirmedAttendances = () => {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAttendances = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAllConfirmedAttendances();
+      const data = await apiGetAllConfirmed();
       setAttendances(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar asistencias confirmadas');
@@ -252,17 +157,17 @@ export const useAllConfirmedAttendances = () => {
   return { attendances, loading, error, refresh: fetchAttendances };
 };
 
-// Hook para obtener inasistencias
+// Hook para inasistencias
 export const useAbsences = () => {
   const [absences, setAbsences] = useState<Attendance[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAbsences = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAbsences();
+      const data = await apiGetAbsences();
       setAbsences(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar inasistencias');
@@ -279,17 +184,17 @@ export const useAbsences = () => {
   return { absences, loading, error, refresh: fetchAbsences };
 };
 
-// Hook para obtener asistencias del mes actual
+// Hook para asistencias del mes actual
 export const useCurrentMonthAttendance = (userId?: string) => {
   const [monthlyAttendance, setMonthlyAttendance] = useState<Attendance[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchMonthlyAttendance = useCallback(async (userIdParam: string) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getCurrentMonthAttendances(userIdParam);
+      const data = await apiGetCurrentMonth(userIdParam);
       setMonthlyAttendance(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar asistencias del mes');
@@ -300,9 +205,7 @@ export const useCurrentMonthAttendance = (userId?: string) => {
   }, []);
 
   useEffect(() => {
-    if (userId) {
-      fetchMonthlyAttendance(userId);
-    }
+    if (userId) fetchMonthlyAttendance(userId);
   }, [userId, fetchMonthlyAttendance]);
 
   const monthlyStats = {
@@ -311,16 +214,10 @@ export const useCurrentMonthAttendance = (userId?: string) => {
     attendanceRate: calculateAttendancePercentage(monthlyAttendance),
   };
 
-  return {
-    monthlyAttendance,
-    loading,
-    error,
-    refetch: fetchMonthlyAttendance,
-    monthlyStats,
-  };
+  return { monthlyAttendance, loading, error, refetch: fetchMonthlyAttendance, monthlyStats };
 };
 
-// Hook combinado para dashboard de asistencias
+// Hook para dashboard de asistencias
 export const useAttendanceDashboard = (userId?: string) => {
   const { history, loading: historyLoading, error: historyError, stats } = useAttendanceHistory(userId);
   const { monthlyAttendance, loading: monthlyLoading, monthlyStats } = useCurrentMonthAttendance(userId);
@@ -330,23 +227,29 @@ export const useAttendanceDashboard = (userId?: string) => {
   const error = historyError;
 
   return {
-    // Datos
     history,
     monthlyAttendance,
-    
-    // Estadísticas
     overallStats: stats,
     monthlyStats,
-    
-    // Estados
     loading,
     error,
-    
-    // Acciones
     confirmAttendance: confirm,
     confirmLoading,
     confirmError,
     confirmSuccess,
->>>>>>> 895e89525c800e1f3d84a25d1b8e1bc884ce1ea4
+  };
+};
+
+// Hook legacy para compatibilidad (puede ser deprecado)
+export const useHistoricalAssistances = (userId: string) => {
+  const { history: data, loading: isLoading, error, refetch: fetchHistoricalAssistances, stats } = useAttendanceHistory(userId);
+  
+  return { 
+    data, 
+    isLoading, 
+    error, 
+    isEmpty: data.length === 0, 
+    refetch: fetchHistoricalAssistances,
+    stats
   };
 };
