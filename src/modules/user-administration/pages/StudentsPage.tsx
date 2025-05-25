@@ -5,11 +5,11 @@ import {
   useStudents,
   useAddStudentModal,
 } from "../hooks/useStudents";
-import { useEditStudentModal } from "../hooks/useEditStudentModal";
-import EditStudentModal from "../components/EditStudentModal";
+import { useEditStudentModal } from "../hooks/modals/useEditStudentModal";
+import EditStudentModal from "../components/modals/EditStudentModal";
 import SearchBar from "../components/SearchBar";
 import StudentTable from "../components/StudentTable";
-import AddStudentModal from "../components/AddStudentModal";
+import AddStudentModal from "../components/modals/AddStudentModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 

@@ -1,6 +1,6 @@
 // src/hooks/useAddStaffModal.ts
 import { useState } from "react";
-import { createStaff, StaffPayload } from "../services/staffService";
+import { createStaff, StaffPayload } from "../../services/staffService";
 
 export function useAddStaffModal(onSuccess: () => void) {
   const [showModal, setShowModal] = useState<boolean>(false);

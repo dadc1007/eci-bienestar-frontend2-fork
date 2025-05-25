@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { useStaff } from "../hooks/useStaff";
-import { useAddStaffModal } from "../hooks/useAddStaffModal";
-import { useEditStaffModal } from "../hooks/useEditStaffModal";
+import { useAddStaffModal } from "../hooks/modals/useAddStaffModal";
+import { useEditStaffModal } from "../hooks/modals/useEditStaffModal";
 
 import TeacherTable from "../components/TeacherTable"; // Reutiliza la tabla genérica
 import SearchBar from "../components/SearchBar";
-import AddStaffModal from "../components/AddStaffModal";
-import EditStaffModal from "../components/EditStaffModal";
+import AddStaffModal from "../components/modals/AddStaffModal";
+import EditStaffModal from "../components/modals/EditStaffModal";
 
 const StaffPage: React.FC = () => {
   const navigate = useNavigate();

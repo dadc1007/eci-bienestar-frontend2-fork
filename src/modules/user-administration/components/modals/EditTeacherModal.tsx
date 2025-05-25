@@ -50,11 +50,11 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-3/4 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-2xl font-semibold mb-4">Edit Teacher</h3>
+        <h3 className="text-2xl font-semibold mb-4">Modificar Profesor</h3>
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Teacher Info Section */}
           <div className="border border-gray-200 rounded p-4">
-            <h4 className="text-xl font-medium mb-3">Teacher Info</h4>
+            <h4 className="text-xl font-medium mb-3">Información del Profesor</h4>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium">ID</label>
@@ -67,7 +67,7 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">ID Type</label>
+                <label className="block text-sm font-medium">Tipo de ID</label>
                 <select
                   value={teacherIdType}
                   onChange={(e) => setTeacherIdType(e.target.value)}
@@ -83,7 +83,7 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium">Full Name</label>
+                <label className="block text-sm font-medium">Nombre Completo</label>
                 <input
                   type="text"
                   value={teacherFullName}
@@ -93,7 +93,7 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Phone</label>
+                <label className="block text-sm font-medium">Telefono</label>
                 <input
                   type="text"
                   value={teacherPhone}
@@ -102,7 +102,7 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Email</label>
+                <label className="block text-sm font-medium">Correo</label>
                 <input
                   type="email"
                   value={teacherEmail}
@@ -112,7 +112,7 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Password</label>
+                <label className="block text-sm font-medium">Contraseña</label>
                 <input
                   type="password"
                   value={teacherPassword}
@@ -132,14 +132,14 @@ const EditTeacherModal: React.FC<EditTeacherModalProps> = ({
               className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
               disabled={isSubmitting}
             >
-              Cancel
+              Cancelar
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Updating..." : "Update Teacher"}
+              {isSubmitting ? "Updating..." : "Actualizar Profesor"}
             </button>
           </div>
         </form>

@@ -1,38 +1,32 @@
-// src/hooks/useEditTeacherModal.ts
+// src/hooks/useAddTeacherModal.ts
 import { useState } from "react";
-import {
-  updateTeacher,
-  TeacherFromApi,
-  UpdateTeacherPayload,
-} from "../services/teacherService";
+import { createTeacher, TeacherPayload } from "../../services/teacherService";
 
-export function useEditTeacherModal(onSuccess: () => void) {
+export function useAddTeacherModal(onSuccess: () => void) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Campos del formulario
+  // Campos del formulario para “Add Teacher”
   const [teacherId, setTeacherId] = useState<string>("");
-  const [teacherIdType, setTeacherIdType] = useState<string>("");
+  const [teacherIdType, setTeacherIdType] = useState<string>("ANI");
   const [teacherFullName, setTeacherFullName] = useState<string>("");
   const [teacherPhone, setTeacherPhone] = useState<string>("");
   const [teacherEmail, setTeacherEmail] = useState<string>("");
-  const [teacherRole, setTeacherRole] = useState<"TEACHER">("TEACHER");
   const [teacherPassword, setTeacherPassword] = useState<string>("");
+  const [teacherSpecialty, setTeacherSpecialty] = useState<string>("");
 
   const token = localStorage.getItem("authToken") || "";
 
-  // Al abrir el modal, precargamos datos del profesor
-  const openModal = (teacher: TeacherFromApi) => {
+  const openModal = () => {
     setFormError(null);
-    setTeacherId(teacher.id);
-    setTeacherIdType(teacher.idType);
-    setTeacherFullName(teacher.fullName);
-    setTeacherPhone(teacher.phone);
-    setTeacherEmail(teacher.email);
-    setTeacherRole("TEACHER");
-    // Suponemos que no se muestra la contraseña actual; si se edita, la ingresa aquí
+    setTeacherId("");
+    setTeacherIdType("ANI");
+    setTeacherFullName("");
+    setTeacherPhone("");
+    setTeacherEmail("");
     setTeacherPassword("");
+    setTeacherSpecialty("");
     setShowModal(true);
   };
 
@@ -46,33 +40,37 @@ export function useEditTeacherModal(onSuccess: () => void) {
     setFormError(null);
 
     // Validaciones básicas
-    if (!teacherId || !teacherFullName.trim() || !teacherEmail.trim()) {
-      setFormError("Por favor llena los campos requeridos.");
+    if (!teacherId.trim() || !teacherFullName.trim() || !teacherEmail.trim() || !teacherPassword) {
+      setFormError("Please fill in all required fields.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!token) {
+      setFormError("No token found. Please log in again.");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const payload: UpdateTeacherPayload = {
-        id: teacherId,
+      const payload: TeacherPayload = {
+        id: teacherId.trim(),
         idType: teacherIdType,
         fullName: teacherFullName.trim(),
         phone: teacherPhone.trim(),
         email: teacherEmail.trim(),
-        role: teacherRole,
-        password: teacherPassword, // Si no se modifica, puede quedar vacío según backend
+        role: "TEACHER",
+        password: teacherPassword,
+        specialty: teacherSpecialty.trim() || undefined,
       };
-      await updateTeacher(teacherId, payload, token);
+      await createTeacher(payload, token);
       onSuccess();
       closeModal();
     } catch (err: any) {
-      console.error("Error updating teacher:", err);
+      console.error("Error creating teacher:", err);
       if (err.response && err.response.data && err.response.data.message) {
         setFormError(err.response.data.message);
       } else {
-        setFormError(
-          "No se pudo actualizar el profesor. Verifica la información o permisos."
-        );
+        setFormError("Could not create teacher. Check data or permissions.");
       }
     } finally {
       setIsSubmitting(false);
@@ -91,16 +89,16 @@ export function useEditTeacherModal(onSuccess: () => void) {
     teacherFullName,
     teacherPhone,
     teacherEmail,
-    teacherRole,
     teacherPassword,
+    teacherSpecialty,
 
     setTeacherId,
     setTeacherIdType,
     setTeacherFullName,
     setTeacherPhone,
     setTeacherEmail,
-    setTeacherRole,
     setTeacherPassword,
+    setTeacherSpecialty,
 
     handleSubmit,
   };

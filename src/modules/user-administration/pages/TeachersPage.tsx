@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { useTeachers } from "../hooks/useTeachers";
-import { useAddTeacherModal } from "../hooks/useAddTeacherModal";
-import { useEditTeacherModal } from "../hooks/useEditTeacherModal";
+import { useAddTeacherModal } from "../hooks/modals/useAddTeacherModal";
+import { useEditTeacherModal } from "../hooks/modals/useEditTeacherModal";
 
 import TeacherTable from "../components/TeacherTable";
 import SearchBar from "../components/SearchBar";
-import AddTeacherModal from "../components/AddTeacherModal";
-import EditTeacherModal from "../components/EditTeacherModal";
+import AddTeacherModal from "../components/modals/AddTeacherModal";
+import EditTeacherModal from "../components/modals/EditTeacherModal";
 
 const TeachersPage: React.FC = () => {
   const navigate = useNavigate();

@@ -4,7 +4,7 @@ import {
   updateStaff,
   StaffFromApi,
   UpdateStaffPayload,
-} from "../services/staffService";
+} from "../../services/staffService";
 
 export function useEditStaffModal(onSuccess: () => void) {
   const [showModal, setShowModal] = useState<boolean>(false);

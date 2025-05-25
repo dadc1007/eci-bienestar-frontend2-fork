@@ -1,15 +1,19 @@
-// src/hooks/useAddDoctorModal.ts
+// src/hooks/useEditDoctorModal.ts
 import { useState } from "react";
-import { createDoctor, DoctorPayload } from "../services/doctorService";
+import {
+  updateDoctor,
+  DoctorFromApi,
+  UpdateDoctorPayload,
+} from "../../services/doctorService";
 
-export function useAddDoctorModal(onSuccess: () => void) {
+export function useEditDoctorModal(onSuccess: () => void) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Campos del formulario para “Add Doctor”
+  // Campos del formulario
   const [doctorId, setDoctorId] = useState<string>("");
-  const [doctorIdType, setDoctorIdType] = useState<string>("ANI");
+  const [doctorIdType, setDoctorIdType] = useState<string>("");
   const [doctorFullName, setDoctorFullName] = useState<string>("");
   const [doctorPhone, setDoctorPhone] = useState<string>("");
   const [doctorEmail, setDoctorEmail] = useState<string>("");
@@ -21,16 +25,16 @@ export function useAddDoctorModal(onSuccess: () => void) {
 
   const token = localStorage.getItem("authToken") || "";
 
-  const openModal = () => {
+  const openModal = (doctor: DoctorFromApi) => {
     setFormError(null);
-    setDoctorId("");
-    setDoctorIdType("ANI");
-    setDoctorFullName("");
-    setDoctorPhone("");
-    setDoctorEmail("");
+    setDoctorId(doctor.id);
+    setDoctorIdType(doctor.idType);
+    setDoctorFullName(doctor.fullName);
+    setDoctorPhone(doctor.phone);
+    setDoctorEmail(doctor.email);
+    setDoctorRole(doctor.role);
     setDoctorPassword("");
-    setDoctorRole("MEDICAL_SECRETARY");
-    setDoctorSpecialty("");
+    setDoctorSpecialty(doctor.specialty || "");
     setShowModal(true);
   };
 
@@ -43,25 +47,15 @@ export function useAddDoctorModal(onSuccess: () => void) {
     setIsSubmitting(true);
     setFormError(null);
 
-    if (
-      !doctorId.trim() ||
-      !doctorFullName.trim() ||
-      !doctorEmail.trim() ||
-      !doctorPassword
-    ) {
-      setFormError("Please fill in all required fields.");
-      setIsSubmitting(false);
-      return;
-    }
-    if (!token) {
-      setFormError("No token found. Please log in again.");
+    if (!doctorId || !doctorFullName.trim() || !doctorEmail.trim()) {
+      setFormError("Por favor llena los campos requeridos.");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const payload: DoctorPayload = {
-        id: doctorId.trim(),
+      const payload: UpdateDoctorPayload = {
+        id: doctorId,
         idType: doctorIdType,
         fullName: doctorFullName.trim(),
         phone: doctorPhone.trim(),
@@ -70,15 +64,17 @@ export function useAddDoctorModal(onSuccess: () => void) {
         password: doctorPassword,
         specialty: doctorSpecialty.trim() || undefined,
       };
-      await createDoctor(payload, token);
+      await updateDoctor(doctorId, payload, token);
       onSuccess();
       closeModal();
     } catch (err: any) {
-      console.error("Error creating doctor:", err);
+      console.error("Error updating doctor:", err);
       if (err.response && err.response.data && err.response.data.message) {
         setFormError(err.response.data.message);
       } else {
-        setFormError("Could not create doctor. Check data or permissions.");
+        setFormError(
+          "No se pudo actualizar el doctor. Verifica la información o permisos."
+        );
       }
     } finally {
       setIsSubmitting(false);

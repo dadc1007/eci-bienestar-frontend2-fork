@@ -1,6 +1,6 @@
 // src/hooks/useEditStudentModal.ts
 import { useState, useEffect } from "react";
-import { updateStudent, StudentFromApi, StudentPayload } from "../services/studentService";
+import { updateStudent, StudentFromApi, StudentPayload } from "../../services/studentService";
 
 export function useEditStudentModal(onSuccess: () => void) {
   const [showModal, setShowModal] = useState<boolean>(false);

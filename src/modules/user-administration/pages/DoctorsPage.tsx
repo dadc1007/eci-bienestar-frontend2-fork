@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { useDoctors } from "../hooks/useDoctors";
-import { useAddDoctorModal } from "../hooks/useAddDoctorModal";
-import { useEditDoctorModal } from "../hooks/useEditDoctorModal";
+import { useAddDoctorModal } from "../hooks/modals/useAddDoctorModal";
+import { useEditDoctorModal } from "../hooks/modals/useEditDoctorModal";
 
-import TeacherTable from "../components/TeacherTable"; // Reutiliza el mismo componente de tabla
+import TeacherTable from "../components/TeacherTable"; 
 import SearchBar from "../components/SearchBar";
-import AddTeacherModal from "../components/AddDoctorModal"; // Reutiliza el modal de “Add” (con props genéricos)
-import EditTeacherModal from "../components/EditDoctorModal"; // Reutiliza el modal de “Edit”
+import AddDoctorModal from "../components/modals/AddDoctorModal";
+import EditDoctorModal from "../components/modals/EditDoctorModal";
 
 const DoctorsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -99,54 +99,58 @@ const DoctorsPage: React.FC = () => {
       />
 
       {/* AddDoctorModal (reutiliza AddTeacherModal, solo difieren labels internos) */}
-      <AddTeacherModal
+      <AddDoctorModal
         show={addModal.showModal}
         onClose={addModal.closeModal}
         onSubmit={addModal.handleSubmit}
         isSubmitting={addModal.isSubmitting}
         formError={addModal.formError}
 
-        // Campos del formulario para crear:
-        teacherId={addModal.doctorId}
-        teacherIdType={addModal.doctorIdType}
-        teacherFullName={addModal.doctorFullName}
-        teacherPhone={addModal.doctorPhone}
-        teacherEmail={addModal.doctorEmail}
-        teacherPassword={addModal.doctorPassword}
-        teacherSpecialty={addModal.doctorSpecialty}
+        // CORRECTO: “doctorId” en lugar de “teacherId”
+        doctorId={addModal.doctorId}
+        doctorIdType={addModal.doctorIdType}
+        doctorFullName={addModal.doctorFullName}
+        doctorPhone={addModal.doctorPhone}
+        doctorEmail={addModal.doctorEmail}
+        doctorPassword={addModal.doctorPassword}
+        doctorRole={addModal.doctorRole}
+        doctorSpecialty={addModal.doctorSpecialty}
 
-        setTeacherId={addModal.setDoctorId}
-        setTeacherIdType={addModal.setDoctorIdType}
-        setTeacherFullName={addModal.setDoctorFullName}
-        setTeacherPhone={addModal.setDoctorPhone}
-        setTeacherEmail={addModal.setDoctorEmail}
-        setTeacherPassword={addModal.setDoctorPassword}
-        setTeacherSpecialty={addModal.setDoctorSpecialty}
+        setDoctorId={addModal.setDoctorId}
+        setDoctorIdType={addModal.setDoctorIdType}
+        setDoctorFullName={addModal.setDoctorFullName}
+        setDoctorPhone={addModal.setDoctorPhone}
+        setDoctorEmail={addModal.setDoctorEmail}
+        setDoctorPassword={addModal.setDoctorPassword}
+        setDoctorRole={addModal.setDoctorRole}
+        setDoctorSpecialty={addModal.setDoctorSpecialty}
       />
 
-      {/* EditDoctorModal (reutiliza EditTeacherModal) */}
-      <EditTeacherModal
+      <EditDoctorModal
         show={editModal.showModal}
         onClose={editModal.closeModal}
         onSubmit={editModal.handleSubmit}
         isSubmitting={editModal.isSubmitting}
         formError={editModal.formError}
 
-        teacherId={editModal.doctorId}
-        teacherIdType={editModal.doctorIdType}
-        teacherFullName={editModal.doctorFullName}
-        teacherPhone={editModal.doctorPhone}
-        teacherEmail={editModal.doctorEmail}
-        teacherPassword={editModal.doctorPassword}
-        teacherSpecialty={editModal.doctorSpecialty}
+        // CORRECTO: “doctorId” en lugar de “teacherId”
+        doctorId={editModal.doctorId}
+        doctorIdType={editModal.doctorIdType}
+        doctorFullName={editModal.doctorFullName}
+        doctorPhone={editModal.doctorPhone}
+        doctorEmail={editModal.doctorEmail}
+        doctorPassword={editModal.doctorPassword}
+        doctorRole={editModal.doctorRole}
+        doctorSpecialty={editModal.doctorSpecialty}
 
-        setTeacherId={editModal.setDoctorId}
-        setTeacherIdType={editModal.setDoctorIdType}
-        setTeacherFullName={editModal.setDoctorFullName}
-        setTeacherPhone={editModal.setDoctorPhone}
-        setTeacherEmail={editModal.setDoctorEmail}
-        setTeacherPassword={editModal.setDoctorPassword}
-        setTeacherSpecialty={editModal.setDoctorSpecialty}
+        setDoctorId={editModal.setDoctorId}
+        setDoctorIdType={editModal.setDoctorIdType}
+        setDoctorFullName={editModal.setDoctorFullName}
+        setDoctorPhone={editModal.setDoctorPhone}
+        setDoctorEmail={editModal.setDoctorEmail}
+        setDoctorPassword={editModal.setDoctorPassword}
+        setDoctorRole={editModal.setDoctorRole}
+        setDoctorSpecialty={editModal.setDoctorSpecialty}
       />
     </div>
   );
