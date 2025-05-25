@@ -7,6 +7,11 @@ import { useAuth } from "./common/context";
 import { Role } from "./common/types";
 import { ProtectedRoute, Root } from "@common/components";
 import ExtracurricularClassesRoutes from "./modules/extracurricular-classes/routes";
+import {
+  mapBackendRoleToAppRole,
+  isAdministrator,
+  AppRole
+} from "./modules/extracurricular-classes/utils/roleUtils";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -52,6 +57,8 @@ function App() {
     console.log("Mostrando notificaciones...");
     // Aquí iría la lógica para mostrar notificaciones
   };
+
+  const mappedRole: AppRole | null = user?.role ? mapBackendRoleToAppRole(user.role) : null;
 
   return (
     <Routes>
@@ -109,15 +116,20 @@ function App() {
         />
 
         {/* Módulo de Clases Extracurriculares */}
+        {/* Módulo de Clases Extracurriculares */}
         <Route
           path="/modules/extracurricular/*"
           element={
             <Layout
-              moduleColor={moduleColors.extracurricular}
+              moduleColor={
+                isAdministrator(user?.role || '')
+                  ? "#990000"
+                  : moduleColors.extracurricular
+              }
               activeModule={MODULE_MAPPING.extracurricular}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ExtracurricularClassesRoutes userRole="student" />
+              <ExtracurricularClassesRoutes userRole={mappedRole || 'student'} />
             </Layout>
           }
         />
