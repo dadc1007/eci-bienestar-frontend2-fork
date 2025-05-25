@@ -1,11 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Role } from "@/common/types";
-import ProtectedRoute from "@/modules/gym-management/components/ProtectedRoute";
 import GymRedirect from "@/modules/gym-management/components/GymRedirect";
-
-// Layouts
-import StudentDashboardPage from "@/modules/gym-management/pages/StudentDashboardPage";
-import TrainerDashboardPage from "@/modules/gym-management/pages/TrainerDashboardPage";
 
 // Index
 import StudentIndexPage from "@/modules/gym-management/pages/StudentIndexPage";
@@ -32,53 +26,65 @@ import ProgressPage from "@/modules/gym-management/pages/trainer/ProgressPage";
 
 // NotFound page
 import NotFoundPage from "@/modules/gym-management/pages/NotFoundPage";
+import GymNavBar from "../components/GymNavBar";
+
+const studentTabs = [
+  { label: "Inicio", path: "home" },
+  { label: "Mis reservas", path: "reservations" },
+  { label: "Reservar", path: "booking" },
+  { label: "Rutinas", path: "routines" },
+  { label: "Registro progreso", path: "progress" },
+  { label: "Evolución", path: "evolution" }
+];
+
+const trainerTabs = [
+  { label: "Inicio", path: "trainerHome" },
+  { label: "Rutinas", path: "trainer-routines" },
+  { label: "Ejercicios", path: "exercises" },
+  { label: "Sesiones", path: "sessions" },
+  { label: "Reporte", path: "trainer-generate-report" },
+  { label: "Progresos", path: "progress" }
+];
 
 const GymRoutes = () => {
   return (
     <Routes>
       {/* Redirección basada en rol */}
       <Route index element={<GymRedirect />} />
-      <Route path="redirect" element={<GymRedirect />} />
 
       {/* Rutas protegidas para estudiantes */}
       <Route
         path="student"
-        element={
-          <ProtectedRoute allowedRoles={[Role.STUDENT]}>
-            <StudentDashboardPage />
-          </ProtectedRoute>
-        }
+        element={<GymNavBar tabs={studentTabs} ariaLabel="Navegación del estudiante" />}
       >
-        <Route index element={<StudentIndexPage />} />
         <Route path="home" element={<StudentMainPage />} />
         <Route path="reservations" element={<ReservationsPage />} />
         <Route path="booking" element={<BookingPage />} />
         <Route path="routines" element={<RoutinesPage />} />
         <Route path="progress" element={<RegisterProgressPage />} />
         <Route path="evolution" element={<EvolutionPage />} />
-        <Route path="first-register" element={<RegisterMeasurements />} />
-        <Route path="body-measurements" element={<BodyMeasurements />} />
       </Route>
 
       {/* Rutas protegidas para entrenadores */}
       <Route
         path="trainer"
-        element={
-          <ProtectedRoute allowedRoles={[Role.TRAINER]}>
-            <TrainerDashboardPage />
-          </ProtectedRoute>
-        }
+        element={<GymNavBar tabs={trainerTabs} ariaLabel="Navegación del entrenador" />}
       >
-        <Route index element={<TrainerIndexPage />} />
-        <Route path="trainerHome" element={<TrainerMainPage />} />
-        <Route path="trainer-routines" element={<TrainerRoutinesPage />} />
+        <Route path="home" element={<TrainerMainPage />} />
+        <Route path="routines" element={<TrainerRoutinesPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="sessions" element={<SessionsPage />} />
-        <Route path="trainer-generate-report" element={<TrainerGenerateReportPage />} />
+        <Route path="generate-report" element={<TrainerGenerateReportPage />} />
         <Route path="progress" element={<ProgressPage />} />
         <Route path="my-students-progress" element={<MyStudentsProgress />} />
       </Route>
 
+      {/* Rutas que no requieren la barra de navegación */}
+      <Route path="trainer/index" element={<TrainerIndexPage />} />
+      <Route path="student/index" element={<StudentIndexPage />} />
+      <Route path="student/first-register" element={<RegisterMeasurements />} />
+      <Route path="student/body-measurements" element={<BodyMeasurements />} />
+      
       {/* Ruta para no encontrados */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

@@ -129,7 +129,7 @@ const StudentMainPage = () => {
 
       <div className="pt-6 text-center">
         <button
-          onClick={() => navigate("first-register")}
+          onClick={() => navigate("../student/first-register")}
           className="bg-black text-white font-semibold px-6 py-3 rounded hover:bg-black-500 transition w-full sm:w-auto"
         >
           Inscribirte ahora

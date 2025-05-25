@@ -2,12 +2,15 @@ import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/common/context";
+import axios from "axios";
 
 // Validación del formulario con Yup
 const schema = yup.object().shape({
   gender: yup
     .string()
-    .oneOf(["male", "female", "other"], "Selecciona una opción válida")
+    .oneOf(["HOMBRE", "MUJER", "OTRO"], "Selecciona una opción válida")
     .required("El género es obligatorio"),
   height: yup
     .number()
@@ -31,7 +34,7 @@ const schema = yup.object().shape({
 
 // Tipado para los datos del formulario
 interface FormData {
-  gender: "male" | "female" | "other";
+  gender: "HOMBRE" | "MUJER" | "OTRO";
   height: number;
   age: number;
   weight: number;
@@ -48,22 +51,63 @@ const RegisterMeasurements = () => {
   } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      gender: "male", // Set a valid default value
+      gender: "HOMBRE", // Set a valid default value
       height: 160,
       age: 20,
       weight: 60,
     },
   });
 
-  const onSubmit = (data: any) => {
-    alert("Datos registrados correctamente");
-    console.log(data);
-    navigate("../body-measurements");
-  };
-
+  const navigate = useNavigate();
   const gender = watch("gender");
 
-  const navigate = useNavigate();
+  const [userId, setUserId] = useState<string | null>(null);
+  const userEmail = sessionStorage.getItem("email");
+
+  useEffect(() => {
+    if (userEmail) {
+      axios
+        .get(`https://netherita-gymnasium-service-d8hvgjameybudsh3.canadacentral-01.azurewebsites.net/api/user/users?email=${userEmail}`)
+        .then((response) => {
+          const user = response.data.data[0]; // Ajustado a la respuesta del backend
+          if (user && user.id) {
+            setUserId(user.id);
+          } else {
+            alert("No se encontró el usuario.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error al obtener el usuario:", error);
+          alert("Error al obtener la información del usuario.");
+        });
+    } else {
+      alert("No se encontró el correo del usuario en sesión.");
+    }
+  }, [userEmail]);
+
+  const onSubmit = async (data: FormData) => {
+    if (!userId) {
+      alert("No se pudo obtener el ID del usuario. Intenta de nuevo.");
+      return;
+    }
+
+    try {
+      await axios.put(
+        `https://netherita-gymnasium-service-d8hvgjameybudsh3.canadacentral-01.azurewebsites.net/api/users/${userId}`,
+        {
+          gender: data,
+          registered: true,
+          registracionDate: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD
+        }
+      );
+
+      alert("Datos registrados correctamente");
+      navigate("../student/body-measurements");
+    } catch (error) {
+      console.error("Error al registrarse", error);
+      alert("Error al registrar los datos. Por favor, intenta de nuevo.");
+    }
+  };
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
@@ -80,27 +124,27 @@ const RegisterMeasurements = () => {
           <div className="flex justify-center gap-12">
             <button
               type="button"
-              onClick={() => setValue("gender", "male")}
+              onClick={() => setValue("gender", "HOMBRE")}
               className={`w-24 h-24 cursor-pointer border-4 ${
-                gender === "male" ? "border-blue-600" : "border-transparent"
+                gender === "HOMBRE" ? "border-blue-600" : "border-transparent"
               }`}
             >
               <img src="/src/modules/gym-management/assets/images/hombre.png" alt="Hombre" />
             </button>
             <button
               type="button"
-              onClick={() => setValue("gender", "female")}
+              onClick={() => setValue("gender", "MUJER")}
               className={`w-24 h-24 cursor-pointer border-4 ${
-                gender === "female" ? "border-pink-500" : "border-transparent"
+                gender === "MUJER" ? "border-pink-500" : "border-transparent"
               }`}
             >
               <img src="/src/modules/gym-management/assets/images/mujer.png" alt="Mujer" />
             </button>
             <button
               type="button"
-              onClick={() => setValue("gender", "other")}
+              onClick={() => setValue("gender", "OTRO")}
               className={`w-24 h-24 flex items-center justify-center cursor-pointer border-4 rounded ${
-                gender === "other" ? "border-gray-500" : "border-transparent"
+                gender === "OTRO" ? "border-gray-500" : "border-transparent"
               } bg-gray-200 font-semibold`}
             >
               No especificar
@@ -108,9 +152,9 @@ const RegisterMeasurements = () => {
           </div>
           {gender && (() => {
             let genderLabel = "";
-            if (gender === "male") {
+            if (gender === "HOMBRE") {
               genderLabel = "Hombre";
-            } else if (gender === "female") {
+            } else if (gender === "MUJER") {
               genderLabel = "Mujer";
             } else {
               genderLabel = "No especificar";

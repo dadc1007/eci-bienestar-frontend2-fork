@@ -82,7 +82,7 @@ const BodyMeasurements = () => {
     console.log(data);
     // Aquí puedes hacer una petición a tu API
     // por ejemplo: axios.post("/api/measurements", data)
-    navigate("../studentHome");
+    navigate("../student/home");
   };
 
   return (

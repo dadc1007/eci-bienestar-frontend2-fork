@@ -26,6 +26,8 @@ function GymRedirect() {
                 const response = await axios.get(getUrl);
                 const userData = response.data?.data;
 
+                sessionStorage.setItem("email", userData.email);
+                
                 console.log("Respuesta del backend:", userData);
 
                 // Redirección por rol
@@ -40,7 +42,7 @@ function GymRedirect() {
                 }else if (user.role === Role.STUDENT) {
                     if(!userData.registered){
                         console.warn("Usuario no registrado, redirigiendo a registro");
-                        navigate("student/first-register", { replace: true });
+                        navigate("student/index", { replace: true });
                     }else{
                         console.log("Redirigiendo a estudiante");
                         navigate("student", { replace: true });
