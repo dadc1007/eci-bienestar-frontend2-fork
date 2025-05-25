@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo/ECIBienestarTransparent.png";
-import apiClient from "../../../common/services/apiCliend";
+import apiClient from "../../../common/services/apiClient";
+import { useAuth } from "@/common/context";
+import { User, LoginResponse } from "@/common/types";
 
 const Login: React.FC = () => {
   const [username, setEmail] = useState<string>("");
@@ -10,6 +12,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,21 +20,24 @@ const Login: React.FC = () => {
     setError("");
 
     try {
-      const response = await apiClient.post("/auth/login", {
+      const response = await apiClient.post<LoginResponse>("/auth/login", {
         username,
         password,
       });
 
       console.log("Login exitoso:", response.data);
 
-      if (response.data.token) {
-        localStorage.setItem("authToken", response.data.token);
-      }
-      if (response.data.user) {
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-      } else {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
+      const { token, refreshToken, id, email, fullName, role, specialty } =
+        response.data;
+      const user: User = {
+        id,
+        email,
+        fullName,
+        role,
+        speciality: specialty,
+      };
+
+      login(user, token, refreshToken);
       navigate("/home");
     } catch (err: any) {
       console.error("Error en login:", err);
