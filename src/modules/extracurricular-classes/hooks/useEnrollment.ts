@@ -105,6 +105,7 @@ export const usePendingInscriptions = (userId: string) => {
 };
 
 // Hook para inscribir a un usuario (existente)
+
 export const useEnrollUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -128,16 +129,22 @@ export const useEnrollUser = () => {
       });
       
       if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`);
+        // Manejar específicamente errores 400
+        if (response.status === 400) {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Error al inscribir usuario');
+        }
+        throw new Error(`Error en el servidor: ${response.status}`);
       }
       
-      const result = await response.json();
+      const result = await response.text();
       setIsSuccess(true);
-      return result;
+      return result; // Devuelve "Usuario inscrito exitosamente"
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Error desconocido'));
-      console.error('Error al inscribir usuario:', err);
-      throw err;
+      const error = err instanceof Error ? err : new Error('Error desconocido al inscribir usuario');
+      setError(error);
+      console.error('Error al inscribir usuario:', error);
+      throw error; // Re-lanzamos el error para que pueda ser capturado en el componente
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +154,11 @@ export const useEnrollUser = () => {
     mutate: enrollUserMutation, 
     isLoading, 
     error, 
-    isSuccess 
+    isSuccess,
+    reset: () => {
+      setIsSuccess(false);
+      setError(null);
+    }
   };
 };
 
@@ -171,17 +182,21 @@ export const useDeleteInscription = () => {
         method: 'DELETE',
       });
       
-      if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`);
+      if (response.status === 404) {
+        throw new Error('Inscripción no encontrada');
       }
       
-      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      
       setIsSuccess(true);
-      return result;
+      return await response.text(); // Devuelve el mensaje de éxito del backend
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Error desconocido'));
-      console.error('Error al eliminar inscripción:', err);
-      throw err;
+      const error = err instanceof Error ? err : new Error('Error desconocido al eliminar inscripción');
+      setError(error);
+      console.error('Error al eliminar inscripción:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -191,6 +206,66 @@ export const useDeleteInscription = () => {
     mutate: deleteInscriptionMutation, 
     isLoading, 
     error, 
-    isSuccess 
+    isSuccess,
+    reset: () => {
+      setIsSuccess(false);
+      setError(null);
+    }
+  };
+};
+
+export const useHistoricalAssistances = (userId: string) => {
+  const [data, setData] = useState<Assistance[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [isEmpty, setIsEmpty] = useState(false);
+
+  const fetchHistoricalAssistances = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    setIsEmpty(false);
+    
+    try {
+      const url = new URL(`${INSCRIPTIONS_URL}/my-Historical`);
+      url.searchParams.append('userId', userId);
+      
+      const response = await fetch(url.toString());
+      
+      if (response.status === 204) {
+        setIsEmpty(true);
+        setData([]);
+        return;
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Error al obtener historial'));
+      console.error('Error al cargar historial de asistencias:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchHistoricalAssistances();
+    }
+  }, [fetchHistoricalAssistances, userId]);
+
+  const refetch = () => {
+    fetchHistoricalAssistances();
+  };
+
+  return { 
+    data, 
+    isLoading, 
+    error, 
+    isEmpty, 
+    refetch 
   };
 };

@@ -111,7 +111,7 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               userEmail="estudiante@ejemplo.com"
             >
-              <ExtracurricularClassesRoutes userRole={userRole} />
+              <ExtracurricularClassesRoutes userRole={"student"} />
             </Layout>
           } 
         />

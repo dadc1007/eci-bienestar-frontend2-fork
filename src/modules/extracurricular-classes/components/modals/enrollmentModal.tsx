@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../common/modal';
 import { Class } from '../../services/classesService';
 import { useEnrollUser } from '../../hooks/useEnrollment';
@@ -17,15 +17,32 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
   userId
 }) => {
   const [confirmEnroll, setConfirmEnroll] = useState(false);
-  const { mutate, isLoading, isSuccess, error } = useEnrollUser();
+  const [showError, setShowError] = useState(false);
+  const { mutate, isLoading, isSuccess, error, reset } = useEnrollUser();
 
-  if (!classData) return null;
+  // Resetear estados cuando se abre/cierra el modal
+  useEffect(() => {
+    if (!isOpen) {
+      setConfirmEnroll(false);
+      setShowError(false);
+      reset();
+    }
+  }, [isOpen, reset]);
+
+  // Formatear el horario según las sesiones o los tiempos directos
+  const formattedSchedule = classData?.sessions
+    ? classData.sessions.map(s => `${s.day} ${s.startTime}-${s.endTime}`).join(', ')
+    : `${classData?.startTime} - ${classData?.endTime}`;
 
   const handleEnroll = async () => {
+    if (!classData) return;
+    
     try {
-      await mutate(userId, classData.id);
+      await mutate("123", classData.id);
       setConfirmEnroll(true);
+      setShowError(false);
     } catch (error) {
+      setShowError(true);
       console.error('Error al inscribirse:', error);
     }
   };
@@ -34,6 +51,8 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
     setConfirmEnroll(false);
     onClose();
   };
+
+  if (!classData) return null;
 
   return (
     <Modal
@@ -49,6 +68,10 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
             </svg>
           </div>
           <p className="mb-4">Te has inscrito correctamente a la clase de <strong>{classData.name}</strong>.</p>
+          <div className="mb-4 text-left bg-gray-100 p-2 rounded">
+            <p className="text-sm"><strong>Horario:</strong> {formattedSchedule}</p>
+            <p className="text-sm"><strong>Lugar:</strong> Coliseo</p>
+          </div>
           <button
             onClick={handleClose}
             className="bg-purple-800 hover:bg-purple-900 text-white py-2 px-4 rounded-md"
@@ -58,11 +81,18 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
         </div>
       ) : (
         <div>
+          {showError && (
+            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
+              <p><strong>Error:</strong> {error?.message || 'Ocurrió un error al procesar tu inscripción'}</p>
+            </div>
+          )}
+
           <div className="mb-4">
             <h2 className="text-xl font-bold mb-2">{classData.name}</h2>
             <p className="mb-1"><strong>Instructor:</strong> {classData.instructorId || 'Por asignar'}</p>
+            <p className="mb-1"><strong>Horario:</strong> {formattedSchedule}</p>
             <p className="mb-1"><strong>Ubicación:</strong> Coliseo</p>
-            <p className="mb-1"><strong>Categoría:</strong> Desarrollo Humano</p>
+            <p className="mb-1"><strong>Categoría:</strong> {classData.type || 'Desarrollo Humano'}</p>
           </div>
 
           <p className="text-sm text-gray-600 mb-4">
@@ -72,7 +102,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
           <div className="flex justify-between mt-6">
             <button
               onClick={handleEnroll}
-              className="bg-[#362550] hover:bg-[#362550]-900 text-white py-2 px-4 rounded-md"
+              className="bg-[#362550] hover:bg-[#362550] text-white py-2 px-4 rounded-md"
               disabled={isLoading}
             >
               {isLoading ? 'Procesando...' : 'Confirmar Inscripción'}

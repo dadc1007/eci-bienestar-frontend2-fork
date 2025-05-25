@@ -67,7 +67,7 @@ const EnrolledClassesPage: FC = () => {
         {viewType === 'list' ? (
           <EnrolledClassesList userId={studentId} />
         ) : (
-          <CalendarView />
+          <CalendarView userId={studentId}/>
         )}
       </div>
     </div>
