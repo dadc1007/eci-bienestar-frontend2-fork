@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { InfoCardItem } from "../../../appointment-management/components/InfoCardItem";
-import { CarroselItem } from "@/modules/appointment-management/types/carroselType";
 import { useAllMultimedia, useDeleteMultimedia } from "../../hooks";
 import { MultimediaResponse } from "../../types/dto/response/MultimediaResponse";
 import { ShowErrorMessage, ShowLoading } from "../common";
@@ -9,10 +8,10 @@ import { useState } from "react";
 
 const MediaList = () => {
   const { data, isLoading, isError } = useAllMultimedia();
-  const { mutate: deleteMultimedia, isPending } = useDeleteMultimedia();
+  const { mutate: deleteMultimedia } = useDeleteMultimedia();
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const multimediaList: MultimediaResponse[] = data?.data || [];
+  const multimediaList: MultimediaResponse[] = data?.data ?? [];
   const handleDelete = (id: number) => {
     setDeletingId(id);
     deleteMultimedia(id, {
