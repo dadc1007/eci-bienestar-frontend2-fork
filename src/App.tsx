@@ -1,5 +1,4 @@
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -17,7 +16,6 @@ import ReservationsPage from "./modules/recreational-rooms/components/Reservatio
 import ItemsPage from "./modules/recreational-rooms/components/ItemsPage";
 
 // Health & others
-import { HealthRoutes } from "@modules/appointment-management/routes";
 import { useAuth } from "./common/context";
 import { Role } from "./common/types";
 import { ProtectedRoute, Root } from "@common/components";
@@ -101,7 +99,7 @@ function App() {
             >
               <ModuleTemplate
                 title="Gestión de Salas Recreativas"
-                color={moduleColors.recreation}
+                //color={moduleColors.recreation}
               />
             </Layout>
           }
@@ -191,7 +189,7 @@ function App() {
             >
               <ModuleTemplate
                 title="Estadísticas y Reportes"
-                color={moduleColors.statistics}
+                //color={moduleColors.statistics}
               />
             </Layout>
           }
@@ -208,7 +206,7 @@ function App() {
             >
               <ModuleTemplate
                 title="Gestión de Usuarios"
-                color={moduleColors.users}
+                //color={moduleColors.users}
               />
             </Layout>
           }
