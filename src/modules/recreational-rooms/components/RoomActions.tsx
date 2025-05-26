@@ -1,4 +1,4 @@
-import { CalendarDaysIcon, CubeIcon, UsersIcon, ChartBarIcon, FireIcon } from "@heroicons/react/24/outline";
+import { CalendarDaysIcon, CubeIcon, ChartBarIcon, FireIcon } from "@heroicons/react/24/outline";
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../../assets/images/recreational-rooms.jpg";
@@ -19,8 +19,23 @@ const navigationOptions = [
 		description: "Gestiona las reservas de salas y elementos recreativos",
 		to: "/modules/recreation/reservations",
 		icon: CalendarDaysIcon,
-		roles: [Role.ADMINISTRATOR, Role.STUDENT]
+		roles: [Role.ADMINISTRATOR]
 	},
+	{
+		label: "Reservar",
+		description: "Crea tus reservas de salas y elementos recreativos",
+		to: "/modules/recreation/crea-rooms",
+		icon: CalendarDaysIcon,
+		roles: [Role.STUDENT]
+	},
+	{
+		label: "Mis Reservas",
+		description: "Consulta tus reservas de salas y elementos recreativos",
+		to: "/modules/recreation/my-reservations",
+		icon: CalendarDaysIcon,
+		roles: [Role.STUDENT]
+	},
+
 	{
 		label: "Elementos",
 		description: "Administra los elementos recreativos disponibles para préstamo",
