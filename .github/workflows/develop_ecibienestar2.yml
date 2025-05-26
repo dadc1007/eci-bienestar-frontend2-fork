@@ -64,5 +64,5 @@ jobs:
         with:
           app-name: 'EciBienestar2'
           slot-name: 'Production'
-          package: .
+          package: dist #
           
