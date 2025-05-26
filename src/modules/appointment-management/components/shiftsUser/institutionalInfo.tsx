@@ -11,17 +11,15 @@ import Carrosel from "./carrosel/carrosel";
 import GestionMultimediaPanel from "@/modules/appointment-management/components/gestionMultimediaPanel/gestionMultimediaPanel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { CarroselProps } from "../../types/carroselType";
-import { CarroselItem } from "@/modules/appointment-management/types/carroselType";
+import { MultimediaResponse } from "../../types/dto/response/MultimediaResponse";
+import { ShowErrorMessage, ShowLoading } from "../common";
+import { useAllMultimedia } from "../../hooks";
 
-
-const InstitutionalInfo = ({ items: initialItems }: CarroselProps) => {
+const InstitutionalInfo = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [items, setItems] = useState<CarroselItem[]>(initialItems);
+  const { data, isLoading, isError } = useAllMultimedia();
 
-  const updateItems = (newList: CarroselItem[]) => {
-    setItems(newList);
-  };
+  const items: MultimediaResponse[] = data?.data || [];
 
   return (
     <>
@@ -43,7 +41,13 @@ const InstitutionalInfo = ({ items: initialItems }: CarroselProps) => {
         </CardHeader>
 
         <CardBody className="py-0 px-0 flex-col items-start h-[600px]">
-          <Carrosel items={items} />
+          {isLoading && <ShowLoading />}
+
+          {!isLoading && isError && (
+            <ShowErrorMessage message="Error al cargar los contenidos multimedia" />
+          )}
+
+          {!isLoading && !isError && <Carrosel items={items} />}
         </CardBody>
       </Card>
 
@@ -55,14 +59,7 @@ const InstitutionalInfo = ({ items: initialItems }: CarroselProps) => {
         scrollBehavior="inside"
         className="max-h-[90vh] overflow-y-auto"
       >
-        <ModalContent>
-          {() => (
-            <GestionMultimediaPanel
-              initialItems={items}
-              onItemsUpdate={updateItems}
-            />
-          )}
-        </ModalContent>
+        <ModalContent>{() => <GestionMultimediaPanel />}</ModalContent>
       </Modal>
     </>
   );

@@ -1,7 +1,7 @@
-import apiClient from "@/common/services/apiClient";
 import { CreateMultimediaRequest } from "@/modules/appointment-management/types/dto/request/CreateMultimediaRequest";
 import { MultimediaResponse } from "@/modules/appointment-management/types/dto/response/MultimediaResponse";
 import { ApiResponse, TurnResponse } from "../types/dto";
+import mediaApiClient from "./mediaApiClient";
 
 export const uploadMultimedia = async (
   data: CreateMultimediaRequest
@@ -13,7 +13,7 @@ export const uploadMultimedia = async (
     formData.append("duration", data.duration.toString());
     formData.append("type", data.type);
 
-    const response = await apiClient.post("/api/multimedia", formData);
+    const response = await mediaApiClient.post("/api/multimedia", formData);
     return response.data;
   } catch (error) {
     console.error("Error subiendo multimedia:", error);
@@ -25,7 +25,7 @@ export const getMultimediaById = async (
   id: number
 ): Promise<ApiResponse<TurnResponse>> => {
   try {
-    const response = await apiClient.get<ApiResponse<TurnResponse>>(
+    const response = await mediaApiClient.get<ApiResponse<TurnResponse>>(
       `/api/multimedia/${id}`
     );
     return response.data;
@@ -39,9 +39,9 @@ export const getAllMultimedia = async (): Promise<
   ApiResponse<MultimediaResponse[]>
 > => {
   try {
-    const response = await apiClient.get<ApiResponse<MultimediaResponse[]>>(
-      "/api/multimedia"
-    );
+    const response = await mediaApiClient.get<
+      ApiResponse<MultimediaResponse[]>
+    >("/api/multimedia");
     return response.data;
   } catch (error) {
     console.error("Error obteniendo multimedia:", error);
@@ -53,7 +53,7 @@ export const deleteMultimedia = async (
   id: number
 ): Promise<ApiResponse<void>> => {
   try {
-    const response = await apiClient.delete<ApiResponse<void>>(
+    const response = await mediaApiClient.delete<ApiResponse<void>>(
       `/api/multimedia/${id}`
     );
     return response.data;

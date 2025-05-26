@@ -3,23 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import AddMediaForm from "./addMediaForm";
 import MediaList from "./mediaList";
-import hookGestionMultimediaPanel from "@/modules/appointment-management/hooks/hookGestionMultimediaPanel";
-import { CarroselItem } from "@/modules/appointment-management/types/carroselType";
 
-type GestionMultimediaPanelProps = {
-  initialItems: CarroselItem[];
-  onItemsUpdate: (items: CarroselItem[]) => void;
-};
-
-const GestionMultimediaPanel = ({
-  initialItems,
-  onItemsUpdate,
-}: GestionMultimediaPanelProps) => {
-  const { handleSaveChanges, resetPendingDelete } = hookGestionMultimediaPanel(
-    initialItems,
-    onItemsUpdate
-  );
-
+const GestionMultimediaPanel = () => {
   return (
     <Card className="p-5">
       <CardHeader className="flex flex-col items-start gap-2">
@@ -31,11 +16,7 @@ const GestionMultimediaPanel = ({
         </p>
       </CardHeader>
 
-      <Tabs
-        aria-label="Options"
-        fullWidth
-        onSelectionChange={() => resetPendingDelete()}
-      >
+      <Tabs aria-label="Options" fullWidth>
         <Tab key="addMedia" title="Agregar">
           <Card>
             <CardBody className="flex flex-col gap-4">
@@ -51,7 +32,6 @@ const GestionMultimediaPanel = ({
               <Button
                 className="w-full my-2 bg-health-primary text-white"
                 type="button"
-                onPress={handleSaveChanges}
               >
                 <FontAwesomeIcon icon={faFloppyDisk} /> Guardar cambios
               </Button>
