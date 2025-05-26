@@ -7,19 +7,22 @@ import {
 
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
-import ForgotPassword from "./modules/auth/components/ForgotPassword";
+import Login from "./modules/auth/pages/LoginPage";
+import ForgotPassword from "./modules/auth/pages/ForgotPasswordPage";
+import AdminDashboard from "./modules/user-administration/pages/AdminDashboardPage";
+import Students from "./modules/user-administration/pages/StudentsPage";
+import Staff from "./modules/user-administration/pages/StaffPage";
+import Teachers from "./modules/user-administration/pages/TeachersPage";
+import Doctors from "./modules/user-administration/pages/DoctorsPage";
 
-// Recreational rooms
-import RoomActions from "./modules/recreational-rooms/components/RoomActions";
-import RoomsPage from "@modules/recreational-rooms/components/rooms/components/RoomsPage";
-import ReservationsPage from "./modules/recreational-rooms/components/ReservationsPage";
-import ItemsPage from "./modules/recreational-rooms/components/ItemsPage";
+// Importar rutas de módulos
+import RecreationalRoomsRoutes from "@modules/recreational-rooms/routes";
+import ExtracurricularClassesRoutes from "./modules/extracurricular-classes/routes";
 
-// Health & others
 import { useAuth } from "./common/context";
 import { Role } from "./common/types";
 import { ProtectedRoute, Root } from "@common/components";
-import ExtracurricularClassesRoutes from "./modules/extracurricular-classes/routes";
+import { HealthRoutes } from "./modules/appointment-management/routes";
 
 const MODULE_MAPPING = {
   health: "turnos",
@@ -44,9 +47,7 @@ const moduleColors = {
 };
 
 // Componentes de módulos
-const ModuleTemplate: React.FC<{ title: string }> = ({
-  title,
-}) => (
+const ModuleTemplate: React.FC<{ title: string }> = ({ title }) => (
   <div className="container mx-auto px-4 py-8">
     <h1 className="text-3xl font-bold text-gray-800 mb-6">{title}</h1>
     <div className="bg-white rounded-lg shadow p-6">
@@ -97,13 +98,10 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               showSidebar={user?.role === Role.ADMINISTRATOR}
             >
-              <ModuleTemplate
-                title="Gestión de Salas Recreativas"
-                //color={moduleColors.recreation}
-              />
+              <HealthRoutes />
             </Layout>
           }
-        />        
+        />
         {/* Módulo de Recreación/Salas */}
         <Route
           path="/modules/recreation/*"
@@ -113,24 +111,10 @@ function App() {
               activeModule={MODULE_MAPPING.recreation}
               onNotificationsClick={handleNotificationsClick}
             >
-              <div className="">
-                <div className="">
-                  <div className="bg-white rounded-lg shadow p-6 h-full">
-                    <Outlet />
-                  </div>
-                </div>
-              </div>
+              <RecreationalRoomsRoutes />
             </Layout>
           }
-        >
-          {/* Ruta principal del módulo */}
-          <Route index element={<RoomActions />} />
-  
-          {/* Subrutas */}
-          <Route path="rooms" element={<RoomsPage />} />
-          <Route path="reservations" element={<ReservationsPage />} />
-          <Route path="items" element={<ItemsPage />} />
-        </Route>
+        />
 
         {/* Módulo de Clases Extracurriculares */}
         <Route
@@ -155,9 +139,7 @@ function App() {
               activeModule={MODULE_MAPPING.sports}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Préstamos Deportivos"
-              />
+              <ModuleTemplate title="Préstamos Deportivos" />
             </Layout>
           }
         />
@@ -171,9 +153,7 @@ function App() {
               activeModule={MODULE_MAPPING.gym}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Gestión del Gimnasio"
-              />
+              <ModuleTemplate title="Gestión del Gimnasio" />
             </Layout>
           }
         />
@@ -189,7 +169,7 @@ function App() {
             >
               <ModuleTemplate
                 title="Estadísticas y Reportes"
-                //color={moduleColors.statistics}
+                // color={moduleColors.statistics}
               />
             </Layout>
           }
@@ -204,14 +184,25 @@ function App() {
               activeModule={MODULE_MAPPING.users}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Gestión de Usuarios"
-                //color={moduleColors.users}
-              />
+              <div className="w-full h-full flex flex-col p-6 lg:p-8">
+                <div className="container mx-auto px-4 py-8 h-full">
+                  <div className="bg-white rounded-lg shadow p-6 h-full">
+                    <Outlet />
+                  </div>
+                </div>
+              </div>
             </Layout>
           }
-        />
-      </Route>
+        >
+          {/* Ruta principal del módulo */}
+          <Route index element={<AdminDashboard />} />
+  
+          {/* Subrutas */}
+          <Route path="students" element={<Students />} />
+          <Route path="teachers" element={<Teachers />} />
+          <Route path="staff" element={<Staff />} />
+          <Route path="doctors" element={<Doctors />} />
+        </Route>
 
       {/* Ruta de fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
