@@ -1,4 +1,4 @@
-import apiClient from "@/common/services/apiClient";
+import healthApiClient from "./healthApiClient";
 import {
   ApiResponse,
   CountByRole,
@@ -16,8 +16,8 @@ export const getTurnCountByRole = async (
     if (role) params.role = role;
     if (status) params.status = status;
 
-    const response = await apiClient.get<ApiResponse<CountByRole[]>>(
-      "/medical-turns/reports/count-role",
+    const response = await healthApiClient.get<ApiResponse<CountByRole[]>>(
+      "/reports/count-role",
       { params }
     );
     return response.data;
@@ -38,10 +38,9 @@ export const getTurnCountBySpeciality = async (
     if (speciality) params.speciality = speciality;
     if (status) params.status = status;
 
-    const response = await apiClient.get<ApiResponse<CountBySpeciality[]>>(
-      "/medical-turns/reports/count-speciality",
-      { params }
-    );
+    const response = await healthApiClient.get<
+      ApiResponse<CountBySpeciality[]>
+    >("/reports/count-speciality", { params });
     return response.data;
   } catch (error) {
     console.error(
