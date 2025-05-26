@@ -3,7 +3,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
-import ForgotPassword from "./modules/auth/components/ForgotPassword";
+import Login from "./modules/auth/pages/LoginPage";
+import ForgotPassword from "./modules/auth/pages/ForgotPasswordPage";
+import AdminDashboard from "./modules/user-administration/pages/AdminDashboardPage";
+import Students from "./modules/user-administration/pages/StudentsPage";
+import Staff from "./modules/user-administration/pages/StaffPage";
+import Teachers from "./modules/user-administration/pages/TeachersPage";
+import Doctors from "./modules/user-administration/pages/DoctorsPage";
 
 // Importar rutas de módulos
 import RecreationalRoomsRoutes from "@modules/recreational-rooms/routes";
@@ -174,14 +180,25 @@ function App() {
               activeModule={MODULE_MAPPING.users}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Gestión de Usuarios"
-                // color={moduleColors.users}
-              />
+              <div className="w-full h-full flex flex-col p-6 lg:p-8">
+                <div className="container mx-auto px-4 py-8 h-full">
+                  <div className="bg-white rounded-lg shadow p-6 h-full">
+                    <Outlet />
+                  </div>
+                </div>
+              </div>
             </Layout>
           }
-        />
-      </Route>
+        >
+          {/* Ruta principal del módulo */}
+          <Route index element={<AdminDashboard />} />
+  
+          {/* Subrutas */}
+          <Route path="students" element={<Students />} />
+          <Route path="teachers" element={<Teachers />} />
+          <Route path="staff" element={<Staff />} />
+          <Route path="doctors" element={<Doctors />} />
+        </Route>
 
       {/* Ruta de fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
