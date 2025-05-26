@@ -12,6 +12,14 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
     console.log("Response:", JSON.stringify(response.data, null, 2));

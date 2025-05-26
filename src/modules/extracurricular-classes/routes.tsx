@@ -23,6 +23,7 @@ const ExtracurricularClassesRoutes: React.FC<AppRoutesProps> = ({
   userRole,
 }) => {
   const { user } = useAuth();
+
   return (
     <Routes>
       {/* Ruta principal - Dashboard específico por rol */}

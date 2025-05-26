@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
 import ForgotPassword from "./modules/auth/components/ForgotPassword";
@@ -92,6 +91,7 @@ function App() {
               showSidebar={user?.role === Role.ADMINISTRATOR}
             >
               <HealthRoutes />
+              <HealthRoutes />
             </Layout>
           }
         />
@@ -147,6 +147,7 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
             >
               <ModuleTemplate title="Préstamos Deportivos" />
+              <ModuleTemplate title="Préstamos Deportivos" />
             </Layout>
           }
         />
@@ -161,6 +162,7 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
             >
               <ModuleTemplate title="Gestión del Gimnasio" />
+              <ModuleTemplate title="Gestión del Gimnasio" />
             </Layout>
           }
         />
@@ -174,10 +176,7 @@ function App() {
               activeModule={MODULE_MAPPING.statistics}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Estadísticas y Reportes"
-                // color={moduleColors.statistics}
-              />
+              <ModuleTemplate title="Estadísticas y Reportes" />
             </Layout>
           }
         />
@@ -191,10 +190,7 @@ function App() {
               activeModule={MODULE_MAPPING.users}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Gestión de Usuarios"
-                // color={moduleColors.users}
-              />
+              <ModuleTemplate title="Gestión de Usuarios" />
             </Layout>
           }
         />
