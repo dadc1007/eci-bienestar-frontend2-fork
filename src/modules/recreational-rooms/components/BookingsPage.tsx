@@ -5,17 +5,14 @@ import {
     ClockIcon,
     UserIcon,
     IdentificationIcon,
-    AcademicCapIcon,
     MapPinIcon,
     ClipboardDocumentIcon,
-    XMarkIcon,
-    CheckCircleIcon,
-    XCircleIcon,
 } from "@heroicons/react/24/outline";
 import toast, { Toaster } from "react-hot-toast";
 import { bookingApi, type BookingResponse } from "../services/BookingService";
-import { hallsApi, type HallEntity } from "./rooms/services/RoomService";
+import { hallsApi } from "./rooms/services/RoomService";
 import { itemsApi, type ItemEntity } from "../services/api";
+import { HallEntity } from "./rooms/types";
 
 interface BookingFormData {
     date: string;
@@ -322,7 +319,6 @@ const BookingsPage: React.FC = () => {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
-                            <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
                         </Transition.Child>
 
                         <span
@@ -446,7 +442,7 @@ const BookingsPage: React.FC = () => {
                                                             ];
                                                             if (quantity > 0) {
                                                                 newItemsLoans.push({
-                                                                    idItem: item.id,
+                                                                    idItem: item.id ?? 0,
                                                                     quantity,
                                                                 });
                                                             }
@@ -505,7 +501,6 @@ const BookingsPage: React.FC = () => {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
-                            <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
                         </Transition.Child>
 
                         <span

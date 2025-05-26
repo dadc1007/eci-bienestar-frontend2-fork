@@ -9,15 +9,9 @@ import {
 	XMarkIcon,
 	MapPinIcon,
 	ClipboardDocumentIcon,
-	CheckCircleIcon,
-	XCircleIcon,
 	SparklesIcon,
 	WrenchScrewdriverIcon,
 	CalendarIcon,
-	ClockIcon,
-	UserIcon,
-	IdentificationIcon,
-	AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import toast, { Toaster } from "react-hot-toast";
 import {
@@ -77,7 +71,7 @@ const ItemsPage: React.FC = () => {
 	});
 
 	const [searchQuery, setSearchQuery] = useState("");
-	const [filterCategory, setFilterCategory] = useState("");
+	const [filterCategory] = useState("");
 	const [filterStatus, setFilterStatus] = useState<string>("");
 	const [sortField, setSortField] = useState<string>("name");
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");

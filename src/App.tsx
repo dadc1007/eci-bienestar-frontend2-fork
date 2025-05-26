@@ -1,5 +1,4 @@
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -11,7 +10,6 @@ import ForgotPassword from "./modules/auth/components/ForgotPassword";
 
 // Importar rutas de módulos
 import RecreationalRoomsRoutes from "@modules/recreational-rooms/routes";
-import { HealthRoutes } from "@modules/appointment-management/routes";
 import ExtracurricularClassesRoutes from "./modules/extracurricular-classes/routes";
 
 import { useAuth } from "./common/context";
@@ -96,7 +94,6 @@ function App() {
             >
               <ModuleTemplate
                 title="Gestión de Salas Recreativas"
-                color={moduleColors.recreation}
               />
             </Layout>
           }
@@ -173,7 +170,6 @@ function App() {
             >
               <ModuleTemplate
                 title="Estadísticas y Reportes"
-                color={moduleColors.statistics}
               />
             </Layout>
           }
@@ -190,7 +186,6 @@ function App() {
             >
               <ModuleTemplate
                 title="Gestión de Usuarios"
-                color={moduleColors.users}
               />
             </Layout>
           }
