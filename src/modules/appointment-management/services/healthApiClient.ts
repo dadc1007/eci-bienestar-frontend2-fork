@@ -2,13 +2,21 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 
 const MEDIA_API_BASE_URL =
   import.meta.env.VITE_MEDIA_API_BASE_URL ??
-  "https://diamante-medicalturns-develop-dvb8c2cqfbh4gwbg.canadacentral-01.azurewebsites.net";
+  "https://diamante-medicalturns-develop-dvb8c2cqfbh4gwbg.canadacentral-01.azurewebsites.net/api";
 
-const mediaApiClient: AxiosInstance = axios.create({
+const healthApiClient: AxiosInstance = axios.create({
   baseURL: MEDIA_API_BASE_URL,
 });
 
-mediaApiClient.interceptors.response.use(
+healthApiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+healthApiClient.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
     console.log("Response:", JSON.stringify(response.data, null, 2));
     return response;
@@ -45,4 +53,4 @@ mediaApiClient.interceptors.response.use(
   }
 );
 
-export default mediaApiClient;
+export default healthApiClient;

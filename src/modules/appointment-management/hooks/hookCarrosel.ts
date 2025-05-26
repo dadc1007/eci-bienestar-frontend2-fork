@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { CarroselItem } from "../types/carroselType";
 import { MultimediaResponse } from "../types/dto/response/MultimediaResponse";
 
 const FADE_DURATION = 500;
