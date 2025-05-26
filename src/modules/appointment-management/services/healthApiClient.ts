@@ -1,18 +1,14 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ??
-  "https://suoeltmtp2.execute-api.us-east-1.amazonaws.com";
+const MEDIA_API_BASE_URL =
+  import.meta.env.VITE_MEDIA_API_BASE_URL ??
+  "https://diamante-medicalturns-develop-dvb8c2cqfbh4gwbg.canadacentral-01.azurewebsites.net/api";
 
-const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+const healthApiClient: AxiosInstance = axios.create({
+  baseURL: MEDIA_API_BASE_URL,
 });
 
-apiClient.interceptors.request.use((config) => {
+healthApiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -20,7 +16,7 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-apiClient.interceptors.response.use(
+healthApiClient.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
     console.log("Response:", JSON.stringify(response.data, null, 2));
     return response;
@@ -57,4 +53,4 @@ apiClient.interceptors.response.use(
   }
 );
 
-export default apiClient;
+export default healthApiClient;
