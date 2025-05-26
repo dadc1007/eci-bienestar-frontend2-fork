@@ -72,15 +72,6 @@ const Home = () => {
                         </CardBody>
                     </Card>
                 </div>
-
-                {/* Imagen adicional */}
-                <div className="flex justify-center">
-                    <img
-                        src={detalleImg}
-                        alt="Detalle del coliseo"
-                        className="w-full max-w-md h-56 object-cover rounded border-2 border-[#5B1F00] shadow-md"
-                    />
-                </div>
             </section>
 
             <footer className="bg-[#5B1F00] text-white text-xs text-center py-3 mt-6 rounded-t-md shadow-inner">
