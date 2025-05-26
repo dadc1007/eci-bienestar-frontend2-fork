@@ -1,8 +1,5 @@
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
@@ -39,9 +36,7 @@ const moduleColors = {
 };
 
 // Componentes de módulos
-const ModuleTemplate: React.FC<{ title: string }> = ({
-  title,
-}) => (
+const ModuleTemplate: React.FC<{ title: string }> = ({ title }) => (
   <div className="container mx-auto px-4 py-8">
     <h1 className="text-3xl font-bold text-gray-800 mb-6">{title}</h1>
     <div className="bg-white rounded-lg shadow p-6">
@@ -92,13 +87,10 @@ function App() {
               onNotificationsClick={handleNotificationsClick}
               showSidebar={user?.role === Role.ADMINISTRATOR}
             >
-              <ModuleTemplate
-                title="Gestión de Salas Recreativas"
-              />
+              <HealthRoutes />
             </Layout>
           }
         />
-
         {/* Módulo de Recreación/Salas */}
         <Route
           path="/modules/recreation/*"
@@ -136,9 +128,7 @@ function App() {
               activeModule={MODULE_MAPPING.sports}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Préstamos Deportivos"
-              />
+              <ModuleTemplate title="Préstamos Deportivos" />
             </Layout>
           }
         />
@@ -152,9 +142,7 @@ function App() {
               activeModule={MODULE_MAPPING.gym}
               onNotificationsClick={handleNotificationsClick}
             >
-              <ModuleTemplate
-                title="Gestión del Gimnasio"
-              />
+              <ModuleTemplate title="Gestión del Gimnasio" />
             </Layout>
           }
         />
@@ -170,6 +158,7 @@ function App() {
             >
               <ModuleTemplate
                 title="Estadísticas y Reportes"
+                // color={moduleColors.statistics}
               />
             </Layout>
           }
@@ -186,6 +175,7 @@ function App() {
             >
               <ModuleTemplate
                 title="Gestión de Usuarios"
+                // color={moduleColors.users}
               />
             </Layout>
           }

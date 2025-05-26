@@ -1,4 +1,9 @@
-import { CalendarDaysIcon, CubeIcon, ChartBarIcon, FireIcon } from "@heroicons/react/24/outline";
+import {
+  CalendarDaysIcon,
+  CubeIcon,
+  ChartBarIcon,
+  FireIcon,
+} from "@heroicons/react/24/outline";
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../../assets/images/recreational-rooms.jpg";
@@ -114,6 +119,7 @@ const TurnActions: React.FC = () => {
 			</div>
 		</div>
 	);
+
 };
 
 export default TurnActions;
