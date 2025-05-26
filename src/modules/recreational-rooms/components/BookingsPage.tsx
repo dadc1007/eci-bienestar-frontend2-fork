@@ -317,24 +317,16 @@ const BookingsPage: React.FC = () => {
           onClose={() => setIsFormModalOpen(false)}
         >
           <div className="min-h-screen px-4 text-center">
-            <Transition
+            <Transition.Child
               as={React.Fragment}
               enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
               leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
             >
-              <Dialog.Panel className="w-full max-w-md rounded bg-white p-6">
-                <Dialog.Title className="text-lg font-medium text-gray-900">
-                  Título del Modal
-                </Dialog.Title>
-                <p className="mt-2 text-sm text-gray-500">
-                  Aquí va el contenido del modal.
-                </p>
-              </Dialog.Panel>
-            </Transition>
+            </Transition.Child>
 
             <span
               className="inline-block h-screen align-middle"
@@ -357,56 +349,8 @@ const BookingsPage: React.FC = () => {
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
                 >
-                    <div className="min-h-screen px-4 text-center">
-                        <Transition.Child
-                            as={React.Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0"
-                            enterTo="opacity-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                        >
-                        </Transition.Child>
-
-                        <span
-                            className="inline-block h-screen align-middle"
-                            aria-hidden="true"
-                        >
-                            &#8203;
-                        </span>
-
-                        <Transition.Child
-                            as={React.Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                        >
-                            <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-                                <Dialog.Title
-                                    as="h3"
-                                    className="text-lg font-medium leading-6 text-gray-900"
-                                >
-                                    Nueva Reserva
-                                </Dialog.Title>
-
-                                <div className="mt-4 space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Fecha
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={formData.date}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, date: e.target.value })
-                                            }
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                                        />
-                                    </div>
+                  Nueva Reserva
+                </Dialog.Title>
 
                 <div className="mt-4 space-y-4">
                   <div>
@@ -456,50 +400,29 @@ const BookingsPage: React.FC = () => {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                     />
                   </div>
+
                   <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                          Elementos
-                      </label>
-                      <div className="mt-2 space-y-2">
-                          {items.map((item) => (
-                              <div key={item.id} className="flex items-center">
-                                  <input
-                                      type="number"
-                                      min="0"
-                                      max={item.quantityAvailable}
-                                      value={
-                                          formData.itemsLoans.find(
-                                              (loan) => loan.idItem === item.id,
-                                          )?.quantity || 0
-                                      }
-                                      onChange={(e) => {
-                                          const quantity = Number(e.target.value);
-                                          const newItemsLoans = [
-                                              ...formData.itemsLoans.filter(
-                                                  (loan) => loan.idItem !== item.id,
-                                              ),
-                                          ];
-                                          if (quantity > 0) {
-                                              newItemsLoans.push({
-                                                  idItem: item.id ?? 0,
-                                                  quantity,
-                                              });
-                                          }
-                                          setFormData({
-                                              ...formData,
-                                              itemsLoans: newItemsLoans,
-                                          });
-                                      }}
-                                      className="w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                                  />
-                                  <span className="ml-2 text-sm text-gray-500">
-                                      {item.name}
-                                  </span>
-                              </div>
-                          ))}
-                      </div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Sala
+                    </label>
+                    <select
+                      value={formData.hallId}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          hallId: Number(e.target.value),
+                        })
+                      }
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                    >
+                      <option value={0}>Seleccionar sala</option>
+                      {halls.map((hall) => (
+                        <option key={hall.id} value={hall.id}>
+                          {hall.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-              </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -538,31 +461,35 @@ const BookingsPage: React.FC = () => {
                             className="w-20 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                           />
                           <span className="ml-2 text-sm text-gray-500">
-                            {item.name}
+                            {item.name} (Disponible: {item.quantityAvailable})
                           </span>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
-            {/* View Modal */}
-            <Transition appear show={isViewModalOpen} as={React.Fragment}>
-                <Dialog
-                    as="div"
-                    className="fixed inset-0 z-10 overflow-y-auto"
-                    onClose={() => setIsViewModalOpen(false)}
-                >
-                    <div className="min-h-screen px-4 text-center">
-                        <Transition.Child
-                            as={React.Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0"
-                            enterTo="opacity-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                        >
-                        </Transition.Child>
+
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500"
+                    onClick={() => setIsFormModalOpen(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500"
+                    onClick={handleCreateBooking}
+                  >
+                    Crear Reserva
+                  </button>
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition>
 
       {/* View Modal */}
       <Transition appear show={isViewModalOpen} as={React.Fragment}>
@@ -572,7 +499,7 @@ const BookingsPage: React.FC = () => {
           onClose={() => setIsViewModalOpen(false)}
         >
           <div className="min-h-screen px-4 text-center">
-            <Transition
+            <Transition.Child
               as={React.Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0"
@@ -581,15 +508,7 @@ const BookingsPage: React.FC = () => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Panel className="w-full max-w-md rounded bg-white p-6">
-                <Dialog.Title className="text-lg font-medium text-gray-900">
-                  Título del Modal
-                </Dialog.Title>
-                <p className="mt-2 text-sm text-gray-500">
-                  Aquí va el contenido del modal.
-                </p>
-              </Dialog.Panel>
-            </Transition>
+            </Transition.Child>
 
             <span
               className="inline-block h-screen align-middle"

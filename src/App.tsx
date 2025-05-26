@@ -1,5 +1,5 @@
 
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Dashboard from "./common/dashboard";
 import Layout from "./common/layout/layout";
@@ -12,6 +12,7 @@ import ExtracurricularClassesRoutes from "./modules/extracurricular-classes/rout
 import { useAuth } from "./common/context";
 import { Role } from "./common/types";
 import { ProtectedRoute, Root } from "@common/components";
+import { HealthRoutes } from "./modules/appointment-management/routes";
 
 const MODULE_MAPPING = {
   health: "turnos",
