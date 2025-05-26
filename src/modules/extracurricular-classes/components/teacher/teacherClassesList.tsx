@@ -1,28 +1,26 @@
 import React, { useState } from 'react';
 import { Class } from '../../services/classesService';
-import ClassCard from '../common/classCard';
-import EnrollmentModal from '../modals/enrollmentModal';
-import UseModal from '../../hooks/useModal';
+import TeacherClassCard from './teacherClassCard';
+import { useNavigate } from 'react-router-dom';
 
-interface AvailableClassesListProps {
+interface TeacherClassesListProps {
   classes: Class[];
   categoryTitle: string;
-  userId: string;
+  instructorId: string;
 }
 
-const AvailableClassesList: React.FC<AvailableClassesListProps> = ({ 
+const TeacherClassesList: React.FC<TeacherClassesListProps> = ({ 
   classes, 
   categoryTitle,
-  userId 
+  instructorId 
 }) => {
   const [expanded, setExpanded] = useState(true);
-  const { isOpen, modalData, openModal, closeModal } = UseModal();
+  const navigate = useNavigate();
 
-  const handleEnroll = (classId: string) => {
-    const selectedClass = classes.find(c => c.id === classId);
-    if (selectedClass) {
-      openModal(selectedClass);
-    }
+  const handleTakeAttendance = (classId: string) => {
+    navigate(`/modules/extracurricular/profesor/asistencia/${classId}`, {
+      state: { classId, instructorId }
+    });
   };
 
   return (
@@ -47,24 +45,23 @@ const AvailableClassesList: React.FC<AvailableClassesListProps> = ({
       
       {expanded && (
         <div className="bg-gray-50 p-4 rounded-b-[30px] grid grid-cols-1 md:grid-cols-3 gap-4 border border-[#362550]">
-          {classes.map((classItem) => (
-            <ClassCard 
-              key={classItem.id} 
-              classData={classItem} 
-              onEnroll={handleEnroll} 
-            />
-          ))}
+          {classes.length > 0 ? (
+            classes.map((classItem) => (
+              <TeacherClassCard 
+                key={classItem.id} 
+                classData={classItem} 
+                onTakeAttendance={handleTakeAttendance} 
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-8 text-gray-500">
+              No hay clases programadas en esta categoría
+            </div>
+          )}
         </div>
       )}
-
-      <EnrollmentModal 
-        isOpen={isOpen}
-        onClose={closeModal}
-        classData={modalData}
-        userId={"123"}
-      />
     </div>
   );
 };
 
-export default AvailableClassesList;
+export default TeacherClassesList;

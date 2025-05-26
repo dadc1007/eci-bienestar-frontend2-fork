@@ -4,7 +4,7 @@ import BackButton from '../../components/common/backButton';
 import CalendarViewMain from '../../components/common/calendarViewMain';
 
 const ScheduledClassesPage: FC = () => {
-  const instructorId = "Diana Rojas";
+  const instructorId = "Martin Cantor";
   const userRole = 'teacher';
 
   const teacherTabs = [

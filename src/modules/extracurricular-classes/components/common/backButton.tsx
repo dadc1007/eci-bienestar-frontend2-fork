@@ -8,7 +8,7 @@ const BackButton: FC = () => {
 
   return (
     <button
-      onClick={() => navigate('/estudiante/dashboard')} // condicional de rol dashboard
+      onClick={() => navigate('/modules/extracurricular')} // condicional de rol dashboard
       className="flex items-center justify-center w-10 h-10 rounded-full bg-[#362550] hover:bg-indigo-700 transition-colors"
       title="Volver al inicio"
     >

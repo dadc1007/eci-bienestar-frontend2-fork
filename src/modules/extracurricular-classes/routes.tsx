@@ -9,6 +9,8 @@ import AttendanceHistoryPage from './pages/student/attendanceHistoryPage';
 // Páginas de docente
 import ScheduledClassesPage from './pages/teacher/scheduledClassesPage';
 import AttendanceRegisterPage from './pages/teacher/attendanceRegisterPage';
+import ClassAttendancePage  from './pages/teacher/classAttendancePage';
+
 // Páginas personal de bienestar y admin
 import StatisticsPage from './pages/common/statisticsPage';
 import ClassManagementPage from './pages/common/classManagementPage';
@@ -47,6 +49,7 @@ const ExtracurricularClassesRoutes: React.FC<AppRoutesProps> = ({ userRole }) =>
           
           <Route path="clases-programadas" element={<ScheduledClassesPage />} />
           <Route path="registro-de-asistencia" element={<AttendanceRegisterPage />} />
+          <Route path="/profesor/asistencia/:classId" element={<ClassAttendancePage />} />
         </>
       )}
       
