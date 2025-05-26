@@ -1,5 +1,4 @@
 import { MultimediaResponse } from "@/modules/appointment-management/types/dto/response/MultimediaResponse";
-import type { CarroselItem } from "../../../../appointment-management/types/carroselType";
 import { TypeEnum } from "@/modules/appointment-management/types/enums";
 
 type Props = {
