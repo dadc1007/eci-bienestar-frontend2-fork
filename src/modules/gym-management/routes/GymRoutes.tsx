@@ -38,11 +38,11 @@ const studentTabs = [
 ];
 
 const trainerTabs = [
-  { label: "Inicio", path: "trainerHome" },
-  { label: "Rutinas", path: "trainer-routines" },
+  { label: "Inicio", path: "home" },
+  { label: "Rutinas", path: "routines" },
   { label: "Ejercicios", path: "exercises" },
   { label: "Sesiones", path: "sessions" },
-  { label: "Reporte", path: "trainer-generate-report" },
+  { label: "Reporte", path: "reports" },
   { label: "Progresos", path: "progress" }
 ];
 
@@ -74,7 +74,7 @@ const GymRoutes = () => {
         <Route path="routines" element={<TrainerRoutinesPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="sessions" element={<SessionsPage />} />
-        <Route path="generate-report" element={<TrainerGenerateReportPage />} />
+        <Route path="reports" element={<TrainerGenerateReportPage />} />
         <Route path="progress" element={<ProgressPage />} />
         <Route path="my-students-progress" element={<MyStudentsProgress />} />
       </Route>
